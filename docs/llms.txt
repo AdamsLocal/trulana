@@ -1,0 +1,59 @@
+# Trulana
+
+> Your device is the API. A local-first private context server for AI tools.
+
+Trulana turns your machine into a private context server. AI tools can request context about you — but your raw data never leaves your device. Every response is filtered on-device before it's returned.
+
+## What it does
+
+Instead of sending personal data to AI tools, Trulana flips the model:
+
+1. An app requests access via REST (localhost:8432) or MCP (stdio)
+2. Trulana issues a short-lived, scoped access token (15-minute TTL, in-memory only)
+3. The app queries local context (e.g. "morning routine", "work colleagues")
+4. The query is matched against an encrypted local vault
+5. The response passes through a 3-stage Auto-Redact Engine:
+   - Stage 1: Regex filter (SSN, email, phone, credit card, IP)
+   - Stage 2: NER processor (person names, locations, organizations)
+   - Stage 3: Privacy filter (time generalization, amount generalization, age redaction)
+6. Only the sanitized result is returned
+7. Every request is logged to an encrypted audit trail
+
+## Technical details
+
+- Framework: Flutter (Dart 3.x) on macOS
+- Database: SQLite encrypted via sqflite_sqlcipher (AES-256)
+- Key storage: macOS Keychain via flutter_secure_storage (Secure Enclave backed)
+- REST API: shelf HTTP server bound to 127.0.0.1:8432 (localhost only)
+- MCP: stdio JSON-RPC adapter triggered via SOVEREIGN_MCP=1 environment variable
+- Auth: Bearer tokens, 15-minute TTL, in-memory (don't survive restart)
+- Rate limiting: 60 requests/minute per agent (REST only, MCP pending)
+
+## MCP tools
+
+- sovereign_request_access: Request a scoped access token. Requires app_id, app_name, scopes, intent.
+- sovereign_query_context: Query personal context with a valid token. Response is automatically redacted.
+
+## Privacy levels
+
+- Standard: Regex + NER stripping only
+- Strict: Also generalizes times, currency amounts, ages
+- Paranoid: All of strict plus proper noun catch-all and noise disclaimer
+
+## Current limits
+
+- Scope enforcement records scopes but does not enforce them at query time
+- MCP uses local-process trust model (no cryptographic caller verification)
+- MCP per-agent rate limiting not yet enforced
+- NER uses keyword dictionaries (on-device LLM is a future phase)
+
+## Links
+
+- Source: https://github.com/AdamsLocal/trulana
+- Security model: https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md
+- Landing page: https://adamslocal.github.io/trulana/
+- Contact: adam@trulana.com
+
+## Status
+
+macOS MVP / technical preview. 117 tests passing. REST and MCP verified.

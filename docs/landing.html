@@ -35,23 +35,51 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Trulana",
+  "alternateName": "Trulana Context Server",
+  "headline": "Your device is the API",
   "description": "A local-first private context server for AI tools. Stores personal context in an encrypted local vault. AI tools query via REST or MCP and receive filtered, redacted responses. Raw data never leaves the device.",
   "applicationCategory": "DeveloperApplication",
+  "applicationSubCategory": "Privacy Tools",
   "operatingSystem": "macOS",
-  "url": "https://github.com/AdamsLocal/trulana",
+  "softwareVersion": "1.0.0-mvp",
+  "releaseNotes": "macOS MVP with REST API on localhost:8432, MCP stdio adapter for Claude/Cursor, 3-stage Auto-Redact Engine, encrypted database, token-based auth, and audit logging. 117 tests passing.",
+  "url": "https://adamslocal.github.io/trulana/",
+  "downloadUrl": "https://github.com/AdamsLocal/trulana",
+  "codeRepository": "https://github.com/AdamsLocal/trulana",
+  "programmingLanguage": ["Dart", "Flutter"],
+  "runtimePlatform": "Flutter macOS",
+  "permissions": "No network access required. Runs entirely on localhost.",
+  "screenshot": "https://adamslocal.github.io/trulana/trulana-og.png",
+  "featureList": [
+    "Local-first encrypted context vault (AES-256)",
+    "REST API on localhost:8432",
+    "MCP stdio adapter for Claude Desktop and Cursor",
+    "3-stage PII auto-redaction (regex, NER, privacy-level generalization)",
+    "Token-based auth with 15-minute TTL",
+    "Encrypted audit log for every request",
+    "Three privacy levels: Standard, Strict, Paranoid",
+    "117 automated tests"
+  ],
   "author": {
-    "@type": "Organization",
-    "name": "AdamsLocal",
+    "@type": "Person",
+    "name": "Adam",
+    "email": "adam@trulana.com",
     "url": "https://github.com/AdamsLocal"
   },
   "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
   "offers": {
     "@type": "Offer",
     "price": "0",
-    "priceCurrency": "USD"
-  }
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  },
+  "keywords": "privacy, local-first, AI, context server, MCP, redaction, personal data, macOS, Flutter, PII"
 }
 </script>
+
+<!-- llms.txt for AI crawlers -->
+<link rel="alternate" type="text/plain" href="llms.txt">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
