@@ -1,8 +1,22 @@
 # Sovereign
 
-**The Autonomous Personal API & Data Broker**
+Sovereign turns your device into a private context server. Apps can query what they need — but raw data never leaves. Every response is filtered on-device before it’s returned.
 
-Sovereign is a local-first, privacy-centric mobile application that solves "Context Fragmentation." Instead of giving personal data to dozens of third-party AIs and apps, users store their life context locally on-device. Third-party apps must query Sovereign, which acts as a gatekeeper — answering on the user's behalf, redacting personal info, and negotiating micro-payments for data leasing.
+## Status
+
+**macOS MVP / technical preview**
+
+- REST transport (localhost API) — verified
+- MCP transport (Claude / Cursor) — verified
+- Shared policy core across both — enforced and tested
+
+117 tests passing. Full integration checks for both transports.
+
+## What this proves
+
+- Your device can act as the API instead of the client
+- Third-party apps can request context without accessing raw data
+- Privacy enforcement can happen locally, not in the cloud
 
 ## Key Features
 
