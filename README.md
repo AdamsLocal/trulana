@@ -76,7 +76,7 @@ lib/
 
 ```bash
 # Clone the repository
-git clone https://github.com/adamslocal/trulana.git
+git clone https://github.com/AdamsLocal/trulana.git
 cd trulana
 
 # Install dependencies

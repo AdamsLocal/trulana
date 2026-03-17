@@ -88,8 +88,8 @@ If we update this privacy policy, the new version will be bundled with the app u
 For privacy-related questions or concerns:
 
 - **Email:** privacy@adamslocal.com
-- **GitHub:** github.com/adamslocal/sovereign
+- **GitHub:** github.com/AdamsLocal/trulana
 
 ---
 
-**Summary:** Sovereign stores everything locally, encrypts everything, shares nothing without your tap-by-tap approval, and has no backend servers. Your data is sovereign.
+**Summary:** Trulana stores everything locally, encrypts everything, shares nothing without your tap-by-tap approval, and has no backend servers. Your data is sovereign.
