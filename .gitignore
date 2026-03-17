@@ -54,3 +54,11 @@ app.*.map.json
 macos/build/
 trulana-test/
 .cursorrules
+
+# Non-macOS platform directories
+/windows/
+/android/
+/linux/
+/web/
+/ios/
+.metadata
