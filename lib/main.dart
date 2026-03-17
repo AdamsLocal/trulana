@@ -15,7 +15,6 @@ import 'package:trulana/models/models.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GoogleFonts.config.allowRuntimeFetching = false;
   await _seedDefaultConfig();
 
   final bool mcpMode = Platform.environment['SOVEREIGN_MCP'] == '1';
