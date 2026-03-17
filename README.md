@@ -89,7 +89,7 @@ flutter doctor
 ## Running Tests
 
 ```bash
-# Run all 72 unit tests
+# Run all 117 unit + integration tests
 flutter test
 
 # Run only the Auto-Redact Engine tests
