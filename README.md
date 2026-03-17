@@ -76,7 +76,7 @@ lib/
 
 ```bash
 # Clone the repository
-git clone https://github.com/adamslocal/trulana.git
+git clone https://github.com/AdamsLocal/trulana.git
 cd trulana
 
 # Install dependencies
@@ -89,7 +89,7 @@ flutter doctor
 ## Running Tests
 
 ```bash
-# Run all 72 unit tests
+# Run all 117 unit + integration tests
 flutter test
 
 # Run only the Auto-Redact Engine tests

@@ -617,10 +617,10 @@ footer a:hover {
 
 <nav>
   <div class="nav-inner">
-    <a href="https://github.com/adamslocal/trulana" class="nav-brand">Trulana</a>
+    <a href="https://github.com/AdamsLocal/trulana" class="nav-brand">Trulana</a>
     <div class="nav-links">
-      <a href="https://github.com/adamslocal/trulana">Source</a>
-      <a href="https://github.com/adamslocal/trulana/blob/main/SECURITY.md">Security</a>
+      <a href="https://github.com/AdamsLocal/trulana">Source</a>
+      <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a>
       <a href="#partner">Design Partner</a>
     </div>
   </div>
@@ -631,14 +631,14 @@ footer a:hover {
     <div class="hero-badge">Technical Preview — macOS</div>
     <h1 class="hero-wordmark">Trulana</h1>
     <h2 class="hero-headline">Your device is <em>the API.</em></h2>
-    <p class="sub">AI tools can request context about you — but your raw data stays local, and every response is filtered before it leaves.</p>
+    <p class="sub">Apps can request context about a user — but raw data stays local, and every response is filtered before it leaves.</p>
     <div class="hero-proof"><span>macOS MVP</span> · <span>REST + MCP verified</span> · <span>117 tests passing</span></div>
     <div class="cta-row">
-      <a href="https://github.com/adamslocal/trulana" id="btn-source" class="btn btn-primary">Get the source</a>
-      <a href="#example" class="btn btn-ghost">Watch demo</a>
+      <a href="#install-bar" id="btn-source" class="btn btn-primary">Build it locally</a>
+      <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost">View source</a>
     </div>
     <div class="install-bar" id="install-bar">
-      <span><span style="color:var(--accent)">$</span> git clone https://github.com/adamslocal/trulana &amp;&amp; cd trulana &amp;&amp; flutter build macos</span>
+      <span><span style="color:var(--accent)">$</span> git clone https://github.com/AdamsLocal/trulana &amp;&amp; cd trulana &amp;&amp; flutter pub get &amp;&amp; flutter run -d macos</span>
       <span class="install-copy">COPY</span>
     </div>
   </div>
@@ -648,7 +648,7 @@ footer a:hover {
   <div class="container">
     <div class="section-label">The problem</div>
     <h2>AI that doesn't know you is useless.<br>AI that knows everything is dangerous.</h2>
-    <p>Right now you have two choices. Give your AI tools zero personal context and get generic answers. Or hand over your emails, calendar, health data, and notes — and hope nobody leaks it, trains on it, or sells it.</p>
+    <p>Right now you have two choices. Give your apps zero personal context and get generic answers. Or hand over your emails, calendar, health data, and notes — and hope nobody leaks it, trains on it, or sells it.</p>
     <div class="problem-grid">
       <div class="problem-card">
         <div class="label">Option A</div>
@@ -751,7 +751,7 @@ footer a:hover {
       </div>
       <div class="audience-card">
         <h3>Consultants &amp; professionals</h3>
-        <p>Use AI tools with client data, NDAs, and sensitive materials — without sending any of it to a cloud provider.</p>
+        <p>Use apps with client data, NDAs, and sensitive materials — without sending any of it to a cloud provider.</p>
       </div>
       <div class="audience-card">
         <h3>Privacy-aware power users</h3>
@@ -806,7 +806,7 @@ footer a:hover {
 
 <footer>
   <div class="container">
-    Trulana · Built by <a href="https://github.com/adamslocal">adamslocal</a> · <a href="https://github.com/adamslocal/trulana/blob/main/SECURITY.md">SECURITY.md</a> · <a href="https://github.com/adamslocal/trulana">GitHub</a>
+    Trulana · Built by <a href="https://github.com/AdamsLocal">AdamsLocal</a> · <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">SECURITY.md</a> · <a href="https://github.com/AdamsLocal/trulana">GitHub</a>
   </div>
 </footer>
 
@@ -956,7 +956,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 var installBar = document.getElementById('install-bar');
 if (installBar) {
   installBar.addEventListener('click', function() {
-    navigator.clipboard.writeText('git clone https://github.com/adamslocal/trulana && cd trulana && flutter build macos').then(function() {
+    navigator.clipboard.writeText('git clone https://github.com/AdamsLocal/trulana && cd trulana && flutter pub get && flutter run -d macos').then(function() {
       installBar.classList.add('copied');
       var copyEl = installBar.querySelector('.install-copy');
       copyEl.textContent = 'COPIED';
