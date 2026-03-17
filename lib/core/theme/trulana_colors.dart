@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens for the Sovereign dark UI.
+/// Design tokens for the Trulana dark UI.
 ///
 /// Kept as an abstract class with static constants so it can never be
 /// instantiated — it exists purely as a compile-time colour namespace.
-abstract class SovereignColors {
-  SovereignColors._();
+abstract class TrulanaColors {
+  TrulanaColors._();
 
   static const Color background = Color(0xFF0A0A0F);
   static const Color surface = Color(0xFF12121A);

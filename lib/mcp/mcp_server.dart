@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:sovereign/core/logging/safe_logger.dart';
-import 'package:sovereign/core/services/auth_service.dart';
-import 'package:sovereign/core/services/context_query_service.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+import 'package:trulana/core/services/auth_service.dart';
+import 'package:trulana/core/services/context_query_service.dart';
 
-const String _serverName = 'sovereign';
+const String _serverName = 'trulana';
 const String _serverVersion = '1.0.0';
 
-/// MCP stdio server that exposes Sovereign's shared services over the
+/// MCP stdio server that exposes Trulana's shared services over the
 /// Model Context Protocol. Reads JSON-RPC 2.0 from stdin, dispatches
 /// to [AuthService] and [ContextQueryService], writes responses to
 /// stdout. All logging goes to stderr via [SafeLogger].
@@ -95,7 +95,7 @@ class McpServer {
         <String, Object?>{
           'name': 'sovereign_request_access',
           'description':
-              'Request scoped access to the user\'s Sovereign vault. '
+              'Request scoped access to the user\'s Trulana vault. '
               'Returns a short-lived access token.',
           'inputSchema': <String, Object?>{
             'type': 'object',

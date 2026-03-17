@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
 
-import 'package:sovereign/core/network/middleware/auth_middleware.dart';
-import 'package:sovereign/core/network/token_manager.dart';
-import 'package:sovereign/core/services/context_query_service.dart';
+import 'package:trulana/core/network/middleware/auth_middleware.dart';
+import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/core/services/context_query_service.dart';
 
 /// Thin HTTP adapter for [ContextQueryService.queryContext].
 /// Parses the shelf request, delegates to the service, formats the response.

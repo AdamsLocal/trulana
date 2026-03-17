@@ -51,7 +51,7 @@ class BiometricAuth {
   /// `stickyAuth: true` keeps the auth session alive across app lifecycle
   /// interruptions (e.g. incoming phone call) so the user isn't re-prompted.
   Future<bool> authenticate({
-    String reason = 'Authenticate to access Sovereign',
+    String reason = 'Authenticate to access Trulana',
   }) async {
     try {
       final bool result = await _localAuth.authenticate(

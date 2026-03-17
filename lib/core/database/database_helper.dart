@@ -1,12 +1,12 @@
 import 'package:path/path.dart' as p;
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
-import 'package:sovereign/core/database/migrations.dart';
-import 'package:sovereign/core/database/schema.dart';
-import 'package:sovereign/core/security/key_manager.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/migrations.dart';
+import 'package:trulana/core/database/schema.dart';
+import 'package:trulana/core/security/key_manager.dart';
+import 'package:trulana/models/models.dart';
 
-/// Singleton gateway to the encrypted Sovereign database.
+/// Singleton gateway to the encrypted Trulana database.
 ///
 /// All reads and writes flow through this class so the encryption key is
 /// resolved exactly once per session, and every operation is wrapped in

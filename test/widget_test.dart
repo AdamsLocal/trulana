@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/models/models.dart';
 
 void main() {
   test('Core models round-trip through toMap/fromMap', () {

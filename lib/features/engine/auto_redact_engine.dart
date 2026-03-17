@@ -1,8 +1,8 @@
-import 'package:sovereign/features/engine/models/redaction_result.dart';
-import 'package:sovereign/features/engine/stages/ner_processor.dart';
-import 'package:sovereign/features/engine/stages/privacy_filter.dart';
-import 'package:sovereign/features/engine/stages/regex_filter.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/features/engine/models/redaction_result.dart';
+import 'package:trulana/features/engine/stages/ner_processor.dart';
+import 'package:trulana/features/engine/stages/privacy_filter.dart';
+import 'package:trulana/features/engine/stages/regex_filter.dart';
+import 'package:trulana/models/models.dart';
 
 /// Orchestrates the 3-stage Auto-Redact pipeline:
 ///   1. Regex filter  — deterministic PII stripping

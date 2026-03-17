@@ -1,4 +1,4 @@
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/models/models.dart';
 
 /// A single PII detection event capturing what was found, where, and how
 /// it was neutralized. Immutable by design so events can safely accumulate

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
 
-import 'package:sovereign/core/services/auth_service.dart';
+import 'package:trulana/core/services/auth_service.dart';
 
 /// Thin HTTP adapter for [AuthService.requestAccess].
 /// Parses the shelf request, delegates to the service, formats the response.

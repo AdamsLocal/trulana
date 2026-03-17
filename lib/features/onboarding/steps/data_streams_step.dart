@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
 
-/// Step 3 — Lets the user choose which data streams Sovereign manages.
+/// Step 3 — Lets the user choose which data streams Trulana manages.
 ///
 /// These are mock toggles for MVP — actual data integrations are wired
 /// in later phases. Pre-enabled defaults create a "just works" first
@@ -42,7 +42,7 @@ class _DataStreamsStepState extends State<DataStreamsStep> {
           AnimatedListItem(
             index: 0,
             child: Text(
-              'What should Sovereign manage for you?',
+              'What should Trulana manage for you?',
               style: textTheme.headlineLarge,
             ),
           ),
@@ -53,7 +53,7 @@ class _DataStreamsStepState extends State<DataStreamsStep> {
               'You can change this anytime.',
               style: TextStyle(
                 fontSize: 15,
-                color: SovereignColors.textSecondary,
+                color: TrulanaColors.textSecondary,
               ),
             ),
           ),
@@ -82,7 +82,7 @@ class _DataStreamsStepState extends State<DataStreamsStep> {
           ),
           const SizedBox(height: 24),
           Center(
-            child: SovereignButton(
+            child: TrulanaButton(
               label: 'Continue',
               onPressed: widget.onComplete,
             ),
@@ -114,13 +114,13 @@ class _StreamToggleCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, color: SovereignColors.primaryCyan, size: 24),
+          Icon(icon, color: TrulanaColors.primaryCyan, size: 24),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               label,
               style: const TextStyle(
-                color: SovereignColors.textPrimary,
+                color: TrulanaColors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -129,7 +129,7 @@ class _StreamToggleCard extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeTrackColor: SovereignColors.primaryCyan,
+            activeTrackColor: TrulanaColors.primaryCyan,
             activeThumbColor: Colors.white,
           ),
         ],

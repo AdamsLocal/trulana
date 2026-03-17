@@ -1,4 +1,4 @@
-package com.adamslocal.sovereign
+package com.adamslocal.trulana
 
 import io.flutter.embedding.android.FlutterActivity
 

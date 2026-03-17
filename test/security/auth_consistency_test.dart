@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/core/services/auth_service.dart';
-import 'package:sovereign/core/services/context_query_service.dart';
+import 'package:trulana/core/services/auth_service.dart';
+import 'package:trulana/core/services/context_query_service.dart';
 
 /// Proves that REST and MCP transports use the exact same service
 /// singletons. Both auth_routes.dart and mcp_server.dart reference

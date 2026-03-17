@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:sovereign/core/theme/sovereign_colors.dart';
+import 'package:trulana/core/theme/trulana_colors.dart';
 
 /// Full-screen animated mesh gradient that drifts slowly behind all
 /// content. The organic movement prevents the dark background from
@@ -27,10 +27,10 @@ class _MeshGradientBackgroundState extends State<MeshGradientBackground>
   late final AnimationController _controller;
 
   static const _defaultColors = <Color>[
-    SovereignColors.background,
+    TrulanaColors.background,
     Color(0xFF0D1B2A),
     Color(0xFF1B0A2E),
-    SovereignColors.background,
+    TrulanaColors.background,
   ];
 
   @override

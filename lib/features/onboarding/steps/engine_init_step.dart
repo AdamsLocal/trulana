@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
 
 /// Step 2 — Simulates the local AI engine boot sequence.
 ///
@@ -125,10 +125,10 @@ class _TerminalLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         text,
-        style: SovereignTheme.monoStyle.copyWith(
+        style: TrulanaTheme.monoStyle.copyWith(
           color: isSuccess
-              ? SovereignColors.successGreen
-              : SovereignColors.primaryCyan,
+              ? TrulanaColors.successGreen
+              : TrulanaColors.primaryCyan,
           fontSize: 13,
         ),
       ),
@@ -152,9 +152,9 @@ class _ProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: animation.value,
             backgroundColor:
-                SovereignColors.primaryCyan.withValues(alpha: 0.1),
+                TrulanaColors.primaryCyan.withValues(alpha: 0.1),
             valueColor: const AlwaysStoppedAnimation<Color>(
-              SovereignColors.primaryCyan,
+              TrulanaColors.primaryCyan,
             ),
             minHeight: 3,
           ),

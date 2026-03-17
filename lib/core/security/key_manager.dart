@@ -15,7 +15,7 @@ class KeyManager {
 
   static final KeyManager instance = KeyManager._();
 
-  static const String _dbKeyName = 'sovereign_db_encryption_key';
+  static const String _dbKeyName = 'trulana_db_encryption_key';
   static const int _keyLengthBytes = 32; // 256-bit AES key
 
   /// Platform-specific options route storage through hardware-backed keystores
@@ -23,7 +23,7 @@ class KeyManager {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
-      accountName: 'sovereign_vault',
+      accountName: 'trulana_vault',
     ),
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );

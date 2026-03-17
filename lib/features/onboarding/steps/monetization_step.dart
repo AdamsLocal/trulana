@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
 
 /// Step 5 — Final step offering opt-in data monetization.
 ///
@@ -56,7 +56,7 @@ class _MonetizationStepState extends State<MonetizationStep> {
         children: [
           const SizedBox(height: 48),
           Text(
-            'Brands pay billions for user data.',
+            'Let companies pay for access',
             style: textTheme.headlineLarge,
           )
               .animate()
@@ -69,11 +69,11 @@ class _MonetizationStepState extends State<MonetizationStep> {
               ),
           const SizedBox(height: 8),
           const Text(
-            "It's time they paid you.",
+            'On your terms.',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: SovereignColors.primaryCyan,
+              color: TrulanaColors.primaryCyan,
             ),
           )
               .animate(delay: 200.ms)
@@ -111,8 +111,8 @@ class _MonetizationStepState extends State<MonetizationStep> {
           ),
           const SizedBox(height: 24),
           Center(
-            child: SovereignButton(
-              label: 'Enter Sovereign',
+            child: TrulanaButton(
+              label: 'Enter Trulana',
               icon: Icons.rocket_launch,
               onPressed: widget.onComplete,
             ),
@@ -142,7 +142,7 @@ class _MonetizeToggle extends StatelessWidget {
         children: [
           const Icon(
             Icons.monetization_on_outlined,
-            color: SovereignColors.warningAmber,
+            color: TrulanaColors.warningAmber,
             size: 24,
           ),
           const SizedBox(width: 16),
@@ -150,7 +150,7 @@ class _MonetizeToggle extends StatelessWidget {
             child: Text(
               'Enable data leasing',
               style: TextStyle(
-                color: SovereignColors.textPrimary,
+                color: TrulanaColors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -159,7 +159,7 @@ class _MonetizeToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeTrackColor: SovereignColors.primaryCyan,
+            activeTrackColor: TrulanaColors.primaryCyan,
             activeThumbColor: Colors.white,
           ),
         ],
@@ -190,7 +190,7 @@ class _WalletInput extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: SovereignColors.textTertiary,
+              color: TrulanaColors.textTertiary,
               letterSpacing: 0.5,
             ),
           ),
@@ -198,12 +198,12 @@ class _WalletInput extends StatelessWidget {
           TextField(
             controller: controller,
             onChanged: onChanged,
-            style: SovereignTheme.monoStyle.copyWith(fontSize: 14),
-            cursorColor: SovereignColors.primaryCyan,
+            style: TrulanaTheme.monoStyle.copyWith(fontSize: 14),
+            cursorColor: TrulanaColors.primaryCyan,
             decoration: const InputDecoration(
               hintText: 'Enter wallet address or leave blank for fiat',
               hintStyle: TextStyle(
-                color: SovereignColors.textTertiary,
+                color: TrulanaColors.textTertiary,
                 fontSize: 13,
               ),
               border: InputBorder.none,

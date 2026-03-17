@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:sovereign/features/dashboard/dashboard_screen.dart';
-import 'package:sovereign/features/onboarding/onboarding_screen.dart';
-import 'package:sovereign/providers/user_config_provider.dart';
+import 'package:trulana/features/dashboard/dashboard_screen.dart';
+import 'package:trulana/features/onboarding/onboarding_screen.dart';
+import 'package:trulana/providers/user_config_provider.dart';
 
 /// Central [GoRouter] instance wired to Riverpod so route guards
 /// re-evaluate reactively whenever [userConfigProvider] changes.

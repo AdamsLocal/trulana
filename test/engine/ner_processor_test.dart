@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/features/engine/stages/ner_processor.dart';
+import 'package:trulana/features/engine/stages/ner_processor.dart';
 
 void main() {
   late MockNerProcessor processor;

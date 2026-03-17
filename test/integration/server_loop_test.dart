@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/core/network/token_manager.dart';
-import 'package:sovereign/core/services/auth_service.dart';
-import 'package:sovereign/core/services/context_query_service.dart';
+import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/core/services/auth_service.dart';
+import 'package:trulana/core/services/context_query_service.dart';
 
 /// End-to-end tests for the full service loop:
 ///   auth request -> token -> context query -> redact -> response

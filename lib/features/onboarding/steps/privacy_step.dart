@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/models/models.dart';
 
 /// Step 4 — Configures the Auto-Redact Engine's aggressiveness.
 ///
@@ -55,7 +55,7 @@ class _PrivacyStepState extends State<PrivacyStep> {
         children: [
           const SizedBox(height: 48),
           Text(
-            'Set your privacy threshold',
+            'How much should be exposed to AI?',
             style: textTheme.headlineLarge,
           )
               .animate()
@@ -82,7 +82,7 @@ class _PrivacyStepState extends State<PrivacyStep> {
             ),
           ),
           Center(
-            child: SovereignButton(
+            child: TrulanaButton(
               label: 'Continue',
               onPressed: widget.onComplete,
             ),
@@ -119,14 +119,14 @@ class _PrivacyExampleCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: SovereignColors.textTertiary,
+                color: TrulanaColors.textTertiary,
                 letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 16),
             Text(
               exampleText,
-              style: SovereignTheme.monoStyle.copyWith(
+              style: TrulanaTheme.monoStyle.copyWith(
                 fontSize: 13,
                 height: 1.6,
               ),

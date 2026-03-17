@@ -6,25 +6,25 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
 
-import 'package:sovereign/core/network/middleware/auth_middleware.dart';
-import 'package:sovereign/core/network/middleware/rate_limiter.dart';
-import 'package:sovereign/core/network/middleware/validation_middleware.dart';
-import 'package:sovereign/core/network/routes/auth_routes.dart';
-import 'package:sovereign/core/network/routes/context_routes.dart';
-import 'package:sovereign/core/network/routes/monetize_routes.dart';
-import 'package:sovereign/core/logging/safe_logger.dart';
-import 'package:sovereign/core/network/token_manager.dart';
+import 'package:trulana/core/network/middleware/auth_middleware.dart';
+import 'package:trulana/core/network/middleware/rate_limiter.dart';
+import 'package:trulana/core/network/middleware/validation_middleware.dart';
+import 'package:trulana/core/network/routes/auth_routes.dart';
+import 'package:trulana/core/network/routes/context_routes.dart';
+import 'package:trulana/core/network/routes/monetize_routes.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+import 'package:trulana/core/network/token_manager.dart';
 
-/// The local HTTP server that exposes Sovereign's Personal API to
+/// The local HTTP server that exposes Trulana's Personal API to
 /// third-party agents running on the same device.
 ///
 /// Binds exclusively to the IPv4 loopback address so that no traffic
 /// from the local network or internet can reach it. This is the
 /// foundational security boundary — even if a firewall is misconfigured,
 /// the OS kernel will reject non-localhost connections.
-class SovereignServer {
-  SovereignServer._();
-  static final SovereignServer instance = SovereignServer._();
+class TrulanaServer {
+  TrulanaServer._();
+  static final TrulanaServer instance = TrulanaServer._();
 
   HttpServer? _server;
 

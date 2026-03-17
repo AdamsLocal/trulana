@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
-import 'package:sovereign/core/network/middleware/auth_middleware.dart';
-import 'package:sovereign/core/network/token_manager.dart';
+import 'package:trulana/core/network/middleware/auth_middleware.dart';
+import 'package:trulana/core/network/token_manager.dart';
 
 /// Sliding-window rate limiter that caps requests per agent.
 ///

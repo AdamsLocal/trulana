@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sovereign/core/theme/sovereign_colors.dart';
+import 'package:trulana/core/theme/trulana_colors.dart';
 
 /// Glass-styled action button with two interaction modes:
 ///
@@ -9,11 +9,11 @@ import 'package:sovereign/core/theme/sovereign_colors.dart';
 /// * **Hold-to-confirm** — the user must press and hold for 1.5 s;
 ///   a radial progress ring fills as visual confirmation. Designed
 ///   for irreversible actions like revoking agent access.
-class SovereignButton extends StatefulWidget {
-  const SovereignButton({
+class TrulanaButton extends StatefulWidget {
+  const TrulanaButton({
     required this.label,
     this.onPressed,
-    this.color = SovereignColors.primaryCyan,
+    this.color = TrulanaColors.primaryCyan,
     this.holdToConfirm = false,
     this.icon,
     super.key,
@@ -26,10 +26,10 @@ class SovereignButton extends StatefulWidget {
   final IconData? icon;
 
   @override
-  State<SovereignButton> createState() => _SovereignButtonState();
+  State<TrulanaButton> createState() => _TrulanaButtonState();
 }
 
-class _SovereignButtonState extends State<SovereignButton>
+class _TrulanaButtonState extends State<TrulanaButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 

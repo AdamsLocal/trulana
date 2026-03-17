@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:sovereign/core/database/database_helper.dart';
-import 'package:sovereign/core/logging/safe_logger.dart';
-import 'package:sovereign/core/network/token_manager.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/models/models.dart';
 
 const int _defaultTtlSeconds = 900;
 const Uuid _uuid = Uuid();

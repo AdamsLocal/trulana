@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/features/engine/context_vault.dart';
+import 'package:trulana/features/engine/context_vault.dart';
 
 void main() {
   final ContextVault vault = ContextVault.instance;

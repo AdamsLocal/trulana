@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sovereign/core/theme/sovereign_colors.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/theme/trulana_colors.dart';
+import 'package:trulana/models/models.dart';
 
 /// Three-notch haptic slider for the Auto-Redact privacy level.
 ///
@@ -26,9 +26,9 @@ class _PrivacySliderState extends State<PrivacySlider> {
   static const _levels = PrivacyLevel.values;
 
   static const _levelColors = <PrivacyLevel, Color>{
-    PrivacyLevel.standard: SovereignColors.primaryCyan,
-    PrivacyLevel.strict: SovereignColors.warningAmber,
-    PrivacyLevel.paranoid: SovereignColors.dangerRed,
+    PrivacyLevel.standard: TrulanaColors.primaryCyan,
+    PrivacyLevel.strict: TrulanaColors.warningAmber,
+    PrivacyLevel.paranoid: TrulanaColors.dangerRed,
   };
 
   static const _levelLabels = <PrivacyLevel, String>{
@@ -40,7 +40,7 @@ class _PrivacySliderState extends State<PrivacySlider> {
   double get _sliderValue => widget.value.value.toDouble();
 
   Color get _activeColor =>
-      _levelColors[widget.value] ?? SovereignColors.primaryCyan;
+      _levelColors[widget.value] ?? TrulanaColors.primaryCyan;
 
   void _onChanged(double v) {
     final snapped = v.round().clamp(1, 3);
@@ -85,7 +85,7 @@ class _PrivacySliderState extends State<PrivacySlider> {
                   label: _levelLabels[level]!,
                   color: level == widget.value
                       ? _levelColors[level]!
-                      : SovereignColors.textTertiary,
+                      : TrulanaColors.textTertiary,
                   active: level == widget.value,
                 ),
             ],

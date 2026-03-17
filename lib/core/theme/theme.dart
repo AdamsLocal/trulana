@@ -1,2 +1,2 @@
-export 'sovereign_colors.dart';
-export 'sovereign_theme.dart';
+export 'trulana_colors.dart';
+export 'trulana_theme.dart';

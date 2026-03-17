@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:sovereign/core/security/biometric_auth.dart';
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
+import 'package:trulana/core/security/biometric_auth.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
 
 /// Step 1 — Establishes the biometric lock that gates vault access.
 ///
@@ -53,7 +53,7 @@ class _BiometricStepState extends State<BiometricStep> {
               child: Icon(
                 Icons.shield,
                 size: 56,
-                color: SovereignColors.primaryCyan,
+                color: TrulanaColors.primaryCyan,
               ),
             ),
           ),
@@ -70,7 +70,7 @@ class _BiometricStepState extends State<BiometricStep> {
           const SizedBox(height: 48),
           AnimatedListItem(
             index: 3,
-            child: SovereignButton(
+            child: TrulanaButton(
               label: 'Authenticate',
               icon: Icons.fingerprint,
               onPressed: _isAuthenticating ? null : _authenticate,
@@ -92,7 +92,7 @@ class _HeroTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.w600,
-        color: SovereignColors.textPrimary,
+        color: TrulanaColors.textPrimary,
       ),
       textAlign: TextAlign.center,
     );
@@ -105,11 +105,11 @@ class _HeroSubtitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'Sovereign does not have user accounts or cloud passwords. '
+      'Trulana does not have user accounts or cloud passwords. '
       'Your encryption key is generated locally on this device.',
       style: TextStyle(
         fontSize: 15,
-        color: SovereignColors.textSecondary,
+        color: TrulanaColors.textSecondary,
         height: 1.5,
       ),
       textAlign: TextAlign.center,

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
 
 import 'widgets/vault_status_card.dart';
 import 'widgets/connections_section.dart';
 import 'widgets/monetization_card.dart';
 
-/// Root screen for the Sovereign command center.
+/// Root screen for the Trulana command center.
 ///
 /// Composes the vault heartbeat, active connections, and monetization
 /// modules into a single scrollable column over the animated mesh
@@ -21,7 +21,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: SovereignColors.background,
+      backgroundColor: TrulanaColors.background,
       body: MeshGradientBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -36,10 +36,10 @@ class DashboardScreen extends ConsumerWidget {
                 AnimatedListItem(
                   index: 0,
                   child: const Text(
-                    'Welcome back.',
+                    'Trulana',
                     style: TextStyle(
                       fontSize: 14,
-                      color: SovereignColors.textSecondary,
+                      color: TrulanaColors.textSecondary,
                     ),
                   ),
                 ),
@@ -47,11 +47,39 @@ class DashboardScreen extends ConsumerWidget {
                 AnimatedListItem(
                   index: 1,
                   child: const Text(
-                    'You are sovereign.',
+                    'Your local context server is running.',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: SovereignColors.textPrimary,
+                      color: TrulanaColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                AnimatedListItem(
+                  index: 2,
+                  child: GlassCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.terminal,
+                          color: TrulanaColors.primaryCyan,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Connect with Claude or Cursor to start querying your vault. '
+                            'REST on localhost:8432 · MCP via TRULANA_MCP=1',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: TrulanaColors.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -60,7 +88,7 @@ class DashboardScreen extends ConsumerWidget {
 
                 // — Vault heartbeat
                 AnimatedListItem(
-                  index: 2,
+                  index: 3,
                   child: const VaultStatusCard(),
                 ),
 
@@ -68,7 +96,7 @@ class DashboardScreen extends ConsumerWidget {
 
                 // — Third-party agent connections
                 AnimatedListItem(
-                  index: 3,
+                  index: 4,
                   child: const ConnectionsSection(),
                 ),
 
@@ -76,7 +104,7 @@ class DashboardScreen extends ConsumerWidget {
 
                 // — Earnings & pending lease requests
                 AnimatedListItem(
-                  index: 4,
+                  index: 5,
                   child: const MonetizationCard(),
                 ),
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sovereign/core/theme/sovereign_colors.dart';
+import 'package:trulana/core/theme/trulana_colors.dart';
 
 /// Compact pill-shaped badge for agent lifecycle states (ACTIVE,
 /// REVOKED, PAUSED). If no explicit [color] is provided, the badge
@@ -18,10 +18,10 @@ class StatusBadge extends StatelessWidget {
   Color get _resolvedColor {
     if (color != null) return color!;
     return switch (label.toLowerCase()) {
-      'active' => SovereignColors.successGreen,
-      'revoked' => SovereignColors.dangerRed,
-      'paused' => SovereignColors.warningAmber,
-      _ => SovereignColors.textSecondary,
+      'active' => TrulanaColors.successGreen,
+      'revoked' => TrulanaColors.dangerRed,
+      'paused' => TrulanaColors.warningAmber,
+      _ => TrulanaColors.textSecondary,
     };
   }
 

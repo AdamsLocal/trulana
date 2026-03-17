@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
-import 'package:sovereign/models/models.dart';
-import 'package:sovereign/providers/providers.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/models/models.dart';
+import 'package:trulana/providers/providers.dart';
 
 /// Displays the local vault's heartbeat — a sonar pulse paired with
 /// the last-sync timestamp. Lives in its own widget so the
@@ -24,7 +24,7 @@ class VaultStatusCard extends ConsumerWidget {
           height: 60,
           child: Center(
             child: CircularProgressIndicator(
-              color: SovereignColors.primaryCyan,
+              color: TrulanaColors.primaryCyan,
               strokeWidth: 2,
             ),
           ),
@@ -33,7 +33,7 @@ class VaultStatusCard extends ConsumerWidget {
       error: (Object error, StackTrace stack) => const GlassCard(
         child: Text(
           'Unable to read vault status',
-          style: TextStyle(color: SovereignColors.dangerRed),
+          style: TextStyle(color: TrulanaColors.dangerRed),
         ),
       ),
       data: (UserConfig? config) {
@@ -41,7 +41,7 @@ class VaultStatusCard extends ConsumerWidget {
           return const GlassCard(
             child: Text(
               'Vault not configured',
-              style: TextStyle(color: SovereignColors.textTertiary),
+              style: TextStyle(color: TrulanaColors.textTertiary),
             ),
           );
         }
@@ -55,7 +55,7 @@ class VaultStatusCard extends ConsumerWidget {
             children: <Widget>[
               const PulseIndicator(
                 size: 60,
-                color: SovereignColors.primaryCyan,
+                color: TrulanaColors.primaryCyan,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -67,15 +67,15 @@ class VaultStatusCard extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: SovereignColors.textPrimary,
+                        color: TrulanaColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Last synchronized: $agoLabel ago',
-                      style: SovereignTheme.monoStyle.copyWith(
+                      style: TrulanaTheme.monoStyle.copyWith(
                         fontSize: 12,
-                        color: SovereignColors.textTertiary,
+                        color: TrulanaColors.textTertiary,
                       ),
                     ),
                   ],

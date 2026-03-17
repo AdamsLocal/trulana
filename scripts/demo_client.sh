@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 #
-# Sovereign MVP — Verification Gate
+# Trulana MVP — Verification Gate
 #
 # Proves the full API loop and exits non-zero on any failure.
 # No python3, no jq — only curl, grep, and sed.
@@ -87,7 +87,7 @@ assert_not_contains() {
 
 # ── pre-flight ───────────────────────────────────────────────────────
 
-printf "\033[1mSovereign Verification Gate\033[0m\n"
+printf "\033[1mTrulana Verification Gate\033[0m\n"
 printf "\033[2mTarget: %s\033[0m\n" "$BASE"
 
 if ! curl -sf --max-time 3 "$BASE/api/v1/health" >/dev/null 2>&1; then

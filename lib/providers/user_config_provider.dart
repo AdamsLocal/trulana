@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:sovereign/core/database/database_helper.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/models/models.dart';
 
 /// Drives the onboarding-vs-dashboard redirect and every screen that
 /// reads or mutates the vault owner's configuration.

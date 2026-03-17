@@ -1,4 +1,4 @@
-import 'package:sovereign/features/engine/models/redaction_result.dart';
+import 'package:trulana/features/engine/models/redaction_result.dart';
 
 /// Stage 1 of the Auto-Redact pipeline: deterministic regex-based PII
 /// stripping. Runs before NER so that obvious structured identifiers

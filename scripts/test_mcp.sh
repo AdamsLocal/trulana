@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 #
-# Sovereign MCP — stdio verification gate
+# Trulana MCP — stdio verification gate
 #
 # Validates the full MCP loop and asserts clean stdout (no non-JSON
 # contamination). Exits non-zero on any failure.
@@ -9,10 +9,10 @@ set -uo pipefail
 # Usage:
 #   ./scripts/test_mcp.sh                     # uses Release, falls back to Debug
 #   ./scripts/test_mcp.sh --debug             # forces Debug binary
-#   ./scripts/test_mcp.sh /path/to/sovereign  # explicit binary
+#   ./scripts/test_mcp.sh /path/to/trulana  # explicit binary
 
-RELEASE_BIN="build/macos/Build/Products/Release/sovereign.app/Contents/MacOS/sovereign"
-DEBUG_BIN="build/macos/Build/Products/Debug/sovereign.app/Contents/MacOS/sovereign"
+RELEASE_BIN="build/macos/Build/Products/Release/trulana.app/Contents/MacOS/trulana"
+DEBUG_BIN="build/macos/Build/Products/Debug/trulana.app/Contents/MacOS/trulana"
 PASS=0
 FAIL=0
 FIFO=""
@@ -58,7 +58,7 @@ if [ ! -x "$SOVEREIGN_BIN" ]; then
   exit 1
 fi
 
-printf "\033[1mSovereign MCP Verification Gate\033[0m\n"
+printf "\033[1mTrulana MCP Verification Gate\033[0m\n"
 printf "\033[2mBinary: %s (%s)\033[0m\n" "$SOVEREIGN_BIN" "$BUILD_TYPE"
 
 # ── Start MCP process ────────────────────────────────────────────
@@ -108,8 +108,8 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 sleep 1
 
 INIT_LINE=$(grep '"id":1' "$STDOUT_LOG" | tail -1)
-if echo "$INIT_LINE" | grep -q '"sovereign"'; then
-  pass "Server identified as sovereign"
+if echo "$INIT_LINE" | grep -q '"trulana"'; then
+  pass "Server identified as trulana"
 else
   fail "Server name not found in initialize response"
 fi
@@ -126,16 +126,16 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' >&3
 sleep 1
 
 LIST_LINE=$(grep '"id":2' "$STDOUT_LOG" | tail -1)
-if echo "$LIST_LINE" | grep -q 'sovereign_request_access'; then
-  pass "sovereign_request_access listed"
+if echo "$LIST_LINE" | grep -q 'trulana_request_access'; then
+  pass "trulana_request_access listed"
 else
-  fail "sovereign_request_access not found"
+  fail "trulana_request_access not found"
 fi
 
-if echo "$LIST_LINE" | grep -q 'sovereign_query_context'; then
-  pass "sovereign_query_context listed"
+if echo "$LIST_LINE" | grep -q 'trulana_query_context'; then
+  pass "trulana_query_context listed"
 else
-  fail "sovereign_query_context not found"
+  fail "trulana_query_context not found"
 fi
 
 if echo "$LIST_LINE" | grep -q '"inputSchema"'; then
@@ -145,8 +145,8 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
-section "sovereign_request_access"
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"sovereign_request_access","arguments":{"app_id":"mcp-test","app_name":"MCP Test","scopes":["context.read"],"intent":"verification"}}}' >&3
+section "trulana_request_access"
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"trulana_request_access","arguments":{"app_id":"mcp-test","app_name":"MCP Test","scopes":["context.read"],"intent":"verification"}}}' >&3
 sleep 2
 
 AUTH_LINE=$(grep '"id":3' "$STDOUT_LOG" | tail -1)
@@ -168,8 +168,8 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
-section "sovereign_query_context — morning routine"
-echo "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{\"name\":\"sovereign_query_context\",\"arguments\":{\"access_token\":\"$TOKEN\",\"query\":\"morning routine\"}}}" >&3
+section "trulana_query_context — morning routine"
+echo "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{\"name\":\"trulana_query_context\",\"arguments\":{\"access_token\":\"$TOKEN\",\"query\":\"morning routine\"}}}" >&3
 sleep 2
 
 QUERY_LINE=$(grep '"id":4' "$STDOUT_LOG" | tail -1)
@@ -207,8 +207,8 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
-section "sovereign_query_context — work (SSN + org)"
-echo "{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"tools/call\",\"params\":{\"name\":\"sovereign_query_context\",\"arguments\":{\"access_token\":\"$TOKEN\",\"query\":\"work colleagues\"}}}" >&3
+section "trulana_query_context — work (SSN + org)"
+echo "{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"tools/call\",\"params\":{\"name\":\"trulana_query_context\",\"arguments\":{\"access_token\":\"$TOKEN\",\"query\":\"work colleagues\"}}}" >&3
 sleep 2
 
 WORK_LINE=$(grep '"id":7' "$STDOUT_LOG" | tail -1)
@@ -227,8 +227,8 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
-section "sovereign_query_context — invalid token"
-echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"sovereign_query_context","arguments":{"access_token":"bad-token","query":"test"}}}' >&3
+section "trulana_query_context — invalid token"
+echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"trulana_query_context","arguments":{"access_token":"bad-token","query":"test"}}}' >&3
 sleep 1
 
 BAD_LINE=$(grep '"id":5' "$STDOUT_LOG" | tail -1)
@@ -239,8 +239,8 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════
-section "sovereign_request_access — missing fields"
-echo '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"sovereign_request_access","arguments":{"app_id":"incomplete"}}}' >&3
+section "trulana_request_access — missing fields"
+echo '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"trulana_request_access","arguments":{"app_id":"incomplete"}}}' >&3
 sleep 1
 
 BAD_AUTH_LINE=$(grep '"id":6' "$STDOUT_LOG" | tail -1)

@@ -1,4 +1,4 @@
-import 'package:sovereign/features/engine/models/redaction_result.dart';
+import 'package:trulana/features/engine/models/redaction_result.dart';
 
 /// Stage 2 result — kept separate from RedactionResult so individual
 /// stages can evolve their return shapes independently.

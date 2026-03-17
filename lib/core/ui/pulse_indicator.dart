@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:sovereign/core/theme/sovereign_colors.dart';
+import 'package:trulana/core/theme/trulana_colors.dart';
 
 /// Sonar-ping concentric-ring animation used on the vault status
 /// screen to convey that the local context engine is alive and
@@ -10,7 +10,7 @@ import 'package:sovereign/core/theme/sovereign_colors.dart';
 class PulseIndicator extends StatefulWidget {
   const PulseIndicator({
     this.size = 120,
-    this.color = SovereignColors.primaryCyan,
+    this.color = TrulanaColors.primaryCyan,
     this.child,
     super.key,
   });

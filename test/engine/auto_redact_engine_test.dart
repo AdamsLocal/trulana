@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/features/engine/auto_redact_engine.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/features/engine/auto_redact_engine.dart';
+import 'package:trulana/models/models.dart';
 
 void main() {
   late AutoRedactEngine engine;

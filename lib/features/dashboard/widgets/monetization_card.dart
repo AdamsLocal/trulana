@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
-import 'package:sovereign/models/models.dart';
-import 'package:sovereign/providers/providers.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/models/models.dart';
+import 'package:trulana/providers/providers.dart';
 
 /// The Data Monetization Hub card — shows aggregate earnings and
 /// pending lease requests.
@@ -27,7 +27,7 @@ class MonetizationCard extends ConsumerWidget {
         children: <Widget>[
           _EarningsDisplay(earningsAsync: earningsAsync),
           const Divider(
-            color: SovereignColors.glassBorder,
+            color: TrulanaColors.glassBorder,
             height: 32,
           ),
           _PendingRequests(ledgerAsync: ledgerAsync),
@@ -52,31 +52,31 @@ class _EarningsDisplay extends StatelessWidget {
           'Earnings This Month',
           style: TextStyle(
             fontSize: 14,
-            color: SovereignColors.textSecondary,
+            color: TrulanaColors.textSecondary,
           ),
         ),
         const SizedBox(height: 8),
         earningsAsync.when(
           loading: () => const CircularProgressIndicator(
-            color: SovereignColors.primaryCyan,
+            color: TrulanaColors.primaryCyan,
             strokeWidth: 2,
           ),
           error: (Object error, StackTrace stack) => const Text(
             '—',
             style: TextStyle(
               fontSize: 28,
-              color: SovereignColors.dangerRed,
+              color: TrulanaColors.dangerRed,
             ),
           ),
           data: (double earnings) => Text(
             '\$${earnings.toStringAsFixed(2)} USD',
-            style: SovereignTheme.monoStyle.copyWith(
+            style: TrulanaTheme.monoStyle.copyWith(
               fontSize: 28,
               fontWeight: FontWeight.w700,
-              color: SovereignColors.successGreen,
+              color: TrulanaColors.successGreen,
               shadows: <Shadow>[
                 Shadow(
-                  color: SovereignColors.successGreen.withValues(alpha: 0.5),
+                  color: TrulanaColors.successGreen.withValues(alpha: 0.5),
                   blurRadius: 12,
                 ),
               ],
@@ -103,20 +103,20 @@ class _PendingRequests extends StatelessWidget {
           'Pending Requests',
           style: TextStyle(
             fontSize: 14,
-            color: SovereignColors.textSecondary,
+            color: TrulanaColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
         ledgerAsync.when(
           loading: () => const Center(
             child: CircularProgressIndicator(
-              color: SovereignColors.primaryCyan,
+              color: TrulanaColors.primaryCyan,
               strokeWidth: 2,
             ),
           ),
           error: (Object error, StackTrace stack) => const Text(
             'Failed to load requests',
-            style: TextStyle(color: SovereignColors.dangerRed),
+            style: TextStyle(color: TrulanaColors.dangerRed),
           ),
           data: (List<LedgerEntry> entries) {
             if (entries.isEmpty) {
@@ -127,7 +127,7 @@ class _PendingRequests extends StatelessWidget {
                     'No pending lease requests',
                     style: TextStyle(
                       fontSize: 14,
-                      color: SovereignColors.textTertiary,
+                      color: TrulanaColors.textTertiary,
                     ),
                   ),
                 ),
@@ -167,7 +167,7 @@ class _LeaseRequestRow extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: SovereignColors.textPrimary,
+                    color: TrulanaColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -175,7 +175,7 @@ class _LeaseRequestRow extends StatelessWidget {
                   entry.dataLeased,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: SovereignColors.textTertiary,
+                    color: TrulanaColors.textTertiary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -186,23 +186,23 @@ class _LeaseRequestRow extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             '\$${entry.amountUsd.toStringAsFixed(2)}',
-            style: SovereignTheme.monoStyle.copyWith(
+            style: TrulanaTheme.monoStyle.copyWith(
               fontSize: 14,
-              color: SovereignColors.successGreen,
+              color: TrulanaColors.successGreen,
             ),
           ),
           const SizedBox(width: 12),
-          SovereignButton(
+          TrulanaButton(
             label: 'Approve',
-            color: SovereignColors.successGreen,
+            color: TrulanaColors.successGreen,
             onPressed: () {
               // TODO: Wire to lease approval flow once backend is ready.
             },
           ),
           const SizedBox(width: 6),
-          SovereignButton(
+          TrulanaButton(
             label: 'Deny',
-            color: SovereignColors.dangerRed,
+            color: TrulanaColors.dangerRed,
             onPressed: () {
               // TODO: Wire to lease denial flow once backend is ready.
             },

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
-import 'package:sovereign/core/network/token_manager.dart';
+import 'package:trulana/core/network/token_manager.dart';
 
 /// Context key used to stash the validated [AccessToken] on the
 /// request so downstream handlers can access it without re-parsing

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
-import 'package:sovereign/models/models.dart';
-import 'package:sovereign/providers/providers.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/models/models.dart';
+import 'package:trulana/providers/providers.dart';
 
 /// Horizontal scrolling roster of active third-party agents.
 ///
@@ -27,7 +27,7 @@ class ConnectionsSection extends ConsumerWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: SovereignColors.textPrimary,
+            color: TrulanaColors.textPrimary,
           ),
         ),
         const SizedBox(height: 12),
@@ -36,7 +36,7 @@ class ConnectionsSection extends ConsumerWidget {
             height: 140,
             child: Center(
               child: CircularProgressIndicator(
-                color: SovereignColors.primaryCyan,
+                color: TrulanaColors.primaryCyan,
                 strokeWidth: 2,
               ),
             ),
@@ -46,7 +46,7 @@ class ConnectionsSection extends ConsumerWidget {
             child: Center(
               child: Text(
                 'Failed to load connections',
-                style: TextStyle(color: SovereignColors.dangerRed),
+                style: TextStyle(color: TrulanaColors.dangerRed),
               ),
             ),
           ),
@@ -64,7 +64,7 @@ class ConnectionsSection extends ConsumerWidget {
                   child: Text(
                     'No active connections',
                     style: TextStyle(
-                      color: SovereignColors.textTertiary,
+                      color: TrulanaColors.textTertiary,
                       fontSize: 14,
                     ),
                   ),
@@ -86,10 +86,10 @@ class ConnectionsSection extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         Center(
-          child: SovereignButton(
+          child: TrulanaButton(
             label: 'Revoke All Access',
             holdToConfirm: true,
-            color: SovereignColors.dangerRed,
+            color: TrulanaColors.dangerRed,
             onPressed: () {
               ref.read(agentsProvider.notifier).revokeAll();
             },
@@ -128,7 +128,7 @@ class _AgentTile extends ConsumerWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: SovereignColors.textPrimary,
+                      color: TrulanaColors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -145,7 +145,7 @@ class _AgentTile extends ConsumerWidget {
                     .map(
                       (String scope) => StatusBadge(
                         label: scope,
-                        color: SovereignColors.primaryCyan,
+                        color: TrulanaColors.primaryCyan,
                       ),
                     )
                     .toList(),
@@ -176,7 +176,7 @@ class _RevokeIconButton extends ConsumerWidget {
       child: const Icon(
         Icons.close,
         size: 18,
-        color: SovereignColors.dangerRed,
+        color: TrulanaColors.dangerRed,
       ),
     );
   }

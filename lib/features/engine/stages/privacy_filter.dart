@@ -1,5 +1,5 @@
-import 'package:sovereign/features/engine/models/redaction_result.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/features/engine/models/redaction_result.dart';
+import 'package:trulana/models/models.dart';
 
 /// Stage 3 of the Auto-Redact pipeline: applies privacy-level-specific
 /// generalizations on top of the already-sanitized text from Stages 1 & 2.

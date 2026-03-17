@@ -1,8 +1,8 @@
-# Sovereign Security Model
+# Trulana Security Model
 
 ## Architecture Overview
 
-Sovereign is a local-first personal data broker. All data stays on-device in an encrypted database. Third-party agents access user context through two transport layers — REST (localhost HTTP) and MCP (stdio) — both of which are gated by the same shared services.
+Trulana is a local-first personal data broker. All data stays on-device in an encrypted database. Third-party agents access user context through two transport layers — REST (localhost HTTP) and MCP (stdio) — both of which are gated by the same shared services.
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -34,7 +34,7 @@ Sovereign is a local-first personal data broker. All data stays on-device in an 
 
 - Runs as a subprocess launched by the MCP client (Claude Desktop, Cursor, etc.).
 - The MCP client controls which binary is launched and what environment variables are set.
-- Access is gated by `AuthService` — agents must call `sovereign_request_access` to obtain a token before calling `sovereign_query_context`.
+- Access is gated by `AuthService` — agents must call `trulana_request_access` to obtain a token before calling `trulana_query_context`.
 - Both calls flow through the same service singletons as REST. No bypass path exists.
 
 ### Current Trust Boundary (MVP)
@@ -100,7 +100,7 @@ Both REST and MCP paths write audit entries through the same `AuthService` and `
 
 ## macOS Release Checklist
 
-Before distributing the Sovereign binary:
+Before distributing the Trulana binary:
 
 - [ ] **Code signing**: Sign the `.app` bundle with a valid Apple Developer ID. Unsigned binaries will be blocked by Gatekeeper.
 - [ ] **Hardened runtime**: Enable hardened runtime in Xcode build settings. Required for notarization and prevents code injection.

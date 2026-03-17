@@ -1,12 +1,12 @@
 import 'package:uuid/uuid.dart';
 
-import 'package:sovereign/core/database/database_helper.dart';
-import 'package:sovereign/core/logging/safe_logger.dart';
-import 'package:sovereign/core/network/token_manager.dart';
-import 'package:sovereign/features/engine/auto_redact_engine.dart';
-import 'package:sovereign/features/engine/context_vault.dart';
-import 'package:sovereign/features/engine/models/redaction_result.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/features/engine/auto_redact_engine.dart';
+import 'package:trulana/features/engine/context_vault.dart';
+import 'package:trulana/features/engine/models/redaction_result.dart';
+import 'package:trulana/models/models.dart';
 
 const Uuid _uuid = Uuid();
 

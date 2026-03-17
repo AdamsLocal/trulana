@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/features/engine/stages/regex_filter.dart';
+import 'package:trulana/features/engine/stages/regex_filter.dart';
 
 void main() {
   final filter = RegexFilter.instance;

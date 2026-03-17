@@ -5,27 +5,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:sovereign/core/database/database_helper.dart';
-import 'package:sovereign/core/logging/safe_logger.dart';
-import 'package:sovereign/core/network/local_server.dart';
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/router/app_router.dart';
-import 'package:sovereign/mcp/mcp_server.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+import 'package:trulana/core/network/local_server.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/router/app_router.dart';
+import 'package:trulana/mcp/mcp_server.dart';
+import 'package:trulana/models/models.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
   await _seedDefaultConfig();
 
-  final bool mcpMode =
-      Platform.environment['SOVEREIGN_MCP'] == '1';
+  final bool mcpMode = Platform.environment['SOVEREIGN_MCP'] == '1';
 
   if (mcpMode) {
     SafeLogger.enableMcpMode();
     await McpServer.run();
   } else {
-    await SovereignServer.instance.start();
-    runApp(const ProviderScope(child: SovereignApp()));
+    await TrulanaServer.instance.start();
+    runApp(const ProviderScope(child: TrulanaApp()));
   }
 }
 
@@ -46,16 +46,16 @@ Future<void> _seedDefaultConfig() async {
 /// App shell that wires Riverpod state to a GoRouter-driven
 /// MaterialApp. All routing decisions (onboarding gate, dashboard
 /// redirect) live in [appRouterProvider] so this widget stays thin.
-class SovereignApp extends ConsumerWidget {
-  const SovereignApp({super.key});
+class TrulanaApp extends ConsumerWidget {
+  const TrulanaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final GoRouter router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Sovereign',
-      theme: SovereignTheme.darkTheme,
+      title: 'Trulana',
+      theme: TrulanaTheme.darkTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

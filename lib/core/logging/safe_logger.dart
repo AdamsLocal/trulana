@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart';
 class SafeLogger {
   SafeLogger._();
 
-  static const String _tag = 'Sovereign';
+  static const String _tag = 'Trulana';
 
   static bool _mcpMode = false;
   static void Function(String)? _testSink;

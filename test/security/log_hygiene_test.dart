@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sovereign/core/logging/safe_logger.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
 
 /// Verifies SafeLogger never includes tokens, PII, query content,
 /// DB paths, or encryption keys in its output. Tests by capturing
@@ -92,7 +92,7 @@ void main() {
       for (final String line in captured) {
         expect(line, isNot(contains('key=')));
         expect(line, isNot(contains('password')));
-        expect(line, isNot(contains('sovereign.db')));
+        expect(line, isNot(contains('trulana.db')));
         expect(line, isNot(contains('.com')));
         expect(line, isNot(contains('SSN')));
       }

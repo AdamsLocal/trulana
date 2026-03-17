@@ -48,3 +48,4 @@ app.*.map.json
 /releases/
 .cursor/
 macos/build/
+trulana-test/

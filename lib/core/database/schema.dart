@@ -1,4 +1,4 @@
-/// Centralised DDL definitions for the encrypted Sovereign database.
+/// Centralised DDL definitions for the encrypted Trulana database.
 ///
 /// Keeping all table schemas in one place makes it trivial to audit column
 /// names, types, and constraints during security reviews — and ensures
@@ -7,7 +7,7 @@ class Schema {
   Schema._();
 
   static const int version = 1;
-  static const String databaseName = 'sovereign.db';
+  static const String databaseName = 'trulana.db';
 
   static const String createUserConfig = '''
     CREATE TABLE user_config (

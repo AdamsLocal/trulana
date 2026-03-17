@@ -1,6 +1,6 @@
-# Sovereign
+# Trulana
 
-Sovereign turns your device into a private context server. Apps can query what they need — but raw data never leaves. Every response is filtered on-device before it’s returned.
+Trulana turns your device into a private context server. Apps can query what they need — but raw data never leaves. Every response is filtered on-device before it’s returned.
 
 ## Status
 
@@ -24,11 +24,11 @@ Sovereign turns your device into a private context server. Apps can query what t
 - **Gatekeeper Protocol:** Real-time dashboard to view, approve, deny, or revoke third-party data access.
 - **Auto-Redact Engine:** 3-stage PII sanitization pipeline (Regex -> NER AI -> Privacy Thresholds) ensuring personal data never leaks.
 - **Data Monetization Hub:** Opt-in data leasing to verified brands via micro-transactions.
-- **Local API Server:** Third-party apps query Sovereign over localhost — no cloud round-trip.
+- **Local API Server:** Third-party apps query Trulana over localhost — no cloud round-trip.
 
 ## Architecture
 
-Sovereign is built on a strict edge-computing paradigm. There is no centralized cloud database.
+Trulana is built on a strict edge-computing paradigm. There is no centralized cloud database.
 
 | Layer | Technology |
 |-------|-----------|
@@ -76,8 +76,8 @@ lib/
 
 ```bash
 # Clone the repository
-git clone https://github.com/adamslocal/sovereign.git
-cd sovereign
+git clone https://github.com/adamslocal/trulana.git
+cd trulana
 
 # Install dependencies
 flutter pub get
@@ -204,7 +204,7 @@ flutter run -d macos
 
 # Build a release .app bundle
 flutter build macos --release
-# Output: build/macos/Build/Products/Release/sovereign.app
+# Output: build/macos/Build/Products/Release/trulana.app
 ```
 
 **Notes:** Biometric auth uses Touch ID on MacBooks with Touch ID, or falls back gracefully on Macs without it. The app runs in a native Cocoa window with the full glassmorphism UI.
@@ -274,13 +274,13 @@ flutter run -d all
 | Android APK | `flutter build apk --release` | `build/app/outputs/flutter-apk/` |
 | Android Bundle | `flutter build appbundle --release` | `build/app/outputs/bundle/release/` |
 | Web | `flutter build web --release` | `build/web/` |
-| macOS | `flutter build macos --release` | `build/macos/.../sovereign.app` |
+| macOS | `flutter build macos --release` | `build/macos/.../trulana.app` |
 | Linux | `flutter build linux --release` | `build/linux/x64/release/bundle/` |
 | Windows | `flutter build windows --release` | `build/windows/x64/runner/Release/` |
 
 ## Local API Server
 
-When running, Sovereign starts a local HTTP server on `localhost:8432`. Third-party apps interact via three endpoints:
+When running, Trulana starts a local HTTP server on `localhost:8432`. Third-party apps interact via three endpoints:
 
 | Endpoint | Method | Auth | Purpose |
 |----------|--------|------|---------|
@@ -309,8 +309,8 @@ MCP client config (Claude Desktop / Cursor):
 ```json
 {
   "mcpServers": {
-    "sovereign": {
-      "command": "/absolute/path/to/sovereign.app/Contents/MacOS/sovereign",
+    "trulana": {
+      "command": "/absolute/path/to/trulana.app/Contents/MacOS/trulana",
       "env": {"SOVEREIGN_MCP": "1"}
     }
   }
@@ -335,7 +335,7 @@ These are known, documented, and scoped for future work. None are bugs.
 
 **Scope enforcement is not yet complete.** Agents request scopes (e.g. `context.read`) during auth, and scopes are recorded in the token grant and database. But query-time enforcement does not check whether the token's granted scopes authorize the specific query being made. Any valid token can query any vault context. The redaction engine still applies regardless, so data is never returned unfiltered — but a `context.read` token is not currently distinguishable from a hypothetical `health.read` token at the policy layer.
 
-**MCP uses a local-process trust model.** The MCP adapter runs as a subprocess launched by the MCP client (Claude Desktop, Cursor, etc.). Any process on the local machine that can invoke the Sovereign binary with `SOVEREIGN_MCP=1` can start an MCP session. Access is still gated by `AuthService` — the agent must call `sovereign_request_access` with valid fields to receive a token before any query is accepted. Every access attempt is written to the encrypted audit log. But there is no cryptographic verification of the calling process identity. This is consistent with how all MCP servers operate today, but it means local process isolation is the trust boundary, not application-level authentication.
+**MCP uses a local-process trust model.** The MCP adapter runs as a subprocess launched by the MCP client (Claude Desktop, Cursor, etc.). Any process on the local machine that can invoke the Trulana binary with `SOVEREIGN_MCP=1` can start an MCP session. Access is still gated by `AuthService` — the agent must call `trulana_request_access` with valid fields to receive a token before any query is accepted. Every access attempt is written to the encrypted audit log. But there is no cryptographic verification of the calling process identity. This is consistent with how all MCP servers operate today, but it means local process isolation is the trust boundary, not application-level authentication.
 
 **MCP per-agent rate limiting is not yet enforced.** The REST transport applies a sliding-window rate limiter (60 requests/minute per agent) via shelf middleware. The MCP transport does not enforce per-agent rate limits because rate limiting currently lives in the HTTP middleware layer, not in the shared services. A malicious MCP caller could issue unlimited queries within a session. Mitigating factor: MCP is local-process only (not network-exposed), and every query is still audited and redacted.
 

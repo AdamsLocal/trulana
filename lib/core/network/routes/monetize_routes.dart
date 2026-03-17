@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:sovereign/core/database/database_helper.dart';
-import 'package:sovereign/core/network/middleware/auth_middleware.dart';
-import 'package:sovereign/core/network/token_manager.dart';
-import 'package:sovereign/models/models.dart';
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/network/middleware/auth_middleware.dart';
+import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/models/models.dart';
 
 const Uuid _uuid = Uuid();
 

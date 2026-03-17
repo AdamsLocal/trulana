@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Anamorphic glassmorphism card used as the primary surface element
-/// throughout the Sovereign UI. Blurs whatever sits behind it and
+/// throughout the Trulana UI. Blurs whatever sits behind it and
 /// overlays a translucent white fill + border to create depth on
 /// the dark mesh-gradient backgrounds.
 class GlassCard extends StatelessWidget {

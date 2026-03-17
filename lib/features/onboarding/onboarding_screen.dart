@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:sovereign/core/theme/theme.dart';
-import 'package:sovereign/core/ui/ui.dart';
-import 'package:sovereign/models/models.dart';
-import 'package:sovereign/providers/providers.dart';
+import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/models/models.dart';
+import 'package:trulana/providers/providers.dart';
 
 import 'steps/biometric_step.dart';
 import 'steps/data_streams_step.dart';
@@ -153,8 +153,8 @@ class _DotIndicator extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             color: isActive
-                ? SovereignColors.primaryCyan
-                : SovereignColors.textTertiary,
+                ? TrulanaColors.primaryCyan
+                : TrulanaColors.textTertiary,
           ),
         );
       }),
