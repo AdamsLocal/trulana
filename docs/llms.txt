@@ -51,7 +51,7 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 
 - Source: https://github.com/AdamsLocal/trulana
 - Security model: https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md
-- Landing page: https://adamslocal.github.io/trulana/
+- Landing page: https://trulana.com/
 - Contact: adam@trulana.com
 
 ## Status
