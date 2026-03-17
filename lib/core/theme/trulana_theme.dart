@@ -1,37 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'trulana_colors.dart';
 
 /// Centralised Material 3 theme built on [TrulanaColors].
 ///
-/// A single static getter keeps the widget tree clean (`TrulanaTheme.darkTheme`)
-/// while still giving us a strongly-typed, testable theme object.
+/// Uses system fonts (SF Pro on macOS) to avoid network fetching
+/// and sandbox permission issues. No google_fonts dependency.
 class TrulanaTheme {
   TrulanaTheme._();
 
   static ThemeData get darkTheme {
     final ThemeData base = ThemeData.dark();
 
-    final TextTheme baseText = GoogleFonts.interTextTheme(base.textTheme);
-
-    final TextTheme textTheme = baseText.copyWith(
-      headlineLarge: baseText.headlineLarge?.copyWith(
+    final TextTheme textTheme = base.textTheme.copyWith(
+      headlineLarge: base.textTheme.headlineLarge?.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: TrulanaColors.textPrimary,
       ),
-      bodyLarge: baseText.bodyLarge?.copyWith(
+      bodyLarge: base.textTheme.bodyLarge?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: TrulanaColors.textSecondary,
       ),
-      bodyMedium: baseText.bodyMedium?.copyWith(
+      bodyMedium: base.textTheme.bodyMedium?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: TrulanaColors.textSecondary,
       ),
-      labelSmall: baseText.labelSmall?.copyWith(
+      labelSmall: base.textTheme.labelSmall?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: TrulanaColors.textTertiary,
@@ -103,9 +100,11 @@ class TrulanaTheme {
   }
 
   /// Monospaced style for numeric/metric displays (balances, IDs, hashes).
-  static TextStyle get monoStyle => GoogleFonts.jetBrainsMono(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: TrulanaColors.textPrimary,
-      );
+  /// Uses Menlo (macOS system mono) with fallback to platform default.
+  static const TextStyle monoStyle = TextStyle(
+    fontFamily: 'Menlo',
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: TrulanaColors.textPrimary,
+  );
 }
