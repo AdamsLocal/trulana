@@ -25,6 +25,36 @@ class MonetizationCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Row(
+            children: [
+              const Text(
+                'Data Monetization',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: TrulanaColors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: TrulanaColors.warningAmber.withValues(alpha: 0.4)),
+                ),
+                child: const Text(
+                  'COMING SOON',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: TrulanaColors.warningAmber,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           _EarningsDisplay(earningsAsync: earningsAsync),
           const Divider(
             color: TrulanaColors.glassBorder,

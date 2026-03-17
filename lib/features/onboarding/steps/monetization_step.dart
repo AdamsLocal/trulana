@@ -84,7 +84,17 @@ class _MonetizationStepState extends State<MonetizationStep> {
                 duration: 500.ms,
                 curve: Curves.easeOutCubic,
               ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 12),
+          const Text(
+            'Payments are not connected yet. This feature is scaffolded '
+            'for a future release.',
+            style: TextStyle(
+              fontSize: 13,
+              color: TrulanaColors.textTertiary,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          const SizedBox(height: 28),
           Expanded(
             child: SingleChildScrollView(
               child: Column(

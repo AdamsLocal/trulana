@@ -72,7 +72,7 @@ class VaultStatusCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Last synchronized: $agoLabel ago',
+                      'Last synchronized: $agoLabel',
                       style: TrulanaTheme.monoStyle.copyWith(
                         fontSize: 12,
                         color: TrulanaColors.textTertiary,
@@ -91,9 +91,9 @@ class VaultStatusCard extends ConsumerWidget {
   /// Converts a [Duration] into a human-friendly relative string
   /// without exposing exact timestamps (privacy-conscious UX).
   static String _formatDuration(Duration d) {
-    if (d.inDays > 0) return '${d.inDays}d';
-    if (d.inHours > 0) return '${d.inHours}h';
-    if (d.inMinutes > 0) return '${d.inMinutes} min';
+    if (d.inDays > 0) return '${d.inDays}d ago';
+    if (d.inHours > 0) return '${d.inHours}h ago';
+    if (d.inMinutes > 0) return '${d.inMinutes} min ago';
     return 'just now';
   }
 }
