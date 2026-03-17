@@ -317,6 +317,19 @@ MCP client config (Claude Desktop / Cursor):
 }
 ```
 
+##Integrate with Cursor (MCP)
+
+Trulana works natively with Cursor and Claude Code. To add it as an MCP server, add this to your project.json or global MCP settings:
+
+{
+  "mcpServers": {
+    "trulana": {
+      "command": "trulana",
+      "args": ["mcp", "--port", "8432"]
+    }
+  }
+}
+
 ## Running Tests
 
 ```bash
