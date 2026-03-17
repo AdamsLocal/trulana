@@ -53,5 +53,4 @@ app.*.map.json
 .cursor/
 macos/build/
 trulana-test/
-docs/trulana-adamslocal-video.mp4
 .cursorrules

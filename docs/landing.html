@@ -636,11 +636,11 @@ section p strong {
   padding: 0 24px;
 }
 
-.video-wrapper iframe {
+.video-wrapper video {
   width: 100%;
-  aspect-ratio: 16 / 9;
   border-radius: 12px;
   border: 1px solid rgba(92, 224, 216, 0.08);
+  cursor: pointer;
 }
 
 /* ── FOOTER ───────────────────────────────────────────────── */
@@ -699,7 +699,9 @@ footer a:hover {
 
 <div class="video-section">
   <div class="video-wrapper">
-    <iframe src="https://www.youtube.com/embed/lL0avhjsWRA?loop=1&playlist=lL0avhjsWRA&rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <video controls loop playsinline preload="metadata">
+      <source src="trulana-adamslocal-video.mp4" type="video/mp4">
+    </video>
   </div>
 </div>
 
