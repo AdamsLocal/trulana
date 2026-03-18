@@ -181,6 +181,15 @@ nav .nav-brand {
   text-transform: uppercase;
   color: var(--accent);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+nav .nav-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
 }
 
 nav .nav-links {
@@ -217,6 +226,13 @@ nav .nav-links a:hover {
   padding: 4px 12px;
   border-radius: 100px;
   margin-bottom: 24px;
+}
+
+.hero-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  margin-bottom: 20px;
 }
 
 .hero-wordmark {
@@ -670,7 +686,7 @@ footer a:hover {
 
 <nav>
   <div class="nav-inner">
-    <a href="https://github.com/AdamsLocal/trulana" class="nav-brand">Trulana</a>
+    <a href="https://github.com/AdamsLocal/trulana" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana</a>
     <div class="nav-links">
       <a href="https://github.com/AdamsLocal/trulana">Source</a>
       <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a>
@@ -682,6 +698,7 @@ footer a:hover {
 <div class="hero">
   <div class="container">
     <div class="hero-badge">Technical Preview — macOS</div>
+    <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
     <h2 class="hero-headline">Your device is <em>the API.</em></h2>
     <p class="sub">Apps can request context about a user — but raw data stays local, and every response is filtered before it leaves.</p>

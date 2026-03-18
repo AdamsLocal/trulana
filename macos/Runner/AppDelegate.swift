@@ -5,7 +5,8 @@ import FlutterMacOS
 class AppDelegate: FlutterAppDelegate {
 
   private var isMcpMode: Bool {
-    ProcessInfo.processInfo.environment["SOVEREIGN_MCP"] == "1"
+    ProcessInfo.processInfo.environment["TRULANA_MCP"] == "1"
+    || ProcessInfo.processInfo.environment["SOVEREIGN_MCP"] == "1"
   }
 
   override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

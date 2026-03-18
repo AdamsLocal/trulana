@@ -7,7 +7,7 @@ Trulana is a local-first personal data broker. All data stays on-device in an en
 ```
 ┌────────────────────────────────────────────────────────┐
 │  Transport: REST (shelf, 127.0.0.1:8432)               │
-│  Transport: MCP  (stdio, SOVEREIGN_MCP=1)              │
+│  Transport: MCP  (stdio, TRULANA_MCP=1)              │
 ├────────────────────────────────────────────────────────┤
 │  Shared Services (policy enforcement)                  │
 │  ├── AuthService       → token issuance + audit        │
@@ -39,7 +39,7 @@ Trulana is a local-first personal data broker. All data stays on-device in an en
 
 ### Current Trust Boundary (MVP)
 
-- Any local process that can invoke the binary with `SOVEREIGN_MCP=1` can start an MCP session.
+- Any local process that can invoke the binary with `TRULANA_MCP=1` can start an MCP session.
 - Access is still gated by token issuance: the agent must provide `app_id`, `app_name`, `scopes`, and `intent` to receive a token.
 - Every access attempt (successful or rejected) is written to the encrypted audit log.
 - Tokens are in-memory only (RAM), 15-minute TTL, and do not survive process restart.

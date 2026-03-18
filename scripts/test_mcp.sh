@@ -66,7 +66,7 @@ printf "\033[2mBinary: %s (%s)\033[0m\n" "$SOVEREIGN_BIN" "$BUILD_TYPE"
 FIFO=$(mktemp -u)
 STDOUT_LOG=$(mktemp)
 mkfifo "$FIFO"
-SOVEREIGN_MCP=1 "$SOVEREIGN_BIN" < "$FIFO" > "$STDOUT_LOG" 2>/dev/null &
+TRULANA_MCP=1 "$SOVEREIGN_BIN" < "$FIFO" > "$STDOUT_LOG" 2>/dev/null &
 MCP_PID=$!
 exec 3>"$FIFO"
 sleep 3

@@ -17,7 +17,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _seedDefaultConfig();
 
-  final bool mcpMode = Platform.environment['SOVEREIGN_MCP'] == '1';
+  final bool mcpMode =
+      Platform.environment['TRULANA_MCP'] == '1' ||
+      Platform.environment['SOVEREIGN_MCP'] == '1';
 
   if (mcpMode) {
     SafeLogger.enableMcpMode();
