@@ -35,12 +35,26 @@ class DashboardScreen extends ConsumerWidget {
                 // — Header
                 AnimatedListItem(
                   index: 0,
-                  child: const Text(
-                    'Trulana',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: TrulanaColors.textSecondary,
-                    ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          'assets/images/trulana-icon.png',
+                          width: 32,
+                          height: 32,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Trulana',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: TrulanaColors.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 4),
