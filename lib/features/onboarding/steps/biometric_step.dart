@@ -48,12 +48,15 @@ class _BiometricStepState extends State<BiometricStep> {
         children: [
           AnimatedListItem(
             index: 0,
-            child: const PulseIndicator(
+            child: PulseIndicator(
               size: 160,
-              child: Icon(
-                Icons.shield,
-                size: 56,
-                color: TrulanaColors.primaryCyan,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/trulana-icon.png',
+                  width: 64,
+                  height: 64,
+                ),
               ),
             ),
           ),

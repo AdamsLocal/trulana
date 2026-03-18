@@ -87,19 +87,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 8),
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/trulana-icon.png',
-                      width: 48,
-                      height: 48,
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: PageView(
                   controller: _pageController,
