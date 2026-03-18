@@ -3,46 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trulana — Your device is the API</title>
+<title>Trulana — Give AI context without giving it your data</title>
 
-<!-- HTTPS enforcement -->
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (location.protocol !== "https:" && location.protocol !== "file:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") { location.replace("https:" + location.href.substring(location.protocol.length)); }</script>
 
-<!-- SEO -->
-<meta name="description" content="Trulana is a local-first private context server for AI tools. Apps can request context about you, but your raw data never leaves your device. Every response is filtered on-device before it's returned.">
+<meta name="description" content="Trulana is a local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.">
 <meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, redaction, personal data, macOS">
 <meta name="author" content="Adam at AdamsLocal">
 <link rel="canonical" href="https://trulana.com/">
 
-<!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Trulana — Your device is the API">
-<meta property="og:description" content="A local-first private context server for AI tools. Apps get answers, not your data. Every response is redacted on-device before it leaves.">
+<meta property="og:title" content="Trulana — Give AI context without giving it your data">
+<meta property="og:description" content="A local-first private context server. Apps query over REST or MCP, and only redacted answers leave the device.">
 <meta property="og:url" content="https://trulana.com/">
 <meta property="og:image" content="https://trulana.com/trulana-og.png">
 <meta property="og:site_name" content="Trulana">
 
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Trulana — Your device is the API">
-<meta name="twitter:description" content="A local-first private context server for AI tools. Apps get answers, not your data.">
+<meta name="twitter:title" content="Trulana — Give AI context without giving it your data">
+<meta name="twitter:description" content="A local-first private context server. Apps get answers, not your data.">
 <meta name="twitter:image" content="https://trulana.com/trulana-og.png">
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" sizes="32x32" href="trulana-logo.png">
 <link rel="apple-touch-icon" href="trulana-logo.png">
 
-<!-- AEO/GEO: structured data for AI search engines -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Trulana",
   "alternateName": "Trulana Context Server",
-  "headline": "Your device is the API",
-  "description": "A local-first private context server for AI tools. Stores personal context in an encrypted local vault. AI tools query via REST or MCP and receive filtered, redacted responses. Raw data never leaves the device.",
+  "headline": "Give AI context without giving it your data",
+  "description": "A local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.",
   "applicationCategory": "DeveloperApplication",
   "applicationSubCategory": "Privacy Tools",
   "operatingSystem": "macOS",
@@ -83,7 +77,6 @@
 }
 </script>
 
-<!-- llms.txt for AI crawlers -->
 <link rel="alternate" type="text/plain" href="llms.txt">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,8 +92,6 @@
   --text-muted: #6a6a80;
   --accent: #5ce0d8;
   --accent-dim: #2a8a84;
-  --blue: #2D9BF0;
-  --blue-dim: #1a6ab8;
   --red: #f05858;
   --green: #5ce068;
   --yellow: #e0c85c;
@@ -151,7 +142,7 @@ body {
   padding: 0 24px;
 }
 
-/* ── NAV ──────────────────────────────────────────────────── */
+/* ── NAV (minimal for PH) ────────────────────────────────── */
 
 nav {
   position: fixed;
@@ -172,7 +163,7 @@ nav .nav-inner {
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 nav .nav-brand {
@@ -194,26 +185,10 @@ nav .nav-logo {
   border-radius: 4px;
 }
 
-nav .nav-links {
-  display: flex;
-  gap: 24px;
-}
-
-nav .nav-links a {
-  font-size: 13px;
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-nav .nav-links a:hover {
-  color: var(--text);
-}
-
 /* ── HERO ─────────────────────────────────────────────────── */
 
 .hero {
-  padding: 88px 0 56px;
+  padding: 88px 0 48px;
   text-align: center;
 }
 
@@ -223,8 +198,8 @@ nav .nav-links a:hover {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--blue);
-  border: 1px solid var(--blue-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
   padding: 4px 12px;
   border-radius: 100px;
   margin-bottom: 24px;
@@ -232,27 +207,27 @@ nav .nav-links a:hover {
 
 .hero-logo {
   display: block;
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 20px;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
 }
 
 .hero-wordmark {
   font-family: 'Myriad Pro', 'Myriad Set Pro', system-ui, sans-serif;
-  font-size: clamp(28px, 4.5vw, 42px);
+  font-size: clamp(24px, 4vw, 36px);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .hero-headline {
-  font-size: clamp(36px, 6vw, 56px);
+  font-size: clamp(30px, 5vw, 48px);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   margin-bottom: 16px;
 }
 
@@ -264,7 +239,7 @@ nav .nav-links a:hover {
 .hero .sub {
   font-size: 17px;
   color: var(--text-dim);
-  max-width: 520px;
+  max-width: 540px;
   margin: 0 auto 12px;
   line-height: 1.5;
 }
@@ -274,7 +249,7 @@ nav .nav-links a:hover {
   font-size: 12px;
   color: var(--text-muted);
   letter-spacing: 0.02em;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .hero-proof span {
@@ -301,8 +276,8 @@ nav .nav-links a:hover {
 }
 
 .btn-primary {
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
 }
 
 .btn-primary:hover {
@@ -319,6 +294,26 @@ nav .nav-links a:hover {
 .btn-ghost:hover {
   border-color: var(--text-dim);
   color: var(--text);
+}
+
+/* ── TRUST PILLS ──────────────────────────────────────────── */
+
+.trust-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.trust-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  border: 1px solid rgba(92, 224, 216, 0.1);
+  padding: 4px 12px;
+  border-radius: 100px;
 }
 
 /* ── SECTIONS ─────────────────────────────────────────────── */
@@ -377,7 +372,7 @@ section p strong {
 
 .problem-card {
   background: rgba(12, 12, 20, 0.45);
-  border: 1px solid rgba(45, 155, 240, 0.15);
+  border: 1px solid rgba(92, 224, 216, 0.1);
   border-radius: 12px;
   padding: 24px;
   backdrop-filter: blur(16px) saturate(1.2);
@@ -405,9 +400,7 @@ section p strong {
 
 /* ── STEPS ────────────────────────────────────────────────── */
 
-.steps {
-  margin-top: 32px;
-}
+.steps { margin-top: 32px; }
 
 .step {
   display: flex;
@@ -416,9 +409,7 @@ section p strong {
   padding: 20px 0;
 }
 
-.step + .step {
-  border-top: 1px solid rgba(92, 224, 216, 0.04);
-}
+.step + .step { border-top: 1px solid rgba(92, 224, 216, 0.04); }
 
 .step-num {
   font-family: 'JetBrains Mono', monospace;
@@ -428,81 +419,8 @@ section p strong {
   padding-top: 2px;
 }
 
-.step-text h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.step-text p {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 0;
-}
-
-/* ── EXAMPLE ──────────────────────────────────────────────── */
-
-.example-box {
-  margin-top: 24px;
-  background: rgba(10, 10, 18, 0.5);
-  border: 1px solid rgba(92, 224, 216, 0.08);
-  border-radius: 12px;
-  overflow: hidden;
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-}
-
-.example-header {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(92, 224, 216, 0.06);
-  display: flex;
-  justify-content: space-between;
-}
-
-.example-body {
-  padding: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.example-body .query {
-  color: var(--text-dim);
-  margin-bottom: 16px;
-}
-
-.example-body .query span {
-  color: var(--text);
-}
-
-.example-body .response {
-  color: var(--text-dim);
-}
-
-.redacted {
-  color: var(--accent);
-  background: rgba(92, 224, 216, 0.08);
-  padding: 1px 4px;
-  border-radius: 3px;
-}
-
-.example-meta {
-  padding: 12px 20px;
-  border-top: 1px solid rgba(92, 224, 216, 0.06);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--text-muted);
-  display: flex;
-  gap: 20px;
-}
-
-.example-meta .val {
-  color: var(--green);
-}
+.step-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.step-text p { font-size: 14px; color: var(--text-muted); margin-bottom: 0; }
 
 /* ── AUDIENCE ─────────────────────────────────────────────── */
 
@@ -515,49 +433,23 @@ section p strong {
 
 .audience-card {
   background: rgba(12, 12, 20, 0.45);
-  border: 1px solid rgba(45, 155, 240, 0.15);
+  border: 1px solid rgba(92, 224, 216, 0.1);
   border-radius: 12px;
   padding: 24px;
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 }
 
-.audience-card h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.audience-card p {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 0;
-}
+.audience-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.audience-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
 
 /* ── STATUS ───────────────────────────────────────────────── */
 
-.status-list {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.status-list { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
 
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--text-dim);
-}
+.status-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-dim); }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .status-dot.live { background: var(--green); }
 .status-dot.soon { background: var(--yellow); }
 
@@ -569,15 +461,8 @@ section p strong {
   border-top: 1px solid rgba(92, 224, 216, 0.06);
 }
 
-.final-cta h2 {
-  font-size: 32px;
-  margin-bottom: 16px;
-}
-
-.final-cta p {
-  margin: 0 auto 16px;
-  text-align: center;
-}
+.final-cta h2 { font-size: 32px; margin-bottom: 16px; }
+.final-cta p { margin: 0 auto 16px; text-align: center; }
 
 .partner-list {
   list-style: none;
@@ -589,13 +474,12 @@ section p strong {
 .partner-list li {
   color: var(--text-dim);
   font-size: 15px;
-  padding: 6px 0;
-  padding-left: 20px;
+  padding: 6px 0 6px 20px;
   position: relative;
 }
 
 .partner-list li::before {
-  content: '·';
+  content: '\b7';
   position: absolute;
   left: 4px;
   color: var(--accent);
@@ -615,17 +499,13 @@ section p strong {
 }
 
 @media (max-width: 768px) {
-  .demo-container {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: 600px;
-  }
+  .demo-container { grid-template-columns: 1fr; height: auto; min-height: 600px; }
   .demo-terminal { min-height: 360px; }
 }
 
 .demo-panel {
   background: rgba(10, 10, 18, 0.5);
-  border: 1px solid rgba(45, 155, 240, 0.15);
+  border: 1px solid rgba(92, 224, 216, 0.1);
   border-radius: 12px;
   backdrop-filter: blur(20px) saturate(1.3);
   -webkit-backdrop-filter: blur(20px) saturate(1.3);
@@ -646,28 +526,13 @@ section p strong {
   align-items: center;
 }
 
-.term-dots span {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-left: 4px;
-}
-
+.term-dots span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 4px; }
 .term-dots span:nth-child(1) { background: #f05858; }
 .term-dots span:nth-child(2) { background: #e0c85c; }
 .term-dots span:nth-child(3) { background: #5ce068; }
 
-.dash-section {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(92, 224, 216, 0.04);
-}
-
-.dash-section-grow {
-  flex: 1;
-  overflow-y: auto;
-  border-bottom: none;
-}
+.dash-section { padding: 12px 16px; border-bottom: 1px solid rgba(92, 224, 216, 0.04); }
+.dash-section-grow { flex: 1; overflow-y: auto; border-bottom: none; }
 
 .dash-section-title {
   font-family: 'JetBrains Mono', monospace;
@@ -678,16 +543,10 @@ section p strong {
   margin-bottom: 8px;
 }
 
-.dash-vault-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.dash-vault-row { display: flex; align-items: center; gap: 8px; }
 
 .dash-pulse {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 6px var(--green);
   animation: dashPulse 2s ease-in-out infinite;
@@ -698,54 +557,24 @@ section p strong {
   50% { opacity: 0.6; box-shadow: 0 0 12px var(--green); }
 }
 
-.dash-vault-label {
-  font-size: 13px;
-  color: var(--text-dim);
-  flex: 1;
-}
+.dash-vault-label { font-size: 13px; color: var(--text-dim); flex: 1; }
 
 .dash-badge {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.05em;
-  padding: 2px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
+  font-size: 9px; letter-spacing: 0.05em;
+  padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
 }
 
-.dash-badge-green {
-  color: var(--green);
-  border: 1px solid rgba(92, 224, 104, 0.3);
-}
+.dash-badge-green { color: var(--green); border: 1px solid rgba(92, 224, 104, 0.3); }
+.dash-badge-active { color: var(--accent); border: 1px solid rgba(92, 224, 216, 0.3); }
 
-.dash-badge-active {
-  color: var(--accent);
-  border: 1px solid rgba(92, 224, 216, 0.3);
-}
+.dash-agents-list, .dash-audit-log { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.dash-empty { color: var(--text-muted); font-size: 11px; font-style: italic; }
 
-.dash-agents-list, .dash-audit-log {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-}
-
-.dash-empty {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-style: italic;
-}
-
-.dash-agent-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  color: var(--text-dim);
-}
+.dash-agent-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; color: var(--text-dim); }
 
 .dash-audit-entry {
-  padding: 4px 0;
-  color: var(--text-dim);
-  font-size: 11px;
+  padding: 4px 0; color: var(--text-dim); font-size: 11px;
   border-bottom: 1px solid rgba(255,255,255,0.02);
   animation: auditFadeIn 0.3s ease-out;
 }
@@ -755,221 +584,96 @@ section p strong {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dash-audit-entry .audit-action {
-  color: var(--accent);
-}
+.dash-audit-entry .audit-action { color: var(--accent); }
+.dash-audit-entry .audit-count { color: var(--green); }
 
-.dash-audit-entry .audit-count {
-  color: var(--green);
-}
-
-.demo-terminal {
-  background: rgba(6, 6, 11, 0.8);
-}
+.demo-terminal { background: rgba(6, 6, 11, 0.8); }
 
 .term-output {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 16px;
+  flex: 1; overflow-y: auto; padding: 12px 16px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--text-dim);
+  font-size: 12px; line-height: 1.6; color: var(--text-dim);
 }
 
-.term-output .term-cmd {
-  color: var(--accent);
-}
+.term-output .term-cmd { color: var(--accent); }
+.term-output .term-cmd::before { content: '$ '; color: var(--text-muted); }
+.term-output .term-resp { color: var(--text-dim); white-space: pre-wrap; word-break: break-word; }
+.term-output .term-resp .r { color: var(--accent); background: rgba(92, 224, 216, 0.08); padding: 0 2px; border-radius: 2px; }
+.term-output .term-info { color: var(--text-muted); font-style: italic; font-size: 11px; }
+.term-output .term-spacer { height: 8px; }
 
-.term-output .term-cmd::before {
-  content: '$ ';
-  color: var(--text-muted);
-}
-
-.term-output .term-resp {
-  color: var(--text-dim);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.term-output .term-resp .r {
-  color: var(--accent);
-  background: rgba(92, 224, 216, 0.08);
-  padding: 0 2px;
-  border-radius: 2px;
-}
-
-.term-output .term-info {
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 11px;
-}
-
-.term-output .term-spacer {
-  height: 8px;
-}
-
-.term-controls {
-  padding: 12px 16px;
-  border-top: 1px solid rgba(92, 224, 216, 0.06);
-  text-align: center;
-}
+.term-controls { padding: 12px 16px; border-top: 1px solid rgba(92, 224, 216, 0.06); text-align: center; }
 
 .term-next-btn {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  padding: 8px 24px;
-  border-radius: 6px;
+  font-size: 12px; padding: 8px 24px; border-radius: 6px;
   border: 1px solid var(--accent-dim);
   background: rgba(92, 224, 216, 0.08);
-  color: var(--accent);
-  cursor: pointer;
-  transition: all 0.15s;
+  color: var(--accent); cursor: pointer; transition: all 0.15s;
 }
 
-.term-next-btn:hover {
-  background: rgba(92, 224, 216, 0.15);
-  border-color: var(--accent);
-}
+.term-next-btn:hover { background: rgba(92, 224, 216, 0.15); border-color: var(--accent); }
+.term-next-btn:disabled { opacity: 0.4; cursor: default; }
 
-.term-next-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
+.term-free { padding: 8px 16px 12px; border-top: 1px solid rgba(92, 224, 216, 0.06); }
 
-.term-free {
-  padding: 8px 16px 12px;
-  border-top: 1px solid rgba(92, 224, 216, 0.06);
-}
-
-.term-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
+.term-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 
 .term-presets button {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 4px;
+  font-size: 10px; padding: 4px 10px; border-radius: 4px;
   border: 1px solid rgba(92, 224, 216, 0.15);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.15s;
+  background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.15s;
 }
 
-.term-presets button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.term-presets button:hover { border-color: var(--accent); color: var(--accent); }
 
-.term-input-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.term-prompt {
-  color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-}
-
-.term-input-row input {
-  flex: 1;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  outline: none;
-}
-
-.term-input-row input::placeholder {
-  color: var(--text-muted);
-}
+.term-input-row { display: flex; align-items: center; gap: 8px; }
+.term-prompt { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.term-input-row input { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; background: transparent; border: none; color: var(--text); outline: none; }
+.term-input-row input::placeholder { color: var(--text-muted); }
 
 /* ── INSTALL BAR ──────────────────────────────────────────── */
 
 .install-bar {
   background: rgba(10, 10, 18, 0.5);
-  border: 1px solid rgba(45, 155, 240, 0.15);
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  margin: 24px auto 0;
-  max-width: 480px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border: 1px solid rgba(92, 224, 216, 0.1);
+  padding: 12px 16px; border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  margin: 20px auto 0; max-width: 480px;
+  display: flex; justify-content: space-between; align-items: center;
   cursor: pointer;
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  transition: border-color 0.15s;
-  color: var(--text-dim);
+  transition: border-color 0.15s; color: var(--text-dim);
 }
 
-.install-bar:hover {
-  border-color: var(--accent-dim);
-}
-
-.install-copy {
-  color: var(--text-muted);
-  font-size: 10px;
-  letter-spacing: 0.05em;
-  transition: color 0.15s;
-}
-
-.install-bar:hover .install-copy {
-  color: var(--accent);
-}
-
-.install-bar.copied .install-copy {
-  color: var(--green);
-}
+.install-bar:hover { border-color: var(--accent-dim); }
+.install-copy { color: var(--text-muted); font-size: 10px; letter-spacing: 0.05em; transition: color 0.15s; }
+.install-bar:hover .install-copy { color: var(--accent); }
+.install-bar.copied .install-copy { color: var(--green); }
 
 /* ── VIDEO ────────────────────────────────────────────────── */
 
-.video-section {
-  padding: 0 0 40px;
-  text-align: center;
-}
+.video-section { padding: 0 0 20px; text-align: center; }
+.video-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
 
-.video-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.video-wrapper { max-width: 800px; margin: 0 auto; padding: 0 24px; }
 
 .video-wrapper video {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(92, 224, 216, 0.08);
-  cursor: pointer;
+  width: 100%; border-radius: 12px;
+  border: 1px solid rgba(92, 224, 216, 0.08); cursor: pointer;
 }
 
 /* ── FOOTER ───────────────────────────────────────────────── */
 
 footer {
   border-top: 1px solid rgba(92, 224, 216, 0.06);
-  padding: 32px 0;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-muted);
+  padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-muted);
 }
 
-footer a {
-  color: var(--text-dim);
-  text-decoration: none;
-}
-
-footer a:hover {
-  color: var(--accent);
-}
+footer a { color: var(--text-dim); text-decoration: none; }
+footer a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -977,122 +681,51 @@ footer a:hover {
 <canvas id="dither-bg"></canvas>
 <div class="logo-pattern"></div>
 
+<!-- Nav: minimal brand mark only for PH launch -->
 <nav>
   <div class="nav-inner">
     <a href="https://github.com/AdamsLocal/trulana" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana</a>
-    <div class="nav-links">
-      <a href="https://github.com/AdamsLocal/trulana">Source</a>
-      <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a>
-      <a href="#partner">Design Partner</a>
-    </div>
   </div>
 </nav>
 
+<!-- 1. HERO -->
 <div class="hero">
   <div class="container">
-    <div class="hero-badge">Technical Preview — macOS</div>
+    <div class="hero-badge">macOS Technical Preview</div>
     <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
-    <h2 class="hero-headline">Your device is <em>the API.</em></h2>
-    <p class="sub">Apps can request context about a user — but raw data stays local, and every response is filtered before it leaves.</p>
-    <div class="hero-proof"><span>macOS MVP</span> · <span>REST + MCP verified</span> · <span>117 tests passing</span></div>
+    <h2 class="hero-headline">Give AI context &mdash;<br>without giving it <em>your data.</em></h2>
+    <p class="sub">Trulana is a local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.</p>
+    <div class="hero-proof"><span>REST + MCP verified</span> &middot; <span>117 tests passing</span> &middot; <span>Runs locally</span></div>
     <div class="cta-row">
-      <a href="https://github.com/AdamsLocal/trulana" id="btn-source" class="btn btn-primary" target="_blank">Get the source</a>
-      <a href="#example" class="btn btn-ghost">See it in action</a>
+      <a href="#example" class="btn btn-primary">Run the demo</a>
+      <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost" target="_blank">View source</a>
     </div>
-    <div class="install-bar" id="install-bar">
-      <span><span style="color:var(--accent)">$</span> git clone https://github.com/AdamsLocal/trulana &amp;&amp; cd trulana &amp;&amp; flutter pub get &amp;&amp; flutter run -d macos</span>
-      <span class="install-copy">COPY</span>
+    <div class="trust-row">
+      <span class="trust-pill">Encrypted local vault</span>
+      <span class="trust-pill">Localhost-only REST</span>
+      <span class="trust-pill">MCP support</span>
+      <span class="trust-pill">Audit log + redaction</span>
     </div>
   </div>
 </div>
 
+<!-- 2. VIDEO -->
 <div class="video-section">
   <div class="video-wrapper">
+    <div class="video-label">30-second product demo</div>
     <video controls loop playsinline preload="metadata">
       <source src="trulana-adamslocal-video.mp4" type="video/mp4">
     </video>
   </div>
 </div>
 
-<section>
-  <div class="container">
-    <div class="section-label">The problem</div>
-    <h2>AI that doesn't know you is useless.<br>AI that knows everything is dangerous.</h2>
-    <p>Right now you have two choices. Give your apps zero personal context and get generic answers. Or hand over your emails, calendar, health data, and notes — and hope nobody leaks it, trains on it, or sells it.</p>
-    <div class="problem-grid">
-      <div class="problem-card">
-        <div class="label">Option A</div>
-        <h3>No context</h3>
-        <p>Every session starts from scratch. The AI doesn't know your name, your schedule, or what you asked yesterday.</p>
-      </div>
-      <div class="problem-card">
-        <div class="label">Option B</div>
-        <h3>Full access</h3>
-        <p>Send everything to the cloud. Your data trains models, populates dashboards, and lives on servers you don't control.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="section-label">The fix</div>
-    <h2>Apps get answers, not your data.</h2>
-    <p>Trulana stores your personal context in an <strong>encrypted local vault</strong>. When an AI tool needs to know something about you, it queries Trulana — and gets back a <strong>filtered, redacted response</strong>. Your name, email, location, and schedule never leave the device in raw form.</p>
-    <p>The AI gets useful context. You keep control of the source material.</p>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="section-label">How it works</div>
-    <h2>Five steps. All local.</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-text">
-          <h3>Agent requests access</h3>
-          <p>An AI tool sends an auth request with its name, ID, and stated intent.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-text">
-          <h3>Trulana issues a scoped token</h3>
-          <p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-text">
-          <h3>Agent queries your context</h3>
-          <p>"What's their morning routine?" — sent to localhost, never to the internet.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-text">
-          <h3>The redaction engine runs</h3>
-          <p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations — all caught.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">05</div>
-        <div class="step-text">
-          <h3>Filtered result returned</h3>
-          <p>The agent gets useful context with all identifying details stripped. The raw data never moved.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+<!-- 3. INTERACTIVE DEMO -->
 <section id="example">
   <div class="container-wide">
     <div class="section-label">Interactive demo</div>
-    <h2>This is what the agent sees.</h2>
-    <p>Walk through a real auth + query flow. The dashboard updates live as requests are processed.</p>
+    <h2>See the full flow in under a minute.</h2>
+    <p>Authenticate an agent, run a live query, watch redactions apply, and see the audit log update in real time.</p>
   </div>
   <div class="demo-container">
     <div class="demo-panel demo-dashboard">
@@ -1124,7 +757,7 @@ footer a:hover {
       </div>
       <div id="term-output" class="term-output"></div>
       <div id="term-controls" class="term-controls">
-        <button id="term-next" class="term-next-btn" onclick="demoNextStep()">Start demo</button>
+        <button id="term-next" class="term-next-btn" onclick="demoNextStep()">Run the demo</button>
       </div>
       <div id="term-free" class="term-free" style="display:none;">
         <div class="term-presets" id="term-presets">
@@ -1144,18 +777,65 @@ footer a:hover {
   </div>
 </section>
 
+<!-- 4. PROBLEM -->
+<section>
+  <div class="container">
+    <div class="section-label">The problem</div>
+    <h2>AI that doesn't know you is useless.<br>AI that knows everything is dangerous.</h2>
+    <p>Right now you have two choices. Give your apps zero personal context and get generic answers. Or hand over your emails, calendar, health data, and notes &mdash; and hope nobody leaks it, trains on it, or sells it.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="label">Option A</div>
+        <h3>No context</h3>
+        <p>Every session starts from scratch. The AI doesn't know your name, your schedule, or what you asked yesterday.</p>
+      </div>
+      <div class="problem-card">
+        <div class="label">Option B</div>
+        <h3>Full access</h3>
+        <p>Send everything to the cloud. Your data trains models, populates dashboards, and lives on servers you don't control.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. FIX -->
+<section>
+  <div class="container">
+    <div class="section-label">The fix</div>
+    <h2>Apps get answers, not your data.</h2>
+    <p>Trulana stores your personal context in an <strong>encrypted local vault</strong>. When an app needs to know something about you, it queries Trulana &mdash; and gets back a <strong>filtered, redacted response</strong>. Your name, email, location, and schedule never leave the device in raw form.</p>
+    <p>The app gets useful context. You keep control of the source material.</p>
+  </div>
+</section>
+
+<!-- 6. HOW IT WORKS -->
+<section>
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2>Five steps. All local.</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div class="step-text"><h3>App requests access</h3><p>An app sends an auth request with its name, ID, and stated intent.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Trulana issues a scoped token</h3><p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>App queries your context</h3><p>"What's their morning routine?" &mdash; sent to localhost, never to the internet.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>The redaction engine runs</h3><p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations &mdash; all caught.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful context with all identifying details stripped. The raw data never moved.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. WHO IT'S FOR -->
 <section>
   <div class="container">
     <div class="section-label">Who it's for</div>
     <h2>Built for people who build with AI.</h2>
     <div class="audience-grid">
       <div class="audience-card">
-        <h3>AI developers</h3>
-        <p>Ship personalized AI features without storing user data. Query Trulana via REST or MCP. Get context without liability.</p>
+        <h3>Developers building AI apps</h3>
+        <p>Need user context without storage liability? Query Trulana via REST or MCP. Get personalization without the GDPR headache.</p>
       </div>
       <div class="audience-card">
         <h3>Consultants &amp; professionals</h3>
-        <p>Use apps with client data, NDAs, and sensitive materials — without sending any of it to a cloud provider.</p>
+        <p>Use AI with client data, NDAs, and sensitive materials &mdash; without sending any of it to a cloud provider.</p>
       </div>
       <div class="audience-card">
         <h3>Privacy-aware power users</h3>
@@ -1165,20 +845,25 @@ footer a:hover {
   </div>
 </section>
 
+<!-- 8. WHY IT MATTERS -->
 <section>
   <div class="container">
     <div class="section-label">Why it matters</div>
     <h2>The current model doesn't scale.</h2>
-    <p>Every AI app that stores personal context becomes a data liability. One breach, one policy change, one acquisition — and your users' data is somewhere it shouldn't be.</p>
+    <p>Every AI app that stores personal context becomes a data liability. One breach, one policy change, one acquisition &mdash; and your users' data is somewhere it shouldn't be.</p>
     <p>Trulana eliminates this by <strong>never collecting the data in the first place</strong>. The context lives on the user's machine. Your app queries it. The redaction engine enforces the boundary. You get personalization without the storage, the GDPR headache, or the trust problem.</p>
   </div>
 </section>
 
+<!-- 9. STATUS -->
 <section>
   <div class="container">
     <div class="section-label">Current status</div>
-    <h2>This is real, working software.</h2>
-    <p>Not a pitch deck. Not a waitlist. A macOS binary you can build and run today.</p>
+    <h2>Working macOS MVP. Build it and run it today.</h2>
+    <div class="install-bar" id="install-bar">
+      <span><span style="color:var(--accent)">$</span> git clone https://github.com/AdamsLocal/trulana &amp;&amp; cd trulana &amp;&amp; flutter run -d macos</span>
+      <span class="install-copy">COPY</span>
+    </div>
     <div class="status-list">
       <div class="status-item"><div class="status-dot live"></div>macOS app with encrypted local database</div>
       <div class="status-item"><div class="status-dot live"></div>REST API on localhost:8432</div>
@@ -1193,9 +878,10 @@ footer a:hover {
   </div>
 </section>
 
+<!-- 10. FINAL CTA -->
 <div class="final-cta" id="partner">
   <div class="container">
-    <h2>Need personalization without storing user data?</h2>
+    <h2>Try the architecture. Then decide if you want to build on it.</h2>
     <p>I'm looking for a few macOS design partners building AI workflows that need local-first context and redacted outputs.</p>
     <ul class="partner-list">
       <li>integrate local-first context into their product</li>
@@ -1204,13 +890,14 @@ footer a:hover {
     </ul>
     <div class="cta-row">
       <a href="mailto:adam@trulana.com?subject=Design Partner Inquiry" class="btn btn-primary">Become a design partner</a>
+      <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost" target="_blank">View source</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="container">
-    &copy; 2026 AdamsLocal. Trulana is a trademark of AdamsLocal. All rights reserved. · <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a> · <a href="https://github.com/AdamsLocal/trulana">Source</a> · <a href="mailto:adam@trulana.com">Contact</a>
+    &copy; 2026 AdamsLocal. Trulana is a trademark of AdamsLocal. All rights reserved. &middot; <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a> &middot; <a href="https://github.com/AdamsLocal/trulana">Source</a> &middot; <a href="mailto:adam@trulana.com">Contact</a>
   </div>
 </footer>
 
@@ -1360,7 +1047,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 var installBar = document.getElementById('install-bar');
 if (installBar) {
   installBar.addEventListener('click', function() {
-    navigator.clipboard.writeText('git clone https://github.com/AdamsLocal/trulana && cd trulana && flutter pub get && flutter run -d macos').then(function() {
+    navigator.clipboard.writeText('git clone https://github.com/AdamsLocal/trulana && cd trulana && flutter run -d macos').then(function() {
       installBar.classList.add('copied');
       var copyEl = installBar.querySelector('.install-copy');
       copyEl.textContent = 'COPIED';
