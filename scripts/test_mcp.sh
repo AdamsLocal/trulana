@@ -35,16 +35,16 @@ trap cleanup EXIT
 # ── Resolve binary ───────────────────────────────────────────────
 
 if [ "${1:-}" = "--debug" ]; then
-  SOVEREIGN_BIN="$DEBUG_BIN"
+  TRULANA_BIN="$DEBUG_BIN"
   BUILD_TYPE="debug"
 elif [ -n "${1:-}" ]; then
-  SOVEREIGN_BIN="$1"
+  TRULANA_BIN="$1"
   BUILD_TYPE="custom"
 elif [ -x "$RELEASE_BIN" ]; then
-  SOVEREIGN_BIN="$RELEASE_BIN"
+  TRULANA_BIN="$RELEASE_BIN"
   BUILD_TYPE="release"
 elif [ -x "$DEBUG_BIN" ]; then
-  SOVEREIGN_BIN="$DEBUG_BIN"
+  TRULANA_BIN="$DEBUG_BIN"
   BUILD_TYPE="debug"
 else
   printf "\033[31mFATAL:\033[0m No binary found.\n"
@@ -53,20 +53,20 @@ else
   exit 1
 fi
 
-if [ ! -x "$SOVEREIGN_BIN" ]; then
-  printf "\033[31mFATAL:\033[0m Binary not executable: %s\n" "$SOVEREIGN_BIN"
+if [ ! -x "$TRULANA_BIN" ]; then
+  printf "\033[31mFATAL:\033[0m Binary not executable: %s\n" "$TRULANA_BIN"
   exit 1
 fi
 
 printf "\033[1mTrulana MCP Verification Gate\033[0m\n"
-printf "\033[2mBinary: %s (%s)\033[0m\n" "$SOVEREIGN_BIN" "$BUILD_TYPE"
+printf "\033[2mBinary: %s (%s)\033[0m\n" "$TRULANA_BIN" "$BUILD_TYPE"
 
 # ── Start MCP process ────────────────────────────────────────────
 
 FIFO=$(mktemp -u)
 STDOUT_LOG=$(mktemp)
 mkfifo "$FIFO"
-TRULANA_MCP=1 "$SOVEREIGN_BIN" < "$FIFO" > "$STDOUT_LOG" 2>/dev/null &
+TRULANA_MCP=1 "$TRULANA_BIN" < "$FIFO" > "$STDOUT_LOG" 2>/dev/null &
 MCP_PID=$!
 exec 3>"$FIFO"
 sleep 3

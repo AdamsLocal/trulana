@@ -50,7 +50,7 @@ These are larger efforts that build on top of the MVP:
 - **Replace the mock NER processor** with an on-device quantized model (Llama 3 8B / Gemma 3 via llama.cpp or MLC LLM). The current `NerProcessor` in `lib/features/engine/stages/ner_processor.dart` is a deterministic mock with a swappable interface ready for this.
 - **Replace keyword vault with vector search.** The `ContextVault` in `lib/features/engine/context_vault.dart` uses hardcoded keyword matching. Production should use ObjectBox Vector Search or Chroma/Milvus Lite for semantic context retrieval.
 - **Web3 / Stripe payment settlement.** The `Ledger` table and `lease_offer` endpoint exist but there's no on-chain settlement (Solana/USDC) or Stripe Connect integration yet.
-- **MCP caller identity verification.** Currently any local process can start an MCP session by invoking the binary with `SOVEREIGN_MCP=1`. Consider adding cryptographic verification of the calling process identity.
+- **MCP caller identity verification.** Currently any local process can start an MCP session by invoking the binary with `TRULANA_MCP=1`. Consider adding cryptographic verification of the calling process identity.
 
 ## Development setup
 

@@ -25,7 +25,7 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 - Database: SQLite encrypted via sqflite_sqlcipher (AES-256)
 - Key storage: macOS Keychain via flutter_secure_storage (Secure Enclave backed)
 - REST API: shelf HTTP server bound to 127.0.0.1:8432 (localhost only)
-- MCP: stdio JSON-RPC adapter triggered via SOVEREIGN_MCP=1 environment variable
+- MCP: stdio JSON-RPC adapter triggered via TRULANA_MCP=1 environment variable
 - Auth: Bearer tokens, 15-minute TTL, in-memory (don't survive restart)
 - Rate limiting: 60 requests/minute per agent (REST only, MCP pending)
 

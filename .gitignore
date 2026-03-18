@@ -65,3 +65,5 @@ trulana-test/
 PRD.md
 CHANGELOG.md
 PRIVACY_POLICY.md
+.dart_tool/
+CONTRIBUTING.md
