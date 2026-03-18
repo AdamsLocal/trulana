@@ -684,6 +684,75 @@ footer {
 
 footer a { color: var(--text-dim); text-decoration: none; }
 footer a:hover { color: var(--accent); }
+
+/* ── MOBILE (640px) ──────────────────────────────────────── */
+
+@media (max-width: 640px) {
+
+  /* Global spacing */
+  section { padding: 64px 16px; }
+  .container, .container-wide { padding: 0 16px; }
+
+  /* Hero */
+  .hero { padding: 80px 0 48px; }
+  .hero-logo { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 16px; }
+  .hero-wordmark { font-size: 20px; margin-bottom: 12px; }
+  .hero-headline { font-size: 28px; line-height: 1.2; margin-bottom: 12px; }
+  .hero .sub { font-size: 15px; max-width: 100%; margin-bottom: 12px; }
+  .hero-proof { font-size: 0.65rem; margin-top: 16px; }
+  .hero-badge { font-size: 0.6rem; padding: 4px 10px; margin-bottom: 20px; }
+
+  /* CTAs full-width stacked */
+  .cta-row { flex-direction: column; gap: 10px; }
+  .cta-row a, .cta-row button { width: 100%; text-align: center; }
+
+  /* Buttons tap targets */
+  .btn { padding: 14px 18px; font-size: 15px; }
+
+  /* Trust pills wrap tighter */
+  .trust-row { gap: 8px; margin-top: 20px; }
+  .trust-pill { font-size: 0.6rem; padding: 4px 10px; }
+
+  /* Video */
+  .video-section { padding: 0 0 24px; }
+  .video-wrapper { padding: 0 16px; }
+
+  /* Demo container */
+  .demo-container { height: auto; min-height: auto; padding: 0 16px; gap: 12px; }
+  .demo-panel { border-radius: 12px; }
+  .demo-terminal { min-height: 320px; }
+  .term-output { font-size: 11px; padding: 10px 12px; }
+  .term-next-btn { width: 100%; padding: 12px; }
+  .term-presets { gap: 6px; }
+  .term-presets button { padding: 6px 10px; font-size: 0.6rem; }
+  .term-input-row input { font-size: 13px; }
+
+  /* Cards */
+  .problem-card, .audience-card { padding: 20px; border-radius: 12px; }
+  .problem-grid { gap: 12px; margin-top: 24px; }
+  .audience-grid { gap: 12px; margin-top: 24px; }
+
+  /* Steps */
+  .steps { margin-top: 24px; }
+  .step { padding: 16px 0; gap: 12px; }
+
+  /* Status */
+  .status-list { gap: 6px; }
+  .status-item { font-size: 13px; }
+  .install-bar { font-size: 11px; padding: 10px 12px; max-width: 100%; }
+
+  /* Final CTA */
+  .final-cta { padding: 80px 16px; }
+  .final-cta h2 { font-size: 24px; }
+  .partner-list { max-width: 100%; }
+  .partner-list li { font-size: 14px; }
+
+  /* Footer */
+  footer { padding: 24px 16px; font-size: 12px; }
+
+  /* Prevent horizontal scroll */
+  body { overflow-x: hidden; }
+}
 </style>
 </head>
 <body>
