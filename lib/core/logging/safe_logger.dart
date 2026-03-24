@@ -71,6 +71,14 @@ class SafeLogger {
         ' | vault_hits=$vaultHits');
   }
 
+  static void preferenceUpdated({required String key}) {
+    _log('preference/set | key=$key');
+  }
+
+  static void preferenceDeleted({required String key}) {
+    _log('preference/delete | key=$key');
+  }
+
   static void contextQueryRejected({
     required int statusCode,
     String? agentId,

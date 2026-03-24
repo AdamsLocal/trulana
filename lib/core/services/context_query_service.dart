@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import 'package:trulana/core/database/database_helper.dart';
 import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/core/services/preferences_service.dart';
 import 'package:trulana/features/engine/auto_redact_engine.dart';
 import 'package:trulana/features/engine/context_vault.dart';
 import 'package:trulana/features/engine/models/redaction_result.dart';
@@ -97,8 +98,12 @@ class ContextQueryService {
         userConfig?.privacyLevel ?? PrivacyLevel.strict;
 
     final List<String> vaultHits = ContextVault.instance.query(query);
+    final List<String> prefHits =
+        await PreferencesService.instance.queryPreferences(query);
+
+    final List<String> allHits = <String>[...prefHits, ...vaultHits];
     final String rawContext =
-        vaultHits.isNotEmpty ? vaultHits.join(' ') : query;
+        allHits.isNotEmpty ? allHits.join(' ') : query;
 
     final AutoRedactEngine engine = AutoRedactEngine();
     final RedactionResult result = await engine.process(rawContext, level);
@@ -116,14 +121,14 @@ class ContextQueryService {
       agentId: token.agentId,
       privacyLevel: level.name,
       redactions: result.totalRedactions,
-      vaultHits: vaultHits.length,
+      vaultHits: allHits.length,
     );
 
     return ContextQueryResult.success(
       sanitizedText: result.sanitizedText,
       privacyLevel: level.name,
       redactionsApplied: result.totalRedactions,
-      vaultHits: vaultHits.length,
+      vaultHits: allHits.length,
     );
   }
 }

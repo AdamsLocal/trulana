@@ -6,7 +6,7 @@
 class Schema {
   Schema._();
 
-  static const int version = 1;
+  static const int version = 2;
   static const String databaseName = 'trulana.db';
 
   static const String createUserConfig = '''
@@ -47,6 +47,17 @@ class Schema {
       data_leased TEXT NOT NULL,
       amount_usd  REAL NOT NULL,
       timestamp   TEXT NOT NULL
+    )
+  ''';
+
+  static const String createPreferences = '''
+    CREATE TABLE preferences (
+      id          TEXT PRIMARY KEY,
+      key         TEXT NOT NULL UNIQUE,
+      value       TEXT NOT NULL,
+      tags        TEXT,
+      created_at  TEXT NOT NULL,
+      updated_at  TEXT NOT NULL
     )
   ''';
 }

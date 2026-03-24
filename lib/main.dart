@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:trulana/core/database/database_helper.dart';
 import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/network/local_server.dart';
+import 'package:trulana/core/services/preferences_service.dart';
 import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/core/router/app_router.dart';
 import 'package:trulana/mcp/mcp_server.dart';
@@ -16,6 +17,7 @@ import 'package:trulana/models/models.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _seedDefaultConfig();
+  await _seedDefaultPreferences();
 
   final bool mcpMode =
       Platform.environment['TRULANA_MCP'] == '1' ||
@@ -42,6 +44,25 @@ Future<void> _seedDefaultConfig() async {
     privacyLevel: PrivacyLevel.strict,
     vaultStatus: DateTime.now(),
   ));
+}
+
+/// Seeds demo preferences on first launch. Skipped if any exist.
+Future<void> _seedDefaultPreferences() async {
+  final List<Preference> existing =
+      await PreferencesService.instance.getAllPreferences();
+  if (existing.isNotEmpty) return;
+
+  const Map<String, String> seeds = <String, String>{
+    'preferred_coffee': 'Philz',
+    'response_style': 'concise',
+    'commute': 'Caltrain from San Francisco',
+    'workout_time': '6:30 AM',
+    'work_style': 'deep focus mornings, meetings after 2 PM',
+  };
+
+  for (final MapEntry<String, String> entry in seeds.entries) {
+    await PreferencesService.instance.setPreference(entry.key, entry.value);
+  }
 }
 
 /// App shell that wires Riverpod state to a GoRouter-driven

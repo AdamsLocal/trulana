@@ -39,6 +39,7 @@ class DatabaseHelper {
         await db.execute(Schema.createAuthorizedAgents);
         await db.execute(Schema.createAuditLog);
         await db.execute(Schema.createLedger);
+        await db.execute(Schema.createPreferences);
       },
       onUpgrade: Migrations.migrate,
     );
@@ -316,6 +317,65 @@ class DatabaseHelper {
       return rows.map(LedgerEntry.fromMap).toList();
     } catch (e) {
       return [];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Preferences CRUD
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertPreference(Preference pref) async {
+    try {
+      final Database db = await database;
+      return await db.insert(
+        'preferences',
+        pref.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  Future<Preference?> getPreferenceByKey(String key) async {
+    try {
+      final Database db = await database;
+      final List<Map<String, dynamic>> rows = await db.query(
+        'preferences',
+        where: 'key = ?',
+        whereArgs: [key],
+        limit: 1,
+      );
+      if (rows.isEmpty) return null;
+      return Preference.fromMap(rows.first);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<List<Preference>> getAllPreferences() async {
+    try {
+      final Database db = await database;
+      final List<Map<String, dynamic>> rows = await db.query(
+        'preferences',
+        orderBy: 'updated_at DESC',
+      );
+      return rows.map(Preference.fromMap).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<int> deletePreference(String key) async {
+    try {
+      final Database db = await database;
+      return await db.delete(
+        'preferences',
+        where: 'key = ?',
+        whereArgs: [key],
+      );
+    } catch (e) {
+      return -1;
     }
   }
 
