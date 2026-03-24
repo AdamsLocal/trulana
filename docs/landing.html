@@ -9,14 +9,14 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (location.protocol !== "https:" && location.protocol !== "file:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") { location.replace("https:" + location.href.substring(location.protocol.length)); }</script>
 
-<meta name="description" content="Trulana is a local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.">
+<meta name="description" content="Trulana is a local-first private context server. Apps query local context and structured preferences over REST or MCP. Only redacted answers leave the device. AI gets more useful over time without owning your data.">
 <meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, redaction, personal data, macOS">
 <meta name="author" content="Adam at AdamsLocal">
 <link rel="canonical" href="https://trulana.com/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Trulana — Give AI context without giving it your data">
-<meta property="og:description" content="A local-first private context server. Apps query over REST or MCP, and only redacted answers leave the device.">
+<meta property="og:description" content="A local-first private context server with structured preferences. Apps query over REST or MCP. Only redacted answers leave the device. AI gets more useful over time.">
 <meta property="og:url" content="https://trulana.com/">
 <meta property="og:image" content="https://trulana.com/trulana-og.png">
 <meta property="og:image:width" content="1376">
@@ -39,12 +39,12 @@
   "name": "Trulana",
   "alternateName": "Trulana Context Server",
   "headline": "Give AI context without giving it your data",
-  "description": "A local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.",
+  "description": "A local-first private context server with structured preferences. Apps query local context over REST or MCP, and only redacted answers leave the device. AI gets more useful over time without owning your data.",
   "applicationCategory": "DeveloperApplication",
   "applicationSubCategory": "Privacy Tools",
   "operatingSystem": "macOS",
   "softwareVersion": "1.0.0-mvp",
-  "releaseNotes": "macOS MVP with REST API on localhost:8432, MCP stdio adapter for Claude/Cursor, 3-stage Auto-Redact Engine, encrypted database, token-based auth, and audit logging. 117 tests passing.",
+  "releaseNotes": "macOS MVP with REST API on localhost:8432, MCP stdio adapter for Claude/Cursor, 3-stage Auto-Redact Engine, structured preferences, encrypted database, token-based auth, and audit logging. 134 tests passing.",
   "url": "https://trulana.com/",
   "downloadUrl": "https://github.com/AdamsLocal/trulana",
   "codeRepository": "https://github.com/AdamsLocal/trulana",
@@ -59,8 +59,9 @@
     "3-stage PII auto-redaction (regex, NER, privacy-level generalization)",
     "Token-based auth with 15-minute TTL",
     "Encrypted audit log for every request",
+    "Structured preferences for compounding local context",
     "Three privacy levels: Standard, Strict, Paranoid",
-    "117 automated tests"
+    "134 automated tests"
   ],
   "author": {
     "@type": "Person",
@@ -785,16 +786,16 @@ footer a:hover { color: var(--accent); }
     <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
     <h2 class="hero-headline">Give AI context &mdash;<br>without giving it <em>your data.</em></h2>
-    <p class="sub">Trulana is a local-first private context server. Apps query local context over REST or MCP, and only redacted answers leave the device.</p>
-    <div class="hero-proof"><span>REST + MCP verified</span> &middot; <span>117 tests passing</span> &middot; <span>Runs locally</span></div>
+    <p class="sub">Trulana is a local-first private context server. Apps query your context and preferences over REST or MCP &mdash; only redacted answers leave the device. AI gets more useful over time without owning your data.</p>
+    <div class="hero-proof"><span>REST + MCP verified</span> &middot; <span>134 tests passing</span> &middot; <span>Runs locally</span></div>
     <div class="cta-row">
       <a href="#example" class="btn btn-primary">Run the demo</a>
       <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost" target="_blank">View source</a>
     </div>
     <div class="trust-row">
       <span class="trust-pill">Encrypted local vault</span>
-      <span class="trust-pill">Localhost-only REST</span>
-      <span class="trust-pill">MCP support</span>
+      <span class="trust-pill">Structured preferences</span>
+      <span class="trust-pill">MCP + REST access</span>
       <span class="trust-pill">Audit log + redaction</span>
     </div>
   </div>
@@ -815,7 +816,7 @@ footer a:hover { color: var(--accent); }
   <div class="container-wide">
     <div class="section-label">Interactive demo</div>
     <h2>See the full flow in under a minute.</h2>
-    <p>Authenticate an agent, run a live query, watch redactions apply, and see the audit log update in real time.</p>
+    <p>Authenticate an agent, run a live query, watch preferences and vault context get matched, then see redactions and audit logging happen in real time.</p>
   </div>
   <div class="demo-container">
     <div class="demo-panel demo-dashboard">
@@ -893,8 +894,8 @@ footer a:hover { color: var(--accent); }
   <div class="container">
     <div class="section-label">The fix</div>
     <h2>Apps get answers, not your data.</h2>
-    <p>Trulana stores your personal context in an <strong>encrypted local vault</strong>. When an app needs to know something about you, it queries Trulana &mdash; and gets back a <strong>filtered, redacted response</strong>. Your name, email, location, and schedule never leave the device in raw form.</p>
-    <p>The app gets useful context. You keep control of the source material.</p>
+    <p>Trulana stores your personal context and <strong>structured preferences</strong> in an <strong>encrypted local vault</strong>. When an app needs to know something about you, it queries Trulana &mdash; and gets back a <strong>filtered, redacted response</strong>. Useful context accumulates over time, but the raw details never leave the device.</p>
+    <p>The app gets better answers the longer you use it. You keep control of the source material.</p>
   </div>
 </section>
 
@@ -906,9 +907,9 @@ footer a:hover { color: var(--accent); }
     <div class="steps">
       <div class="step"><div class="step-num">01</div><div class="step-text"><h3>App requests access</h3><p>An app sends an auth request with its name, ID, and stated intent.</p></div></div>
       <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Trulana issues a scoped token</h3><p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart.</p></div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>App queries your context</h3><p>"What's their morning routine?" &mdash; sent to localhost, never to the internet.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>App queries your local context</h3><p>Trulana matches the request against your encrypted vault and structured preferences &mdash; on-device, before anything is returned.</p></div></div>
       <div class="step"><div class="step-num">04</div><div class="step-text"><h3>The redaction engine runs</h3><p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations &mdash; all caught.</p></div></div>
-      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful context with all identifying details stripped. The raw data never moved.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful, personalized context with identifying details stripped. The raw data never moved.</p></div></div>
     </div>
   </div>
 </section>
@@ -921,7 +922,7 @@ footer a:hover { color: var(--accent); }
     <div class="audience-grid">
       <div class="audience-card">
         <h3>Developers building AI apps</h3>
-        <p>Need user context without storage liability? Query Trulana via REST or MCP. Get personalization without the GDPR headache.</p>
+        <p>Need user context without storage liability? Query Trulana via REST or MCP and let useful preferences accumulate locally &mdash; without turning your app into a surveillance database.</p>
       </div>
       <div class="audience-card">
         <h3>Consultants &amp; professionals</h3>
@@ -942,6 +943,7 @@ footer a:hover { color: var(--accent); }
     <h2>The current model doesn't scale.</h2>
     <p>Every AI app that stores personal context becomes a data liability. One breach, one policy change, one acquisition &mdash; and your users' data is somewhere it shouldn't be.</p>
     <p>Trulana eliminates this by <strong>never collecting the data in the first place</strong>. The context lives on the user's machine. Your app queries it. The redaction engine enforces the boundary. You get personalization without the storage, the GDPR headache, or the trust problem.</p>
+    <p>Users should be able to build a real relationship with AI over time &mdash; without handing that relationship to a cloud provider.</p>
   </div>
 </section>
 
@@ -960,8 +962,9 @@ footer a:hover { color: var(--accent); }
       <div class="status-item"><div class="status-dot live"></div>MCP integration (works in Cursor today)</div>
       <div class="status-item"><div class="status-dot live"></div>Token-based auth with 15-minute TTL</div>
       <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction pipeline</div>
+      <div class="status-item"><div class="status-dot live"></div>Structured preferences for compounding local context</div>
       <div class="status-item"><div class="status-dot live"></div>Encrypted audit log for every query</div>
-      <div class="status-item"><div class="status-dot live"></div>117 tests passing, 38 REST + 18 MCP checks</div>
+      <div class="status-item"><div class="status-dot live"></div>134 tests passing, 38 REST + 18 MCP checks</div>
       <div class="status-item"><div class="status-dot soon"></div>Scope enforcement (in progress)</div>
       <div class="status-item"><div class="status-dot soon"></div>On-device LLM for NER (next phase)</div>
     </div>
@@ -972,7 +975,7 @@ footer a:hover { color: var(--accent); }
 <div class="final-cta" id="partner">
   <div class="container">
     <h2>Try the architecture. Then decide if you want to build on it.</h2>
-    <p>I'm looking for a few macOS design partners building AI workflows that need local-first context and redacted outputs.</p>
+    <p>I'm looking for a few macOS design partners building AI workflows that need persistent local context, structured preferences, and redacted outputs.</p>
     <ul class="partner-list">
       <li>integrate local-first context into their product</li>
       <li>avoid storing sensitive user data</li>
