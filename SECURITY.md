@@ -102,14 +102,14 @@ Both REST and MCP paths write audit entries through the same `AuthService` and `
 
 Before distributing the Trulana binary:
 
-- [ ] **Code signing**: Sign the `.app` bundle with a valid Apple Developer ID. Unsigned binaries will be blocked by Gatekeeper.
-- [ ] **Hardened runtime**: Enable hardened runtime in Xcode build settings. Required for notarization and prevents code injection.
-- [ ] **Notarization**: Submit the signed binary to Apple's notarization service via `xcrun notarytool`. This is required for macOS 10.15+ distribution outside the App Store.
-- [ ] **Entitlements review**: Verify that only required entitlements are present:
+- [x] **Code signing**: Sign the `.app` bundle with a valid Apple Developer ID. Unsigned binaries will be blocked by Gatekeeper.
+- [x] **Hardened runtime**: Enable hardened runtime in Xcode build settings. Required for notarization and prevents code injection.
+- [x] **Notarization**: Submit the signed binary to Apple's notarization service via `xcrun notarytool`. This is required for macOS 10.15+ distribution outside the App Store.
+- [x] **Entitlements review**: Verify that only required entitlements are present:
   - `com.apple.security.app-sandbox` — required
   - `com.apple.security.network.server` — required for localhost binding
   - `com.apple.security.cs.allow-jit` — required for Dart VM (debug only)
-- [ ] **Do not distribute unsigned debug builds.** Debug builds emit the Dart VM service URL to stdout, include assert-enabled code paths (e.g. `debug_ttl_seconds`), and are not hardened.
+- [x] **Do not distribute unsigned debug builds.** Debug builds emit the Dart VM service URL to stdout, include assert-enabled code paths (e.g. `debug_ttl_seconds`), and are not hardened.
 
 ## Acceptable Risks (MVP)
 
