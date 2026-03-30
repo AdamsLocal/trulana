@@ -7,6 +7,7 @@ import 'package:trulana/core/ui/ui.dart';
 import 'widgets/vault_status_card.dart';
 import 'widgets/connections_section.dart';
 import 'widgets/monetization_card.dart';
+import 'widgets/privacy_sandbox_card.dart';
 
 /// Root screen for the Trulana command center.
 ///
@@ -116,9 +117,17 @@ class DashboardScreen extends ConsumerWidget {
 
                 const SizedBox(height: 28),
 
-                // — Earnings & pending lease requests
+                // — Privacy sandbox
                 AnimatedListItem(
                   index: 5,
+                  child: const PrivacySandboxCard(),
+                ),
+
+                const SizedBox(height: 28),
+
+                // — Earnings & pending lease requests
+                AnimatedListItem(
+                  index: 6,
                   child: const MonetizationCard(),
                 ),
 
