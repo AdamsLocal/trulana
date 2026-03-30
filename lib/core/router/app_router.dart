@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:trulana/features/dashboard/dashboard_screen.dart';
 import 'package:trulana/features/onboarding/onboarding_screen.dart';
+import 'package:trulana/features/preferences/preferences_screen.dart';
 import 'package:trulana/providers/user_config_provider.dart';
 
 /// Central [GoRouter] instance wired to Riverpod so route guards
@@ -41,6 +42,11 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
         path: '/dashboard',
         builder: (BuildContext context, GoRouterState state) =>
             const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/preferences',
+        builder: (BuildContext context, GoRouterState state) =>
+            const PreferencesScreen(),
       ),
       GoRoute(
         path: '/gatekeeper',
