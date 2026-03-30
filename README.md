@@ -140,4 +140,4 @@ flutter test test/integration/      # full service loop E2E
 
 ## License
 
-MIT License. Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
+Business Source License 1.1 Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
