@@ -27,18 +27,8 @@ jobs:
       - name: Run tests
         run: flutter test --coverage
 
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        include:
-          - os: macos-latest
-            target: macos
-          - os: ubuntu-latest
-            target: linux
-          - os: windows-latest
-            target: windows
+  build-macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -48,14 +38,8 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
-
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build
-        run: flutter build ${{ matrix.target }} --release
+      - name: Build macOS
+        run: flutter build macos --release
