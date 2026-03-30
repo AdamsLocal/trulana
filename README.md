@@ -1,8 +1,25 @@
-# Trulana
+# Trulana™
 
-**Your device is the API. Apps get answers, not your data.**
+> **Your device is the API. Apps get answers, not your data.**
 
-Trulana turns your Mac into a private context server for AI tools. Apps query over localhost or MCP — every response is redacted on-device before it leaves.
+Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
+
+![Tests](https://img.shields.io/badge/tests-117%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
+
+---
+
+## How it works — six steps, zero leaks
+
+| Step | What happens |
+|------|-------------|
+| 01 · App requests access | Via REST or MCP stdio adapter |
+| 02 · Token issued | 15-min TTL · in-memory only · never persisted |
+| 03 · Context queried | App queries your local vault over localhost |
+| **04 · Auto-Redact Engine** | **3-stage PII pipeline fires on every response** |
+| 05 · Sanitized data returned | Answers only — no raw context ever leaves |
+| 06 · Audit logged | Encrypted trail · every request · tamper-evident |
+
+---
 
 ## Quickstart (macOS)
 
@@ -13,24 +30,17 @@ flutter pub get
 flutter run -d macos
 ```
 
-Then in another terminal:
+Then in a second terminal:
 
 ```bash
 ./scripts/demo_client.sh
 ```
 
-## What it does
+---
 
-1. An app requests access via REST or MCP
-2. Trulana issues a short-lived token (15-min TTL, in-memory)
-3. The app queries your local context
-4. The response passes through a 3-stage redaction pipeline (regex PII stripping, entity recognition, privacy-level generalization)
-5. Only sanitized data is returned
-6. Every request is logged to an encrypted audit trail
+## MCP Integration (Claude / Cursor)
 
-## MCP Integration (Cursor / Claude)
-
-Build and configure:
+Build release:
 
 ```bash
 flutter build macos --release
@@ -43,71 +53,91 @@ Add to your MCP client config:
   "mcpServers": {
     "trulana": {
       "command": "/absolute/path/to/trulana.app/Contents/MacOS/trulana",
-      "env": {"TRULANA_MCP": "1"}
+      "env": { "TRULANA_MCP": "1" }
     }
   }
 }
 ```
 
-Two tools are exposed:
+Two tools exposed:
+
 - `sovereign_request_access` — request a scoped access token
-- `sovereign_query_context` — query context (response is automatically redacted)
+- `sovereign_query_context` — query context vault (response automatically redacted)
+
+---
 
 ## REST API
 
-When running, Trulana serves on `localhost:8432`:
+Server binds to `localhost:8432`. Non-loopback connections rejected.
 
 | Endpoint | Method | Auth | Purpose |
 |----------|--------|------|---------|
 | `/api/v1/health` | GET | None | Server health check |
-| `/api/v1/auth/request` | POST | None | Agent handshake, returns access token |
-| `/api/v1/context/query` | POST | Bearer token | Query the vault, response redacted by Auto-Redact Engine |
+| `/api/v1/auth/request` | POST | None | Agent handshake · returns access token |
+| `/api/v1/context/query` | POST | Bearer token | Query vault · response redacted by Auto-Redact Engine |
+
+---
 
 ## Architecture
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Flutter (Dart 3.x) |
+| Framework | Flutter · Dart 3.x · every OS |
 | Database | SQLite encrypted via `sqflite_sqlcipher` |
-| Key Storage | macOS Keychain via `flutter_secure_storage` |
-| Biometrics | `local_auth` (Touch ID) |
-| Local Server | `shelf` on localhost |
-| MCP | stdio adapter |
+| Key storage | macOS Keychain · Secure Enclave backed |
+| Biometrics | `local_auth` · Touch ID · no passwords · no accounts |
+| Local server | `shelf` · localhost only · rejects non-loopback |
+| MCP | stdio adapter · works with Claude + Cursor today |
 | State | Riverpod |
+
+---
+
+## Privacy & Security
+
+**Zero cloud storage** — All data encrypted locally. Keys in OS Keychain, Secure Enclave backed. Nothing leaves the device unredacted.
+
+**Biometric gate** — Touch ID. No passwords, no accounts, no recovery email.
+
+**Auto-Redact Engine** — 3-stage pipeline on every outbound response: regex PII stripping → entity recognition → privacy-level generalization.
+
+**TTL tokens** — 15-minute expiry. In-memory only. Don't survive a restart. Scope recorded per token.
+
+**Localhost only** — Server binds to `127.0.0.1`. Non-loopback connections rejected at the socket level.
+
+**Encrypted audit trail** — Every request logged. Tamper-evident. You own the log and the key.
+
+See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
+
+---
 
 ## Tests
 
 ```bash
-flutter test                       # all 117 tests
-flutter test test/engine/          # redaction pipeline
-flutter test test/security/        # log hygiene + auth consistency
-flutter test test/integration/     # full service loop E2E
+flutter test                        # all 117 tests
+flutter test test/engine/           # redaction pipeline
+flutter test test/security/         # log hygiene + auth consistency
+flutter test test/integration/      # full service loop E2E
 ```
 
-## Privacy & Security
+---
 
-- **Zero cloud storage.** All data encrypted locally. Keys in macOS Keychain (Secure Enclave backed).
-- **Biometric gate.** Touch ID, no passwords, no accounts.
-- **Auto-Redact Engine.** 3-stage PII stripping on every outbound response.
-- **Localhost only.** Server binds to 127.0.0.1, rejects non-loopback connections.
-- **TTL tokens.** 15-minute expiry, in-memory only, don't survive restart.
-- **Scope recording.** Scopes are recorded per token (enforcement in progress; redaction always applies).
-
-See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
-
-## Current Limits
+## Current limits
 
 - Scope enforcement records scopes but does not yet gate queries by scope
-- MCP uses local-process trust model (no cryptographic caller verification)
+- MCP uses local-process trust model — no cryptographic caller verification yet
 - MCP per-agent rate limiting not yet enforced
-- NER uses keyword dictionaries (on-device LLM is a future phase)
+- NER uses keyword dictionaries — on-device LLM redaction is a future phase
+
+---
 
 ## Prerequisites
 
-- macOS
+- macOS (other platforms via Flutter)
 - Flutter SDK >= 3.11.1
 - Xcode 16+
 
+---
+
 ## License
 
-MIT License. Copyright (c) 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
+MIT License. Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
