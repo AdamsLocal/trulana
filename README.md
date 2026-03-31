@@ -4,7 +4,7 @@
 
 Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
 
-![Tests](https://img.shields.io/badge/tests-117%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
+![Tests](https://img.shields.io/badge/tests-134%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
 
 ---
 
@@ -113,10 +113,10 @@ See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
 ## Tests
 
 ```bash
-flutter test                        # all 117 tests
-flutter test test/engine/           # redaction pipeline
-flutter test test/security/         # log hygiene + auth consistency
-flutter test test/integration/      # full service loop E2E
+flutter test                        # all 134 tests
+flutter test test/engine/           # redaction pipeline (89 tests)
+flutter test test/security/         # log hygiene + auth consistency (11 tests)
+flutter test test/integration/      # full service loop + preferences E2E (31 tests)
 ```
 
 ---

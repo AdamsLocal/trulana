@@ -63,6 +63,15 @@ class ContextVault {
     ),
   ];
 
+  /// Number of vault entries available for querying.
+  int get entryCount => _entries.length;
+
+  /// Returns all raw (unredacted) vault entries for display views.
+  /// The caller must run results through [AutoRedactEngine] before display.
+  List<String> queryAll() {
+    return _entries.map((e) => e.raw).toList();
+  }
+
   /// Returns raw (unredacted) context matching the query keywords.
   /// The caller is responsible for running the result through
   /// [AutoRedactEngine] before it leaves the device.

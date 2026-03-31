@@ -6,7 +6,7 @@ Trulana is a working macOS MVP with two verified transports:
 
 - **REST** — 38 verification checks passing (`scripts/demo_client.sh`)
 - **MCP** — 18 verification checks passing (`scripts/test_mcp.sh`)
-- **117 unit + integration tests** passing (`flutter test`)
+- **134 unit + integration tests** passing (`flutter test`)
 
 The full auth → token → vault query → redact → response → audit log loop works end-to-end on both transports. The three items below are the documented gaps between the current MVP and a production-ready release.
 
@@ -38,7 +38,7 @@ These are ordered by impact. Each one maps directly to a "Current Limits" entry 
 **Why it matters:** The dashboard shows pending lease requests and the backend logs them, but the two action buttons in the UI are stubbed out.
 
 **Where to start:**
-- `lib/features/dashboard/widgets/monetization_card.dart` — lines 199 and 207 have the TODO comments
+- `lib/features/dashboard/widgets/monetization_card.dart` — the Approve/Deny buttons have TODO comments
 - Wire the "Approve" button to accept the lease and record it in the Ledger table
 - Wire the "Deny" button to reject the lease and log the denial in the Audit Log
 - Add tests to verify the approve/deny flow updates the database correctly
@@ -58,7 +58,7 @@ These are larger efforts that build on top of the MVP:
 git clone https://github.com/AdamsLocal/trulana.git
 cd trulana
 flutter pub get
-flutter test                    # run all 117 tests
+flutter test                    # run all 134 tests
 flutter test --reporter expanded  # verbose output
 ```
 
@@ -88,10 +88,10 @@ flutter build macos --release
 
 ```
 test/
-├── engine/              # 72 tests — Auto-Redact pipeline (regex, NER, privacy filter, full pipeline)
+├── engine/              # 89 tests — Auto-Redact pipeline (regex, NER, privacy filter, full pipeline, vault)
 ├── security/            # 11 tests — log hygiene, auth consistency across transports
-├── integration/         # 14 tests — full service loop E2E (auth → query → redact → audit)
-└── widget_test.dart     # widget smoke tests
+├── integration/         # 31 tests — full service loop E2E + preference model (auth → query → redact → audit)
+└── widget_test.dart     # 3 tests — model round-trip smoke tests
 ```
 
 When adding a new feature, add tests in the matching directory. Engine changes go in `test/engine/`, auth/security changes go in `test/security/`, and end-to-end flows go in `test/integration/`.

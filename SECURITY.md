@@ -126,8 +126,9 @@ Before distributing the Trulana binary:
 
 | Area | Tests | What Is Asserted |
 |---|---|---|
-| Redaction pipeline | 72 unit tests | All PII types stripped at all privacy levels |
+| Redaction pipeline | 89 unit tests | All PII types stripped at all privacy levels |
 | REST API | 38 integration checks | Auth, rejection, redaction, PII leak detection, token expiry |
 | MCP protocol | 18 checks (release) | Stdout cleanliness, tool discovery, auth, redaction, rejection |
+| Service loop + models | 31 integration tests | Full auth → query → redact → audit E2E + preference model |
 | Log hygiene | 6 tests | No tokens, PII, keys, or DB paths in log output |
 | Auth consistency | 5 tests | Singleton identity, identical validation across transports |
