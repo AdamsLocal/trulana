@@ -20,7 +20,7 @@ class PreferencesView extends ConsumerWidget {
 
     return Column(
       children: [
-        _header(),
+        _header(context),
         Expanded(
           child: prefsAsync.when(
             loading: () => const Center(
@@ -57,7 +57,7 @@ class PreferencesView extends ConsumerWidget {
     );
   }
 
-  Widget _header() {
+  Widget _header(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 14),
       decoration: const BoxDecoration(
@@ -71,17 +71,82 @@ class PreferencesView extends ConsumerWidget {
                   fontWeight: FontWeight.w600,
                   color: TrulanaColors.textPrimary)),
           const Spacer(),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0xFF2A8A84)),
-              color: TrulanaColors.primaryCyan.withValues(alpha: 0.1),
+          GestureDetector(
+            onTap: () => _showAddPreferenceDialog(context),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFF2A8A84)),
+                  color: TrulanaColors.primaryCyan.withValues(alpha: 0.1),
+                ),
+                child: Text('+ Add',
+                    style: TrulanaTheme.monoStyle.copyWith(
+                        fontSize: 10, color: TrulanaColors.primaryCyan)),
+              ),
             ),
-            child: Text('+ Add',
-                style: TrulanaTheme.monoStyle.copyWith(
-                    fontSize: 10, color: TrulanaColors.primaryCyan)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddPreferenceDialog(BuildContext context) {
+    final keyController = TextEditingController();
+    final valueController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0E0E1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: const BorderSide(color: Color(0xFF14142A)),
+        ),
+        title: Text('Add Preference',
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: TrulanaColors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: keyController,
+              style: TrulanaTheme.monoStyle
+                  .copyWith(fontSize: 13, color: TrulanaColors.textPrimary),
+              decoration: const InputDecoration(hintText: 'key'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: valueController,
+              style: const TextStyle(
+                  fontSize: 13, color: TrulanaColors.textPrimary),
+              decoration: const InputDecoration(hintText: 'value'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Cancel',
+                style: TextStyle(color: TrulanaColors.textTertiary)),
+          ),
+          TextButton(
+            onPressed: () async {
+              final key = keyController.text.trim();
+              final value = valueController.text.trim();
+              if (key.isNotEmpty && value.isNotEmpty) {
+                await PreferencesService.instance
+                    .setPreference(key, value);
+                if (ctx.mounted) Navigator.of(ctx).pop();
+              }
+            },
+            child: Text('Save',
+                style: TextStyle(color: TrulanaColors.primaryCyan)),
           ),
         ],
       ),

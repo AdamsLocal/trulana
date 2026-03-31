@@ -56,7 +56,7 @@ class ContextVaultView extends ConsumerWidget {
 
     return Column(
       children: [
-        _header(),
+        _header(context),
         Expanded(
           child: vaultAsync.when(
             loading: () => const Center(
@@ -93,7 +93,7 @@ class ContextVaultView extends ConsumerWidget {
     );
   }
 
-  Widget _header() {
+  Widget _header(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 14),
       decoration: const BoxDecoration(
@@ -107,17 +107,30 @@ class ContextVaultView extends ConsumerWidget {
                   fontWeight: FontWeight.w600,
                   color: TrulanaColors.textPrimary)),
           const Spacer(),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0xFF2A8A84)),
-              color: TrulanaColors.primaryCyan.withValues(alpha: 0.1),
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Context entry creation coming in a future release.'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFF2A8A84)),
+                  color: TrulanaColors.primaryCyan.withValues(alpha: 0.1),
+                ),
+                child: Text('+ Add Entry',
+                    style: TrulanaTheme.monoStyle.copyWith(
+                        fontSize: 10, color: TrulanaColors.primaryCyan)),
+              ),
             ),
-            child: Text('+ Add Entry',
-                style: TrulanaTheme.monoStyle.copyWith(
-                    fontSize: 10, color: TrulanaColors.primaryCyan)),
           ),
         ],
       ),

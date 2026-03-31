@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:trulana/core/database/database_helper.dart';
 import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/providers/providers.dart';
@@ -90,7 +91,17 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Export vault (encrypted)',
                         subtitle: 'Backup your context vault',
-                        trailing: _ActionButton(label: 'Export'),
+                        trailing: _ActionButton(
+                          label: 'Export',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Vault export coming in a future release.'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                       _SettingRow(
                         label: 'Wipe all data',
@@ -98,6 +109,7 @@ class SettingsView extends ConsumerWidget {
                         trailing: _ActionButton(
                           label: 'Wipe',
                           isDanger: true,
+                          onTap: () => _confirmWipe(context, ref),
                         ),
                       ),
                     ],
@@ -108,6 +120,50 @@ class SettingsView extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _confirmWipe(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0E0E1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: const BorderSide(color: Color(0xFF14142A)),
+        ),
+        title: const Text('Wipe all data?',
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: TrulanaColors.textPrimary)),
+        content: const Text(
+            'This will permanently destroy your vault, preferences, agents, and audit log. This cannot be undone.',
+            style: TextStyle(fontSize: 13, color: TrulanaColors.textSecondary)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Cancel',
+                style: TextStyle(color: TrulanaColors.textTertiary)),
+          ),
+          TextButton(
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteDatabase();
+              if (ctx.mounted) Navigator.of(ctx).pop();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('All data wiped. Restart the app.'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+            child: const Text('Wipe Everything',
+                style: TextStyle(color: Color(0xFFF05858))),
+          ),
+        ],
+      ),
     );
   }
 
@@ -313,30 +369,41 @@ class _PrivacyToggle extends StatelessWidget {
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.label, this.isDanger = false});
+  const _ActionButton({
+    required this.label,
+    this.isDanger = false,
+    this.onTap,
+  });
 
   final String label;
   final bool isDanger;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: isDanger
-              ? const Color(0xFFF05858).withValues(alpha: 0.3)
-              : TrulanaColors.surfaceLight,
-        ),
-      ),
-      child: Text(
-        label,
-        style: TrulanaTheme.monoStyle.copyWith(
-          fontSize: 10,
-          color: isDanger
-              ? const Color(0xFFF05858)
-              : TrulanaColors.textSecondary,
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isDanger
+                  ? const Color(0xFFF05858).withValues(alpha: 0.3)
+                  : TrulanaColors.surfaceLight,
+            ),
+          ),
+          child: Text(
+            label,
+            style: TrulanaTheme.monoStyle.copyWith(
+              fontSize: 10,
+              color: isDanger
+                  ? const Color(0xFFF05858)
+                  : TrulanaColors.textSecondary,
+            ),
+          ),
         ),
       ),
     );
