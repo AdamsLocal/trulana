@@ -63,6 +63,9 @@ class ContextVault {
     ),
   ];
 
+  /// Number of context entries in the vault.
+  int get entryCount => _entries.length;
+
   /// Returns raw (unredacted) context matching the query keywords.
   /// The caller is responsible for running the result through
   /// [AutoRedactEngine] before it leaves the device.

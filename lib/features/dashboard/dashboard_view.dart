@@ -3,8 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/features/engine/context_vault.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/providers/providers.dart';
+
+/// Exposes the number of entries in the in-memory [ContextVault].
+final _vaultEntryCountProvider = Provider<int>(
+  (ref) => ContextVault.instance.entryCount,
+);
 
 /// Dashboard view matching the desktop HTML mockup.
 ///
@@ -194,6 +200,7 @@ class _VaultStatusCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final agentsAsync = ref.watch(agentsProvider);
     final prefsAsync = ref.watch(preferencesProvider);
+    final int entryCount = ref.watch(_vaultEntryCountProvider);
 
     final int? agentCount = agentsAsync.valueOrNull?.length;
     final int? prefCount = prefsAsync.valueOrNull?.length;
@@ -222,8 +229,7 @@ class _VaultStatusCard extends ConsumerWidget {
       badgeColor: TrulanaColors.successGreen,
       child: Row(
         children: [
-          // Vault entries are stored in the in-memory ContextVault (6 entries).
-          const _StatColumn(value: '6', label: 'Entries'),
+          _StatColumn(value: '$entryCount', label: 'Entries'),
           _StatColumn(
             value: prefCount != null ? '$prefCount' : '—',
             label: 'Preferences',
@@ -418,18 +424,31 @@ class _ConnectedAgentsCard extends StatelessWidget {
                   ),
                 )
               : Column(
-                  children: agents.take(5).map((a) {
-                    final bool isLive = a.status == AgentStatus.active &&
-                        !a.expirationDate.isBefore(DateTime.now());
-                    return _AgentRow(
-                      name: a.agentName,
-                      scope: a.grantedScopes.isNotEmpty
-                          ? a.grantedScopes.first
-                          : 'none',
-                      ttl: _formatTtl(a),
-                      isLive: isLive,
-                    );
-                  }).toList(),
+                  children: [
+                    ...agents.take(5).map((a) {
+                      final bool isLive = a.status == AgentStatus.active &&
+                          !a.expirationDate.isBefore(DateTime.now());
+                      return _AgentRow(
+                        name: a.agentName,
+                        scope: a.grantedScopes.isNotEmpty
+                            ? a.grantedScopes.first
+                            : 'none',
+                        ttl: _formatTtl(a),
+                        isLive: isLive,
+                      );
+                    }),
+                    if (agents.length > 5)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          '+${agents.length - 5} more',
+                          style: TrulanaTheme.monoStyle.copyWith(
+                            fontSize: 10,
+                            color: TrulanaColors.textTertiary,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         );
       },

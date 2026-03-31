@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:trulana/core/database/database_helper.dart';
@@ -17,7 +18,8 @@ class PreferencesNotifier extends AsyncNotifier<List<Preference>> {
   Future<List<Preference>> build() async {
     try {
       return await _db.getAllPreferences();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Trulana] preferencesProvider: failed to load preferences: $e');
       return const <Preference>[];
     }
   }

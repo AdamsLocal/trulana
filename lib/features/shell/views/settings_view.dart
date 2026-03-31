@@ -56,15 +56,16 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Require Touch ID on launch',
                         subtitle: 'Biometric gate every session',
-                        trailing: settingsAsync.whenOrNull(
-                              data: (settings) => _ToggleSwitch(
-                                isOn: settings.requireBiometric,
-                                onChanged: (value) => ref
-                                    .read(appSettingsProvider.notifier)
-                                    .setRequireBiometric(value),
-                              ),
-                            ) ??
-                            const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.requireBiometric,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setRequireBiometric(value),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -74,28 +75,30 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Auto-start REST server',
                         subtitle: 'Binds to localhost:8432',
-                        trailing: settingsAsync.whenOrNull(
-                              data: (settings) => _ToggleSwitch(
-                                isOn: settings.autoStartServer,
-                                onChanged: (value) => ref
-                                    .read(appSettingsProvider.notifier)
-                                    .setAutoStartServer(value),
-                              ),
-                            ) ??
-                            const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.autoStartServer,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setAutoStartServer(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'MCP stdio adapter',
                         subtitle: 'For Claude Desktop / Cursor',
-                        trailing: settingsAsync.whenOrNull(
-                              data: (settings) => _ToggleSwitch(
-                                isOn: settings.mcpAdapter,
-                                onChanged: (value) => ref
-                                    .read(appSettingsProvider.notifier)
-                                    .setMcpAdapter(value),
-                              ),
-                            ) ??
-                            const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.mcpAdapter,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setMcpAdapter(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'Token TTL',
@@ -237,6 +240,29 @@ class _SettingRow extends StatelessWidget {
           ),
           trailing,
         ],
+      ),
+    );
+  }
+}
+
+/// Loading placeholder sized to match [_ToggleSwitch] while settings load.
+class _ToggleLoading extends StatelessWidget {
+  const _ToggleLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 36,
+      height: 20,
+      child: Center(
+        child: SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            color: TrulanaColors.primaryCyan,
+            strokeWidth: 1.5,
+          ),
+        ),
       ),
     );
   }

@@ -43,8 +43,14 @@ final appSettingsProvider =
 class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
   PreferencesService get _prefs => PreferencesService.instance;
 
-  static bool _parseBool(String? raw, {required bool defaultValue}) =>
-      raw == null ? defaultValue : raw == 'true';
+  static bool _parseBool(String? raw, {required bool defaultValue}) {
+    if (raw == null) return defaultValue;
+    return switch (raw.trim().toLowerCase()) {
+      'true' || '1' => true,
+      'false' || '0' => false,
+      _ => defaultValue,
+    };
+  }
 
   @override
   Future<AppSettings> build() async {
