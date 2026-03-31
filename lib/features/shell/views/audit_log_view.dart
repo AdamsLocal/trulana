@@ -1,76 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:trulana/core/theme/theme.dart';
+import 'package:trulana/models/models.dart';
+import 'package:trulana/providers/providers.dart';
 
-/// Audit Log view matching the desktop HTML mockup.
-///
-/// Detailed event log with timestamps, color-coded action types,
-/// and redaction details.
-class AuditLogView extends StatelessWidget {
+/// Audit Log view — live from auditProvider.
+class AuditLogView extends ConsumerWidget {
   const AuditLogView({super.key});
 
-  static const List<_AuditDisplayEntry> _entries = [
-    _AuditDisplayEntry(
-      time: '14:32:01',
-      action: 'redact',
-      detail:
-          'cursor-mcp "work schedule" \u2192 [PERSON] [EMAIL] [LOCATION] [TIME] stripped \u00b7 7 total',
-    ),
-    _AuditDisplayEntry(
-      time: '14:28:44',
-      action: 'auth',
-      detail:
-          'claude-desktop handshake \u00b7 scopes: [context.read] \u00b7 intent: "code assistance" \u00b7 ttl=900s',
-    ),
-    _AuditDisplayEntry(
-      time: '14:22:10',
-      action: 'deny',
-      detail: 'unknown-app \u00b7 no bearer token \u00b7 rejected',
-    ),
-    _AuditDisplayEntry(
-      time: '14:15:33',
-      action: 'redact',
-      detail:
-          'cursor-mcp "morning routine" \u2192 [PERSON] [EMAIL] [PHONE] [LOCATION] \u00d72 [ORG] \u00b7 12 total',
-    ),
-    _AuditDisplayEntry(
-      time: '14:15:30',
-      action: 'auth',
-      detail:
-          'cursor-mcp handshake \u00b7 scopes: [context.read] \u00b7 intent: "IDE context" \u00b7 ttl=900s',
-    ),
-    _AuditDisplayEntry(
-      time: '14:02:17',
-      action: 'redact',
-      detail:
-          'demo-agent "financial info" \u2192 [CARD] [SSN] [AMOUNT] \u00d72 \u00b7 9 total',
-    ),
-    _AuditDisplayEntry(
-      time: '13:58:01',
-      action: 'auth',
-      detail:
-          'demo-agent handshake \u00b7 scopes: [context.read] \u00b7 ttl=900s',
-    ),
-    _AuditDisplayEntry(
-      time: '13:45:00',
-      action: 'query',
-      detail:
-          'server started \u00b7 vault unlocked \u00b7 REST bound to 127.0.0.1:8432',
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auditAsync = ref.watch(auditProvider);
+
     return Column(
       children: [
         _header(),
         Expanded(
-          child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            itemCount: _entries.length,
-            itemBuilder: (context, index) =>
-                _AuditRow(entry: _entries[index]),
+          child: auditAsync.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: TrulanaColors.primaryCyan,
+                strokeWidth: 2,
+              ),
+            ),
+            error: (e, s) => Center(
+              child: Text('Failed to load audit log',
+                  style: TextStyle(color: TrulanaColors.dangerRed)),
+            ),
+            data: (entries) {
+              if (entries.isEmpty) {
+                return Center(
+                  child: Text('No audit entries yet',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: TrulanaColors.textTertiary)),
+                );
+              }
+              return ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 20),
+                itemCount: entries.length,
+                itemBuilder: (context, index) =>
+                    _AuditRow(entry: entries[index]),
+              );
+            },
           ),
         ),
       ],
@@ -85,28 +60,22 @@ class AuditLogView extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Text(
-            'Audit Log',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: TrulanaColors.textPrimary,
-            ),
-          ),
+          const Text('Audit Log',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: TrulanaColors.textPrimary)),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: TrulanaColors.surfaceLight),
             ),
-            child: Text(
-              'Export',
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 10,
-                color: TrulanaColors.textSecondary,
-              ),
-            ),
+            child: Text('Export',
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 10, color: TrulanaColors.textSecondary)),
           ),
         ],
       ),
@@ -117,55 +86,61 @@ class AuditLogView extends StatelessWidget {
 class _AuditRow extends StatelessWidget {
   const _AuditRow({required this.entry});
 
-  final _AuditDisplayEntry entry;
+  final AuditLogEntry entry;
 
-  Color get _actionColor => switch (entry.action) {
-        'auth' => TrulanaColors.primaryCyan,
-        'query' => TrulanaColors.successGreen,
-        'redact' => const Color(0xFFE0C85C),
-        'deny' => const Color(0xFFF05858),
-        _ => TrulanaColors.textTertiary,
+  String get _actionLabel => switch (entry.actionTaken) {
+        AuditAction.approved => 'auth',
+        AuditAction.blocked => 'deny',
+        AuditAction.redacted => 'redact',
+        AuditAction.negotiated => 'query',
       };
+
+  Color get _actionColor => switch (entry.actionTaken) {
+        AuditAction.approved => TrulanaColors.primaryCyan,
+        AuditAction.blocked => const Color(0xFFF05858),
+        AuditAction.redacted => const Color(0xFFE0C85C),
+        AuditAction.negotiated => TrulanaColors.successGreen,
+      };
+
+  String get _timeStr {
+    final t = entry.timestamp;
+    return '${t.hour.toString().padLeft(2, '0')}:'
+        '${t.minute.toString().padLeft(2, '0')}:'
+        '${t.second.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x05FFFFFF))),
-      ),
+          border: Border(bottom: BorderSide(color: Color(0x05FFFFFF)))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 65,
-            child: Text(
-              entry.time,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 11,
-                color: TrulanaColors.textTertiary,
-              ),
-            ),
-          ),
+              width: 65,
+              child: Text(_timeStr,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 11, color: TrulanaColors.textTertiary))),
           const SizedBox(width: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: _actionColor.withValues(alpha: 0.1),
-            ),
-            child: Text(
-              entry.action.toUpperCase(),
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 9,
-                letterSpacing: 0.3,
-                color: _actionColor,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(3),
+                color: _actionColor.withValues(alpha: 0.1)),
+            child: Text(_actionLabel.toUpperCase(),
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 9,
+                    letterSpacing: 0.3,
+                    color: _actionColor)),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _HighlightedDetail(text: entry.detail),
+            child: _HighlightedDetail(
+              text: '${entry.agentId} ${entry.requestIntent}',
+            ),
           ),
         ],
       ),
@@ -173,7 +148,7 @@ class _AuditRow extends StatelessWidget {
   }
 }
 
-/// Renders audit detail text with [REDACTED] tags highlighted.
+/// Renders audit detail text with [REDACTED] tags highlighted in cyan.
 class _HighlightedDetail extends StatelessWidget {
   const _HighlightedDetail({required this.text});
 
@@ -194,9 +169,7 @@ class _HighlightedDetail extends StatelessWidget {
     for (final match in pattern.allMatches(text)) {
       if (match.start > lastEnd) {
         spans.add(TextSpan(
-          text: text.substring(lastEnd, match.start),
-          style: baseStyle,
-        ));
+            text: text.substring(lastEnd, match.start), style: baseStyle));
       }
       spans.add(WidgetSpan(
         alignment: PlaceholderAlignment.baseline,
@@ -207,34 +180,19 @@ class _HighlightedDetail extends StatelessWidget {
             color: TrulanaColors.primaryCyan.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(2),
           ),
-          child: Text(
-            match.group(0)!,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 10,
-              color: TrulanaColors.primaryCyan,
-            ),
-          ),
+          child: Text(match.group(0)!,
+              style: TrulanaTheme.monoStyle.copyWith(
+                  fontSize: 10, color: TrulanaColors.primaryCyan)),
         ),
       ));
       lastEnd = match.end;
     }
 
     if (lastEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastEnd), style: baseStyle));
+      spans.add(
+          TextSpan(text: text.substring(lastEnd), style: baseStyle));
     }
 
     return RichText(text: TextSpan(children: spans));
   }
-}
-
-class _AuditDisplayEntry {
-  final String time;
-  final String action;
-  final String detail;
-
-  const _AuditDisplayEntry({
-    required this.time,
-    required this.action,
-    required this.detail,
-  });
 }

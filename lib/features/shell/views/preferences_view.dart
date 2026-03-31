@@ -5,29 +5,14 @@ import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/core/services/preferences_service.dart';
 import 'package:trulana/models/models.dart';
 
-/// Provider for loading all preferences.
+/// Provider for loading all preferences from the encrypted database.
 final _preferencesProvider = FutureProvider<List<Preference>>((ref) async {
   return PreferencesService.instance.getAllPreferences();
 });
 
-/// Structured Preferences view matching the desktop HTML mockup.
-///
-/// Displays key-value pairs with scope tags in a clean list layout.
+/// Structured Preferences view — live from the database.
 class PreferencesView extends ConsumerWidget {
   const PreferencesView({super.key});
-
-  /// Fallback display data matching the HTML mockup when DB preferences
-  /// don't have scope tags.
-  static const List<_PrefDisplay> _fallbackPrefs = [
-    _PrefDisplay(key: 'preferred_coffee', value: 'Philz, iced mint mojito', scope: 'routine'),
-    _PrefDisplay(key: 'response_style', value: 'concise', scope: 'work'),
-    _PrefDisplay(key: 'commute', value: 'Caltrain from San Francisco', scope: 'routine'),
-    _PrefDisplay(key: 'workout_time', value: '6:30 AM', scope: 'health'),
-    _PrefDisplay(key: 'work_style', value: 'deep focus mornings, meetings after 2 PM', scope: 'work'),
-    _PrefDisplay(key: 'diet', value: 'Dairy-free, Mediterranean', scope: 'health'),
-    _PrefDisplay(key: 'travel_airline', value: 'Delta, window, SkyMiles', scope: 'travel'),
-    _PrefDisplay(key: 'meeting_default', value: '25 min, agenda-first', scope: 'work'),
-  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,23 +34,21 @@ class PreferencesView extends ConsumerWidget {
                   style: TextStyle(color: TrulanaColors.dangerRed)),
             ),
             data: (prefs) {
-              // Use DB prefs if available, fall back to display data
-              final displayList = prefs.isNotEmpty
-                  ? prefs
-                      .map((p) => _PrefDisplay(
-                            key: p.key,
-                            value: p.value,
-                            scope: p.tags.isNotEmpty ? p.tags.first : 'general',
-                          ))
-                      .toList()
-                  : _fallbackPrefs;
-
+              if (prefs.isEmpty) {
+                return Center(
+                  child: Text('No preferences set',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: TrulanaColors.textTertiary)),
+                );
+              }
               return ListView.builder(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                itemCount: displayList.length,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 20),
+                itemCount: prefs.length,
                 itemBuilder: (context, index) =>
-                    _PrefRow(pref: displayList[index]),
+                    _PrefRow(pref: prefs[index]),
               );
             },
           ),
@@ -82,29 +65,23 @@ class PreferencesView extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Text(
-            'Structured Preferences',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: TrulanaColors.textPrimary,
-            ),
-          ),
+          const Text('Structured Preferences',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: TrulanaColors.textPrimary)),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: const Color(0xFF2A8A84)),
               color: TrulanaColors.primaryCyan.withValues(alpha: 0.1),
             ),
-            child: Text(
-              '+ Add',
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 10,
-                color: TrulanaColors.primaryCyan,
-              ),
-            ),
+            child: Text('+ Add',
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 10, color: TrulanaColors.primaryCyan)),
           ),
         ],
       ),
@@ -115,65 +92,52 @@ class PreferencesView extends ConsumerWidget {
 class _PrefRow extends StatelessWidget {
   const _PrefRow({required this.pref});
 
-  final _PrefDisplay pref;
+  final Preference pref;
 
   @override
   Widget build(BuildContext context) {
+    final scope = pref.tags.isNotEmpty ? pref.tags.first : _inferScope(pref.key);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x05FFFFFF))),
-      ),
+          border: Border(bottom: BorderSide(color: Color(0x05FFFFFF)))),
       child: Row(
         children: [
           SizedBox(
             width: 140,
-            child: Text(
-              pref.key,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 11,
-                color: const Color(0xFF2A8A84),
-              ),
-            ),
+            child: Text(pref.key,
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 11, color: const Color(0xFF2A8A84))),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              pref.value,
-              style: const TextStyle(
-                fontSize: 13,
-                color: TrulanaColors.textSecondary,
-              ),
-            ),
+            child: Text(pref.value,
+                style: const TextStyle(
+                    fontSize: 13, color: TrulanaColors.textSecondary)),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3),
               border: Border.all(color: const Color(0xFF14142A)),
             ),
-            child: Text(
-              pref.scope,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 9,
-                color: TrulanaColors.textTertiary,
-              ),
-            ),
+            child: Text(scope,
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 9, color: TrulanaColors.textTertiary)),
           ),
         ],
       ),
     );
   }
-}
 
-class _PrefDisplay {
-  final String key;
-  final String value;
-  final String scope;
-
-  const _PrefDisplay({
-    required this.key,
-    required this.value,
-    required this.scope,
-  });
+  /// Infers a scope tag from the preference key when no tags are set.
+  String _inferScope(String key) {
+    if (key.contains('coffee') || key.contains('commute')) return 'routine';
+    if (key.contains('work') || key.contains('response') || key.contains('meeting')) return 'work';
+    if (key.contains('workout') || key.contains('diet')) return 'health';
+    if (key.contains('travel') || key.contains('airline')) return 'travel';
+    return 'general';
+  }
 }

@@ -1,15 +1,91 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/services/preferences_service.dart';
 import 'package:trulana/core/theme/theme.dart';
-import 'package:trulana/core/ui/ui.dart';
+import 'package:trulana/features/engine/context_vault.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/providers/providers.dart';
 
-/// Dashboard view matching the desktop HTML mockup.
-///
-/// Grid layout: vault stats, redaction bars, connected agents,
-/// recent activity, and full audit trail.
+// ---------------------------------------------------------------------------
+// Computed providers for dashboard stats
+// ---------------------------------------------------------------------------
+
+/// Live preference count from the database.
+final _prefCountProvider = FutureProvider<int>((ref) async {
+  final prefs = await PreferencesService.instance.getAllPreferences();
+  return prefs.length;
+});
+
+/// Counts redaction events by type from audit log entries.
+/// Parses the requestIntent text to extract redaction counts.
+final _redactionStatsProvider =
+    FutureProvider<_RedactionStats>((ref) async {
+  final entries = await DatabaseHelper.instance.getAuditEntries(limit: 100);
+  int pii = 0;
+  int entity = 0;
+  int general = 0;
+  int blocked = 0;
+
+  for (final entry in entries) {
+    if (entry.actionTaken == AuditAction.blocked) {
+      blocked++;
+      continue;
+    }
+    if (entry.actionTaken == AuditAction.redacted) {
+      final match = RegExp(r'(\d+) redaction').firstMatch(entry.requestIntent);
+      if (match != null) {
+        final count = int.tryParse(match.group(1)!) ?? 0;
+        // Distribute across categories based on tag presence
+        final text = entry.requestIntent;
+        if (text.contains('[SSN]') ||
+            text.contains('[CARD]') ||
+            text.contains('[EMAIL]') ||
+            text.contains('[PHONE]') ||
+            text.contains('[IP]')) {
+          pii += (count * 0.4).ceil();
+        }
+        if (text.contains('[PERSON]') ||
+            text.contains('[ORG]') ||
+            text.contains('[LOCATION]')) {
+          entity += (count * 0.35).ceil();
+        }
+        general += (count * 0.25).ceil();
+      }
+    }
+  }
+
+  return _RedactionStats(
+    pii: pii,
+    entity: entity,
+    general: general,
+    blocked: blocked,
+  );
+});
+
+class _RedactionStats {
+  final int pii;
+  final int entity;
+  final int general;
+  final int blocked;
+
+  const _RedactionStats({
+    required this.pii,
+    required this.entity,
+    required this.general,
+    required this.blocked,
+  });
+
+  int get total => pii + entity + general + blocked;
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard view
+// ---------------------------------------------------------------------------
+
 class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
 
@@ -17,10 +93,12 @@ class DashboardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final configAsync = ref.watch(userConfigProvider);
     final agentsAsync = ref.watch(agentsProvider);
+    final auditAsync = ref.watch(auditProvider);
+    final prefCountAsync = ref.watch(_prefCountProvider);
+    final redactionAsync = ref.watch(_redactionStatsProvider);
 
     return Column(
       children: [
-        // — Header
         _ContentHeader(
           title: 'Dashboard',
           trailing: configAsync.whenOrNull(
@@ -36,8 +114,6 @@ class DashboardView extends ConsumerWidget {
                 : null,
           ),
         ),
-
-        // — Scrollable grid content
         Expanded(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -48,9 +124,18 @@ class DashboardView extends ConsumerWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _VaultStatusCard(configAsync: configAsync)),
+                    Expanded(
+                      child: _VaultStatusCard(
+                        agentsAsync: agentsAsync,
+                        prefCountAsync: prefCountAsync,
+                      ),
+                    ),
                     const SizedBox(width: 14),
-                    const Expanded(child: _RedactionStatsCard()),
+                    Expanded(
+                      child: _RedactionStatsCard(
+                        statsAsync: redactionAsync,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -59,15 +144,19 @@ class DashboardView extends ConsumerWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _ConnectedAgentsCard(agentsAsync: agentsAsync)),
+                    Expanded(
+                      child: _ConnectedAgentsCard(agentsAsync: agentsAsync),
+                    ),
                     const SizedBox(width: 14),
-                    const Expanded(child: _RecentActivityCard()),
+                    Expanded(
+                      child: _RecentActivityCard(auditAsync: auditAsync),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 14),
 
                 // Full-width audit trail
-                const _AuditTrailCard(),
+                _AuditTrailCard(auditAsync: auditAsync),
               ],
             ),
           ),
@@ -77,7 +166,10 @@ class DashboardView extends ConsumerWidget {
   }
 }
 
-/// Reusable content header bar.
+// ---------------------------------------------------------------------------
+// Reusable widgets
+// ---------------------------------------------------------------------------
+
 class _ContentHeader extends StatelessWidget {
   const _ContentHeader({required this.title, this.trailing});
 
@@ -89,20 +181,15 @@ class _ContentHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 14),
       decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Color(0xFF14142A)),
-        ),
+        border: Border(bottom: BorderSide(color: Color(0xFF14142A))),
       ),
       child: Row(
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: TrulanaColors.textPrimary,
-            ),
-          ),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: TrulanaColors.textPrimary)),
           const Spacer(),
           if (trailing != null) trailing!,
         ],
@@ -111,7 +198,6 @@ class _ContentHeader extends StatelessWidget {
   }
 }
 
-/// Privacy level toggle: Standard / Strict / Paranoid.
 class _PrivacyToggle extends StatelessWidget {
   const _PrivacyToggle({required this.level, required this.onChanged});
 
@@ -133,7 +219,8 @@ class _PrivacyToggle extends StatelessWidget {
           return GestureDetector(
             onTap: () => onChanged(pl),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 color: isActive
@@ -157,7 +244,6 @@ class _PrivacyToggle extends StatelessWidget {
   }
 }
 
-/// Card wrapper matching the HTML mockup card style.
 class _DashCard extends StatelessWidget {
   const _DashCard({
     required this.title,
@@ -183,72 +269,77 @@ class _DashCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xFF14142A)),
-              ),
+              border: Border(bottom: BorderSide(color: Color(0xFF14142A))),
             ),
             child: Row(
               children: [
-                Text(
-                  title.toUpperCase(),
-                  style: TrulanaTheme.monoStyle.copyWith(
-                    fontSize: 10,
-                    letterSpacing: 0.8,
-                    color: TrulanaColors.textTertiary,
-                  ),
-                ),
+                Text(title.toUpperCase(),
+                    style: TrulanaTheme.monoStyle.copyWith(
+                        fontSize: 10,
+                        letterSpacing: 0.8,
+                        color: TrulanaColors.textTertiary)),
                 const Spacer(),
                 if (badge != null)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
-                        color: (badgeColor ?? TrulanaColors.primaryCyan)
-                            .withValues(alpha: 0.25),
-                      ),
+                          color: (badgeColor ?? TrulanaColors.primaryCyan)
+                              .withValues(alpha: 0.25)),
                     ),
-                    child: Text(
-                      badge!,
-                      style: TrulanaTheme.monoStyle.copyWith(
-                        fontSize: 9,
-                        color: badgeColor ?? TrulanaColors.primaryCyan,
-                      ),
-                    ),
+                    child: Text(badge!,
+                        style: TrulanaTheme.monoStyle.copyWith(
+                            fontSize: 9,
+                            color:
+                                badgeColor ?? TrulanaColors.primaryCyan)),
                   ),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: child,
-          ),
+          Padding(padding: const EdgeInsets.all(14), child: child),
         ],
       ),
     );
   }
 }
 
-/// Vault status card with entry counts.
-class _VaultStatusCard extends StatelessWidget {
-  const _VaultStatusCard({required this.configAsync});
+// ---------------------------------------------------------------------------
+// Vault Status — live counts from providers
+// ---------------------------------------------------------------------------
 
-  final AsyncValue<UserConfig?> configAsync;
+class _VaultStatusCard extends StatelessWidget {
+  const _VaultStatusCard({
+    required this.agentsAsync,
+    required this.prefCountAsync,
+  });
+
+  final AsyncValue<List<AuthorizedAgent>> agentsAsync;
+  final AsyncValue<int> prefCountAsync;
 
   @override
   Widget build(BuildContext context) {
+    final vaultEntries = ContextVault.instance.entryCount;
+    final prefCount =
+        prefCountAsync.whenOrNull(data: (c) => c) ?? 0;
+    final activeAgents = agentsAsync.whenOrNull(
+            data: (list) =>
+                list.where((a) => a.status == AgentStatus.active).length) ??
+        0;
+
     return _DashCard(
       title: 'Vault Status',
       badge: 'encrypted',
       badgeColor: TrulanaColors.successGreen,
       child: Row(
         children: [
-          _StatColumn(value: '6', label: 'Entries'),
-          _StatColumn(value: '12', label: 'Preferences'),
-          _StatColumn(value: '2', label: 'Agents'),
+          _StatColumn(value: '$vaultEntries', label: 'Entries'),
+          _StatColumn(value: '$prefCount', label: 'Preferences'),
+          _StatColumn(value: '$activeAgents', label: 'Agents'),
         ],
       ),
     );
@@ -266,47 +357,68 @@ class _StatColumn extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(
-            value,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 22,
-              fontWeight: FontWeight.w500,
-              color: TrulanaColors.textPrimary,
-            ),
-          ),
+          Text(value,
+              style: TrulanaTheme.monoStyle.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w500,
+                  color: TrulanaColors.textPrimary)),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              color: TrulanaColors.textTertiary,
-            ),
-          ),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 10, color: TrulanaColors.textTertiary)),
         ],
       ),
     );
   }
 }
 
-/// Redaction statistics with colored bars.
+// ---------------------------------------------------------------------------
+// Redaction Stats — computed from audit log
+// ---------------------------------------------------------------------------
+
 class _RedactionStatsCard extends StatelessWidget {
-  const _RedactionStatsCard();
+  const _RedactionStatsCard({required this.statsAsync});
+
+  final AsyncValue<_RedactionStats> statsAsync;
 
   @override
   Widget build(BuildContext context) {
+    final stats = statsAsync.whenOrNull(data: (s) => s) ??
+        const _RedactionStats(pii: 0, entity: 0, general: 0, blocked: 0);
+    final total = stats.total;
+    final maxVal = [stats.pii, stats.entity, stats.general, stats.blocked]
+        .reduce(max);
+    final denom = maxVal > 0 ? maxVal.toDouble() : 1.0;
+
     return _DashCard(
       title: 'Redactions Today',
-      badge: '47 total',
+      badge: '$total total',
       badgeColor: TrulanaColors.primaryCyan,
       child: Column(
-        children: const [
-          _RedactionBar(label: 'PII', percent: 0.72, count: '18', color: Color(0xFFF05858)),
-          SizedBox(height: 10),
-          _RedactionBar(label: 'Entity', percent: 0.56, count: '14', color: TrulanaColors.primaryCyan),
-          SizedBox(height: 10),
-          _RedactionBar(label: 'General', percent: 0.44, count: '11', color: Color(0xFFE0C85C)),
-          SizedBox(height: 10),
-          _RedactionBar(label: 'Blocked', percent: 0.16, count: '4', color: TrulanaColors.successGreen),
+        children: [
+          _RedactionBar(
+              label: 'PII',
+              percent: stats.pii / denom,
+              count: '${stats.pii}',
+              color: const Color(0xFFF05858)),
+          const SizedBox(height: 10),
+          _RedactionBar(
+              label: 'Entity',
+              percent: stats.entity / denom,
+              count: '${stats.entity}',
+              color: TrulanaColors.primaryCyan),
+          const SizedBox(height: 10),
+          _RedactionBar(
+              label: 'General',
+              percent: stats.general / denom,
+              count: '${stats.general}',
+              color: const Color(0xFFE0C85C)),
+          const SizedBox(height: 10),
+          _RedactionBar(
+              label: 'Blocked',
+              percent: stats.blocked / denom,
+              count: '${stats.blocked}',
+              color: TrulanaColors.successGreen),
         ],
       ),
     );
@@ -331,52 +443,41 @@ class _RedactionBar extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 60,
-          child: Text(
-            label,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 10,
-              color: TrulanaColors.textTertiary,
-            ),
-          ),
-        ),
+            width: 60,
+            child: Text(label,
+                style: TrulanaTheme.monoStyle
+                    .copyWith(fontSize: 10, color: TrulanaColors.textTertiary))),
         Expanded(
           child: Container(
             height: 6,
             decoration: BoxDecoration(
-              color: TrulanaColors.primaryCyan.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(3),
-            ),
+                color: TrulanaColors.primaryCyan.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(3)),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
-              widthFactor: percent,
+              widthFactor: percent.clamp(0.0, 1.0),
               child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
+                  decoration: BoxDecoration(
+                      color: color, borderRadius: BorderRadius.circular(3))),
             ),
           ),
         ),
         const SizedBox(width: 8),
         SizedBox(
-          width: 30,
-          child: Text(
-            count,
-            textAlign: TextAlign.right,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 10,
-              color: TrulanaColors.textSecondary,
-            ),
-          ),
-        ),
+            width: 30,
+            child: Text(count,
+                textAlign: TextAlign.right,
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 10, color: TrulanaColors.textSecondary))),
       ],
     );
   }
 }
 
-/// Connected agents card with status dots.
+// ---------------------------------------------------------------------------
+// Connected Agents — live from agentsProvider
+// ---------------------------------------------------------------------------
+
 class _ConnectedAgentsCard extends StatelessWidget {
   const _ConnectedAgentsCard({required this.agentsAsync});
 
@@ -384,18 +485,43 @@ class _ConnectedAgentsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final agents = agentsAsync.valueOrNull ?? [];
+    final activeCount =
+        agents.where((a) => a.status == AgentStatus.active).length;
+
     return _DashCard(
       title: 'Connected Agents',
-      badge: '2 active',
+      badge: '$activeCount active',
       badgeColor: TrulanaColors.primaryCyan,
-      child: Column(
-        children: const [
-          _AgentRow(name: 'cursor-mcp', scope: 'context.read', ttl: '11:42', isLive: true),
-          _AgentRow(name: 'claude-desktop', scope: 'context.read', ttl: '8:15', isLive: true),
-          _AgentRow(name: 'demo-agent', scope: 'context.read', ttl: 'expired', isLive: false),
-        ],
-      ),
+      child: agents.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text('No agents registered',
+                  style: TextStyle(
+                      fontSize: 12, color: TrulanaColors.textTertiary)),
+            )
+          : Column(
+              children: agents.map((agent) {
+                final isLive = agent.status == AgentStatus.active;
+                final ttl = _formatTtl(agent);
+                return _AgentRow(
+                  name: agent.agentName,
+                  scope: agent.grantedScopes.join(', '),
+                  ttl: ttl,
+                  isLive: isLive,
+                );
+              }).toList(),
+            ),
     );
+  }
+
+  String _formatTtl(AuthorizedAgent agent) {
+    if (agent.status != AgentStatus.active) return 'expired';
+    final remaining = agent.expirationDate.difference(DateTime.now());
+    if (remaining.isNegative) return 'expired';
+    final min = remaining.inMinutes;
+    final sec = remaining.inSeconds % 60;
+    return '$min:${sec.toString().padLeft(2, '0')}';
   }
 }
 
@@ -417,10 +543,7 @@ class _AgentRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Color(0x05FFFFFF)),
-        ),
-      ),
+          border: Border(bottom: BorderSide(color: Color(0x05FFFFFF)))),
       child: Row(
         children: [
           Container(
@@ -428,178 +551,188 @@ class _AgentRow extends StatelessWidget {
             height: 7,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isLive ? TrulanaColors.successGreen : TrulanaColors.textTertiary,
+              color: isLive
+                  ? TrulanaColors.successGreen
+                  : TrulanaColors.textTertiary,
               boxShadow: isLive
-                  ? [BoxShadow(color: TrulanaColors.successGreen.withValues(alpha: 0.5), blurRadius: 4)]
+                  ? [
+                      BoxShadow(
+                          color: TrulanaColors.successGreen
+                              .withValues(alpha: 0.5),
+                          blurRadius: 4)
+                    ]
                   : null,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              name,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 12,
-                color: TrulanaColors.textSecondary,
-              ),
-            ),
-          ),
+              child: Text(name,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 12, color: TrulanaColors.textSecondary))),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: const Color(0xFF14142A)),
-            ),
-            child: Text(
-              scope,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 9,
-                color: TrulanaColors.textTertiary,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: const Color(0xFF14142A))),
+            child: Text(scope,
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 9, color: TrulanaColors.textTertiary)),
           ),
           const SizedBox(width: 8),
-          Text(
-            ttl,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 10,
-              color: isLive ? const Color(0xFF2A8A84) : TrulanaColors.textTertiary,
-            ),
-          ),
+          Text(ttl,
+              style: TrulanaTheme.monoStyle.copyWith(
+                  fontSize: 10,
+                  color: isLive
+                      ? const Color(0xFF2A8A84)
+                      : TrulanaColors.textTertiary)),
         ],
       ),
     );
   }
 }
 
-/// Recent activity card with color-coded action tags.
+// ---------------------------------------------------------------------------
+// Recent Activity — top 4 from auditProvider
+// ---------------------------------------------------------------------------
+
 class _RecentActivityCard extends StatelessWidget {
-  const _RecentActivityCard();
+  const _RecentActivityCard({required this.auditAsync});
+
+  final AsyncValue<List<AuditLogEntry>> auditAsync;
 
   @override
   Widget build(BuildContext context) {
+    final entries = auditAsync.valueOrNull ?? [];
+    final recent = entries.take(4).toList();
+
     return _DashCard(
       title: 'Recent Activity',
-      child: Column(
-        children: const [
-          _AuditEntry(time: '14:32:01', action: 'redact', detail: 'cursor-mcp \u00b7 7 redactions', isRedactHighlight: true),
-          _AuditEntry(time: '14:31:58', action: 'query', detail: 'cursor-mcp \u00b7 "work schedule"'),
-          _AuditEntry(time: '14:28:44', action: 'auth', detail: 'claude-desktop \u00b7 granted ttl=900s'),
-          _AuditEntry(time: '14:22:10', action: 'deny', detail: 'unknown-app \u00b7 no valid token'),
-        ],
-      ),
+      child: recent.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text('No activity yet',
+                  style: TextStyle(
+                      fontSize: 12, color: TrulanaColors.textTertiary)),
+            )
+          : Column(
+              children: recent
+                  .map((e) => _AuditEntryRow(entry: e, compact: true))
+                  .toList(),
+            ),
     );
   }
 }
 
-/// Full-width audit trail card.
+// ---------------------------------------------------------------------------
+// Audit Trail — full list from auditProvider
+// ---------------------------------------------------------------------------
+
 class _AuditTrailCard extends StatelessWidget {
-  const _AuditTrailCard();
+  const _AuditTrailCard({required this.auditAsync});
+
+  final AsyncValue<List<AuditLogEntry>> auditAsync;
 
   @override
   Widget build(BuildContext context) {
+    final entries = auditAsync.valueOrNull ?? [];
+
     return _DashCard(
       title: 'Audit Trail',
       badge: 'encrypted \u00b7 tamper-evident',
       badgeColor: TrulanaColors.successGreen,
-      child: Column(
-        children: const [
-          _AuditEntry(
-            time: '14:32:01',
-            action: 'redact',
-            detail: 'cursor-mcp queried "work schedule" \u2192 [PERSON] [EMAIL] [LOCATION] stripped',
-            isRedactHighlight: true,
-          ),
-          _AuditEntry(
-            time: '14:28:44',
-            action: 'auth',
-            detail: 'claude-desktop handshake \u00b7 scopes: context.read \u00b7 token issued \u00b7 ttl=900s',
-          ),
-          _AuditEntry(
-            time: '14:22:10',
-            action: 'deny',
-            detail: 'unknown-app attempted query without token \u00b7 request rejected',
-          ),
-          _AuditEntry(
-            time: '14:15:33',
-            action: 'query',
-            detail: 'cursor-mcp queried "morning routine" \u2192 matched 1 vault entry \u00b7 12 redactions',
-          ),
-        ],
-      ),
+      child: entries.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text('No audit entries',
+                  style: TextStyle(
+                      fontSize: 12, color: TrulanaColors.textTertiary)),
+            )
+          : Column(
+              children: entries
+                  .map((e) => _AuditEntryRow(entry: e, compact: false))
+                  .toList(),
+            ),
     );
   }
 }
 
-/// Single audit log entry row used across dashboard cards.
-class _AuditEntry extends StatelessWidget {
-  const _AuditEntry({
-    required this.time,
-    required this.action,
-    required this.detail,
-    this.isRedactHighlight = false,
-  });
+// ---------------------------------------------------------------------------
+// Shared audit entry row — renders from real AuditLogEntry
+// ---------------------------------------------------------------------------
 
-  final String time;
-  final String action;
-  final String detail;
-  final bool isRedactHighlight;
+class _AuditEntryRow extends StatelessWidget {
+  const _AuditEntryRow({required this.entry, this.compact = false});
 
-  Color get _actionColor => switch (action) {
-        'auth' => TrulanaColors.primaryCyan,
-        'query' => TrulanaColors.successGreen,
-        'redact' => const Color(0xFFE0C85C),
-        'deny' => const Color(0xFFF05858),
-        _ => TrulanaColors.textTertiary,
+  final AuditLogEntry entry;
+  final bool compact;
+
+  String get _actionLabel => switch (entry.actionTaken) {
+        AuditAction.approved => 'auth',
+        AuditAction.blocked => 'deny',
+        AuditAction.redacted => 'redact',
+        AuditAction.negotiated => 'query',
       };
+
+  Color get _actionColor => switch (entry.actionTaken) {
+        AuditAction.approved => TrulanaColors.primaryCyan,
+        AuditAction.blocked => const Color(0xFFF05858),
+        AuditAction.redacted => const Color(0xFFE0C85C),
+        AuditAction.negotiated => TrulanaColors.successGreen,
+      };
+
+  String get _timeStr {
+    final t = entry.timestamp;
+    return '${t.hour.toString().padLeft(2, '0')}:'
+        '${t.minute.toString().padLeft(2, '0')}:'
+        '${t.second.toString().padLeft(2, '0')}';
+  }
+
+  String get _detail {
+    if (compact) {
+      return '${entry.agentId} \u00b7 ${_truncate(entry.requestIntent, 40)}';
+    }
+    return '${entry.agentId} ${entry.requestIntent}';
+  }
+
+  String _truncate(String s, int maxLen) {
+    if (s.length <= maxLen) return s;
+    return '${s.substring(0, maxLen)}...';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x05FFFFFF))),
-      ),
+          border: Border(bottom: BorderSide(color: Color(0x05FFFFFF)))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 65,
-            child: Text(
-              time,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 11,
-                color: TrulanaColors.textTertiary,
-              ),
-            ),
-          ),
+              width: 65,
+              child: Text(_timeStr,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 11, color: TrulanaColors.textTertiary))),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: _actionColor.withValues(alpha: 0.1),
-            ),
-            child: Text(
-              action.toUpperCase(),
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 9,
-                letterSpacing: 0.3,
-                color: _actionColor,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(3),
+                color: _actionColor.withValues(alpha: 0.1)),
+            child: Text(_actionLabel.toUpperCase(),
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 9,
+                    letterSpacing: 0.3,
+                    color: _actionColor)),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              detail,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 11,
-                color: TrulanaColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
+              child: Text(_detail,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 11,
+                      color: TrulanaColors.textSecondary,
+                      height: 1.5))),
         ],
       ),
     );

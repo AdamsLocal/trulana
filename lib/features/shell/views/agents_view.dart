@@ -5,9 +5,7 @@ import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/providers/providers.dart';
 
-/// Agents view matching the desktop HTML mockup.
-///
-/// Shows active tokens with TTL remaining and expired/revoked section.
+/// Agents view — live from agentsProvider.
 class AgentsView extends ConsumerWidget {
   const AgentsView({super.key});
 
@@ -19,88 +17,46 @@ class AgentsView extends ConsumerWidget {
       children: [
         _header(),
         Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(24),
-            child: agentsAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(
-                  color: TrulanaColors.primaryCyan,
-                  strokeWidth: 2,
-                ),
+          child: agentsAsync.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: TrulanaColors.primaryCyan,
+                strokeWidth: 2,
               ),
-              error: (e, s) => Text(
-                'Failed to load agents',
-                style: TextStyle(color: TrulanaColors.dangerRed),
-              ),
-              data: (agents) {
-                final active = agents
-                    .where((a) => a.status == AgentStatus.active)
-                    .toList();
-                final inactive = agents
-                    .where((a) => a.status != AgentStatus.active)
-                    .toList();
+            ),
+            error: (e, s) => Center(
+              child: Text('Failed to load agents',
+                  style: TextStyle(color: TrulanaColors.dangerRed)),
+            ),
+            data: (agents) {
+              final active = agents
+                  .where((a) => a.status == AgentStatus.active)
+                  .toList();
+              final inactive = agents
+                  .where((a) => a.status != AgentStatus.active)
+                  .toList();
 
-                return Column(
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(24),
+                child: Column(
                   children: [
                     _AgentCard(
                       title: 'Active Tokens',
                       badge: '${active.length} live',
-                      agents: active.isNotEmpty
-                          ? active
-                              .map((a) => _AgentDisplayRow(
-                                    name: a.agentName,
-                                    scope: a.grantedScopes.join(', '),
-                                    ttl: _formatTtl(a.expirationDate),
-                                    isLive: true,
-                                  ))
-                              .toList()
-                          : [
-                              const _AgentDisplayRow(
-                                name: 'cursor-mcp',
-                                scope: 'context.read',
-                                ttl: '11:42 remaining',
-                                isLive: true,
-                              ),
-                              const _AgentDisplayRow(
-                                name: 'claude-desktop',
-                                scope: 'context.read',
-                                ttl: '8:15 remaining',
-                                isLive: true,
-                              ),
-                            ],
+                      agents: active,
+                      isEmpty: active.isEmpty,
                     ),
                     const SizedBox(height: 14),
                     _AgentCard(
                       title: 'Expired / Revoked',
-                      agents: inactive.isNotEmpty
-                          ? inactive
-                              .map((a) => _AgentDisplayRow(
-                                    name: a.agentName,
-                                    scope: a.grantedScopes.join(', '),
-                                    ttl: 'expired',
-                                    isLive: false,
-                                  ))
-                              .toList()
-                          : [
-                              const _AgentDisplayRow(
-                                name: 'demo-agent',
-                                scope: 'context.read',
-                                ttl: 'expired 12m ago',
-                                isLive: false,
-                              ),
-                              const _AgentDisplayRow(
-                                name: 'test-runner',
-                                scope: 'context.read',
-                                ttl: 'expired 2h ago',
-                                isLive: false,
-                              ),
-                            ],
+                      agents: inactive,
+                      isEmpty: inactive.isEmpty,
                     ),
                   ],
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -115,25 +71,14 @@ class AgentsView extends ConsumerWidget {
       ),
       child: const Row(
         children: [
-          Text(
-            'Agents',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: TrulanaColors.textPrimary,
-            ),
-          ),
+          Text('Agents',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: TrulanaColors.textPrimary)),
         ],
       ),
     );
-  }
-
-  String _formatTtl(DateTime expiration) {
-    final remaining = expiration.difference(DateTime.now());
-    if (remaining.isNegative) return 'expired';
-    final min = remaining.inMinutes;
-    final sec = remaining.inSeconds % 60;
-    return '$min:${sec.toString().padLeft(2, '0')} remaining';
   }
 }
 
@@ -142,11 +87,13 @@ class _AgentCard extends StatelessWidget {
     required this.title,
     required this.agents,
     this.badge,
+    this.isEmpty = false,
   });
 
   final String title;
   final String? badge;
-  final List<_AgentDisplayRow> agents;
+  final List<AuthorizedAgent> agents;
+  final bool isEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -159,20 +106,18 @@ class _AgentCard extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: Color(0xFF14142A))),
             ),
             child: Row(
               children: [
-                Text(
-                  title.toUpperCase(),
-                  style: TrulanaTheme.monoStyle.copyWith(
-                    fontSize: 10,
-                    letterSpacing: 0.8,
-                    color: TrulanaColors.textTertiary,
-                  ),
-                ),
+                Text(title.toUpperCase(),
+                    style: TrulanaTheme.monoStyle.copyWith(
+                        fontSize: 10,
+                        letterSpacing: 0.8,
+                        color: TrulanaColors.textTertiary)),
                 const Spacer(),
                 if (badge != null)
                   Container(
@@ -181,32 +126,60 @@ class _AgentCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
-                        color: TrulanaColors.primaryCyan.withValues(alpha: 0.25),
-                      ),
+                          color: TrulanaColors.primaryCyan
+                              .withValues(alpha: 0.25)),
                     ),
-                    child: Text(
-                      badge!,
-                      style: TrulanaTheme.monoStyle.copyWith(
-                        fontSize: 9,
-                        color: TrulanaColors.primaryCyan,
-                      ),
-                    ),
+                    child: Text(badge!,
+                        style: TrulanaTheme.monoStyle.copyWith(
+                            fontSize: 9,
+                            color: TrulanaColors.primaryCyan)),
                   ),
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(14),
-            child: Column(children: agents),
+            child: isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text('None',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: TrulanaColors.textTertiary)),
+                  )
+                : Column(
+                    children: agents.map((agent) {
+                      final isLive = agent.status == AgentStatus.active;
+                      return _AgentRow(
+                        name: agent.agentName,
+                        scope: agent.grantedScopes.join(', '),
+                        ttl: _formatTtl(agent),
+                        isLive: isLive,
+                      );
+                    }).toList(),
+                  ),
           ),
         ],
       ),
     );
   }
+
+  String _formatTtl(AuthorizedAgent agent) {
+    if (agent.status != AgentStatus.active) {
+      final ago = DateTime.now().difference(agent.expirationDate);
+      if (ago.inHours > 0) return 'expired ${ago.inHours}h ago';
+      return 'expired ${ago.inMinutes}m ago';
+    }
+    final remaining = agent.expirationDate.difference(DateTime.now());
+    if (remaining.isNegative) return 'expired';
+    final min = remaining.inMinutes;
+    final sec = remaining.inSeconds % 60;
+    return '$min:${sec.toString().padLeft(2, '0')} remaining';
+  }
 }
 
-class _AgentDisplayRow extends StatelessWidget {
-  const _AgentDisplayRow({
+class _AgentRow extends StatelessWidget {
+  const _AgentRow({
     required this.name,
     required this.scope,
     required this.ttl,
@@ -223,8 +196,7 @@ class _AgentDisplayRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x05FFFFFF))),
-      ),
+          border: Border(bottom: BorderSide(color: Color(0x05FFFFFF)))),
       child: Row(
         children: [
           Container(
@@ -238,48 +210,35 @@ class _AgentDisplayRow extends StatelessWidget {
               boxShadow: isLive
                   ? [
                       BoxShadow(
-                        color:
-                            TrulanaColors.successGreen.withValues(alpha: 0.5),
-                        blurRadius: 4,
-                      ),
+                          color: TrulanaColors.successGreen
+                              .withValues(alpha: 0.5),
+                          blurRadius: 4)
                     ]
                   : null,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              name,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 12,
-                color: TrulanaColors.textSecondary,
-              ),
-            ),
-          ),
+              child: Text(name,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 12, color: TrulanaColors.textSecondary))),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: const Color(0xFF14142A)),
-            ),
-            child: Text(
-              scope,
-              style: TrulanaTheme.monoStyle.copyWith(
-                fontSize: 9,
-                color: TrulanaColors.textTertiary,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: const Color(0xFF14142A))),
+            child: Text(scope,
+                style: TrulanaTheme.monoStyle.copyWith(
+                    fontSize: 9, color: TrulanaColors.textTertiary)),
           ),
           const SizedBox(width: 8),
-          Text(
-            ttl,
-            style: TrulanaTheme.monoStyle.copyWith(
-              fontSize: 10,
-              color: isLive
-                  ? const Color(0xFF2A8A84)
-                  : TrulanaColors.textTertiary,
-            ),
-          ),
+          Text(ttl,
+              style: TrulanaTheme.monoStyle.copyWith(
+                  fontSize: 10,
+                  color: isLive
+                      ? const Color(0xFF2A8A84)
+                      : TrulanaColors.textTertiary)),
         ],
       ),
     );
