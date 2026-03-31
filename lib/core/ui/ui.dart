@@ -7,3 +7,4 @@ export 'privacy_slider.dart';
 export 'pulse_indicator.dart';
 export 'trulana_button.dart';
 export 'status_badge.dart';
+export 'privacy_toggle.dart';
