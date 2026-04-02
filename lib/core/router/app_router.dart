@@ -30,7 +30,7 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
     routes: <RouteBase>[
       GoRoute(
         path: '/',
-        redirect: (_, _) => '/dashboard',
+        redirect: (context, state) => '/dashboard',
       ),
       GoRoute(
         path: '/onboarding',
@@ -60,7 +60,7 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
 /// refresh mechanism so redirects fire whenever auth state changes.
 class _RouterRefreshNotifier extends ChangeNotifier {
   _RouterRefreshNotifier(Ref ref, ProviderListenable<Object?> provider) {
-    ref.listen<Object?>(provider, (_, _) => notifyListeners());
+    ref.listen<Object?>(provider, (previous, next) => notifyListeners());
   }
 }
 
