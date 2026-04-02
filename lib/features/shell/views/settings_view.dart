@@ -15,6 +15,7 @@ class SettingsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final configAsync = ref.watch(userConfigProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
 
     return Column(
       children: [
@@ -55,7 +56,16 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Require Touch ID on launch',
                         subtitle: 'Biometric gate every session',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.requireBiometric,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setRequireBiometric(value),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -65,12 +75,30 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Auto-start REST server',
                         subtitle: 'Binds to localhost:8432',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.autoStartServer,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setAutoStartServer(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'MCP stdio adapter',
                         subtitle: 'For Claude Desktop / Cursor',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.mcpAdapter,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setMcpAdapter(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'Token TTL',
@@ -272,10 +300,34 @@ class _SettingRow extends StatelessWidget {
   }
 }
 
+/// Sized loading placeholder for while toggle state is being read.
+class _ToggleLoading extends StatelessWidget {
+  const _ToggleLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 36,
+      height: 20,
+      child: Center(
+        child: SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            color: TrulanaColors.primaryCyan,
+            strokeWidth: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ToggleSwitch extends StatefulWidget {
-  const _ToggleSwitch({required this.isOn});
+  const _ToggleSwitch({required this.isOn, this.onChanged});
 
   final bool isOn;
+  final ValueChanged<bool>? onChanged;
 
   @override
   State<_ToggleSwitch> createState() => _ToggleSwitchState();
@@ -291,9 +343,21 @@ class _ToggleSwitchState extends State<_ToggleSwitch> {
   }
 
   @override
+  void didUpdateWidget(_ToggleSwitch oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isOn != widget.isOn) {
+      _on = widget.isOn;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => _on = !_on),
+      onTap: () {
+        final bool next = !_on;
+        setState(() => _on = next);
+        widget.onChanged?.call(next);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 36,
