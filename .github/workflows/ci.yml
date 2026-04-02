@@ -8,7 +8,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Tests run on macOS: flutter_secure_storage (Keychain) and
+    # sqflite_sqlcipher require native macOS APIs that aren't available
+    # on Linux runners.
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
