@@ -191,7 +191,7 @@ class _ContentHeader extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: TrulanaColors.textPrimary)),
           const Spacer(),
-          if (trailing != null) trailing!,
+          if (trailing case final t?) t,
         ],
       ),
     );
