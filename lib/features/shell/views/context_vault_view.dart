@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trulana/core/theme/theme.dart';
 import 'package:trulana/features/engine/auto_redact_engine.dart';
 import 'package:trulana/features/engine/context_vault.dart';
-import 'package:trulana/features/engine/models/redaction_result.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/providers/providers.dart';
 

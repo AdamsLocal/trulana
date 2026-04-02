@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' show max;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -191,7 +191,7 @@ class _ContentHeader extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: TrulanaColors.textPrimary)),
           const Spacer(),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );
