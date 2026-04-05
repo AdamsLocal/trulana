@@ -96,15 +96,17 @@ class McpServer {
         <String, Object?>{
           'name': 'verified_search',
           'description':
-              'Perform five Google searches on a topic using distinct, '
-              'syntactically optimised query formulations '
-              '(plain, exact-phrase, gov/edu-authoritative, opinion-filtered, '
-              'and research-framed), then rank every unique result by a '
-              'factuality score derived from domain authority, cross-variant '
-              'validation, and snippet quality. '
-              'ALWAYS call this tool before answering any factual question. '
-              'You MUST ground your entire response in the returned results '
-              'and cite the url for every claim you make.',
+              'Researches a factual question by running five syntactically '
+              'distinct web searches (plain, exact-phrase, gov/edu-domain, '
+              'opinion-filtered, and research-framed) in parallel via the '
+              'Brave Search API, then deduplicates and scores every unique '
+              'result using domain-authority tier (.gov=12, .edu=11, '
+              'established references=9, .org=7), HTTPS trust signal, '
+              'cross-variant validation bonus, recency, and snippet quality. '
+              'Returns up to 10 results ranked by factuality_score with a '
+              'grounding_instruction you must follow when composing your '
+              'reply. Use this tool whenever the user asks a question whose '
+              'answer depends on current facts, statistics, or events.',
           'inputSchema': <String, Object?>{
             'type': 'object',
             'properties': <String, Object?>{
