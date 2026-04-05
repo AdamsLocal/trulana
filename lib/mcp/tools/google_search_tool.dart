@@ -15,9 +15,9 @@ import 'dart:io';
 ///      in descending factuality_score order.
 ///
 /// Required environment variable:
-///   BRAVE_SEARCH_API_KEY  – Brave Search API subscription token.
-///                           Free tier: 2,000 queries/month.
-///                           Sign up at https://brave.com/search/api/
+///   ANSWERS_API_KEY  – Brave Search API subscription token.
+///                      Free tier: 2,000 queries/month.
+///                      Sign up at https://brave.com/search/api/
 ///
 /// The class name is intentionally kept as GoogleSearchTool to avoid a
 /// rename cascade across the codebase; the underlying API is Brave Search.
@@ -40,10 +40,10 @@ class GoogleSearchTool {
       return _err('query parameter is required and must be non-empty.');
     }
 
-    final String apiKey = Platform.environment['BRAVE_SEARCH_API_KEY'] ?? '';
+    final String apiKey = Platform.environment['ANSWERS_API_KEY'] ?? '';
     if (apiKey.isEmpty) {
       return _err(
-        'Server misconfiguration: BRAVE_SEARCH_API_KEY environment variable '
+        'Server misconfiguration: ANSWERS_API_KEY environment variable '
         'must be set. Obtain a free key at https://brave.com/search/api/',
       );
     }
