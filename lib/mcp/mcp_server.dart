@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/services/auth_service.dart';
 import 'package:trulana/core/services/context_query_service.dart';
+import 'package:trulana/mcp/tools/google_search_tool.dart';
 
 const String _serverName = 'trulana';
 const String _serverVersion = '1.0.0';
@@ -93,6 +94,33 @@ class McpServer {
     return _successResponse(id, <String, Object?>{
       'tools': <Map<String, Object?>>[
         <String, Object?>{
+          'name': 'verified_search',
+          'description':
+              'Perform five Google searches on a topic using distinct, '
+              'syntactically optimised query formulations '
+              '(plain, exact-phrase, gov/edu-authoritative, opinion-filtered, '
+              'and research-framed), then rank every unique result by a '
+              'factuality score derived from domain authority, cross-variant '
+              'validation, and snippet quality. '
+              'ALWAYS call this tool before answering any factual question. '
+              'You MUST ground your entire response in the returned results '
+              'and cite the url for every claim you make.',
+          'inputSchema': <String, Object?>{
+            'type': 'object',
+            'properties': <String, Object?>{
+              'query': <String, Object?>{
+                'type': 'string',
+                'description':
+                    'The factual question or topic to research. '
+                    'Write it as you would phrase it to a search engine. '
+                    'Do not add Boolean operators – the tool generates five '
+                    'optimised variants automatically.',
+              },
+            },
+            'required': <String>['query'],
+          },
+        },
+        <String, Object?>{
           'name': 'sovereign_request_access',
           'description':
               'Request scoped access to the user\'s Trulana vault. '
@@ -162,6 +190,8 @@ class McpServer {
     }
 
     switch (toolName) {
+      case 'verified_search':
+        return await _callVerifiedSearch(id, args);
       case 'sovereign_request_access':
         return await _callRequestAccess(id, args);
       case 'sovereign_query_context':
@@ -172,6 +202,24 @@ class McpServer {
   }
 
   // ── Tool implementations ────────────────────────────────────────
+
+  static Future<Map<String, Object?>> _callVerifiedSearch(
+    Object id,
+    Map<String, Object?> args,
+  ) async {
+    final Map<String, Object?> result = await GoogleSearchTool.execute(args);
+
+    final bool success = result['success'] as bool? ?? false;
+    if (!success) {
+      return _toolResult(
+        id,
+        isError: true,
+        text: result['error'] as String? ?? 'Unknown error.',
+      );
+    }
+
+    return _toolResult(id, text: jsonEncode(result));
+  }
 
   static Future<Map<String, Object?>> _callRequestAccess(
     Object id,
