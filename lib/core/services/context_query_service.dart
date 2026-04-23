@@ -101,6 +101,8 @@ class ContextQueryService {
     // of strict so the privacy filter's time/amount/age rules always apply,
     // compensating for entities the mock NER cannot catch. When a production
     // NER is available this floor can be relaxed.
+    // Note: PrivacyLevel values are ordered ascending (standard=1, strict=2,
+    // paranoid=3), so comparing .value is equivalent to comparing severity.
     final PrivacyLevel level = configuredLevel.value >= PrivacyLevel.strict.value
         ? configuredLevel
         : PrivacyLevel.strict;

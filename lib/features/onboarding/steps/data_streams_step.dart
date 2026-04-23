@@ -49,8 +49,8 @@ class _DataStreamsStepState extends State<DataStreamsStep> {
           AnimatedListItem(
             index: 1,
             child: const Text(
-              'These integrations are coming soon. Your selections will be saved '
-              'and activated automatically when each one ships.',
+              'These integrations are coming soon. Your selections will be '
+              'saved and activated automatically when each one ships.',
               style: TextStyle(
                 fontSize: 15,
                 color: TrulanaColors.textSecondary,
