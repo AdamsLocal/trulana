@@ -4,7 +4,7 @@
 
 Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
 
-![Tests](https://img.shields.io/badge/tests-134%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
+![Tests](https://img.shields.io/badge/tests-134%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS-0A0820?style=flat-square&labelColor=1ABFA0)
 
 ---
 
@@ -82,7 +82,7 @@ Server binds to `localhost:8432`. Non-loopback connections rejected.
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Flutter · Dart 3.x · every OS |
+| Framework | Flutter · Dart 3.x · macOS |
 | Database | SQLite encrypted via `sqflite_sqlcipher` |
 | Key storage | macOS Keychain · Secure Enclave backed |
 | Biometrics | `local_auth` · Touch ID · no passwords · no accounts |
@@ -132,7 +132,7 @@ flutter test test/integration/      # full service loop + preferences E2E (31 te
 
 ## Prerequisites
 
-- macOS (other platforms via Flutter)
+- macOS (the only supported platform in this release; additional platforms via Flutter in a future release)
 - Flutter SDK >= 3.11.1
 - Xcode 16+
 

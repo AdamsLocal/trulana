@@ -225,17 +225,13 @@ class _LeaseRequestRow extends StatelessWidget {
           TrulanaButton(
             label: 'Approve',
             color: TrulanaColors.successGreen,
-            onPressed: () {
-              // TODO: Wire to lease approval flow once backend is ready.
-            },
+            onPressed: null,
           ),
           const SizedBox(width: 6),
           TrulanaButton(
             label: 'Deny',
             color: TrulanaColors.dangerRed,
-            onPressed: () {
-              // TODO: Wire to lease denial flow once backend is ready.
-            },
+            onPressed: null,
           ),
         ],
       ),

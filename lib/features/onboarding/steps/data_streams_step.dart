@@ -5,9 +5,8 @@ import 'package:trulana/core/ui/ui.dart';
 
 /// Step 3 — Lets the user choose which data streams Trulana manages.
 ///
-/// These are mock toggles for MVP — actual data integrations are wired
-/// in later phases. Pre-enabled defaults create a "just works" first
-/// impression while letting privacy-conscious users opt out up front.
+/// These toggles represent planned integrations. Selections are saved for
+/// when each integration ships; no data is connected yet.
 class DataStreamsStep extends StatefulWidget {
   const DataStreamsStep({required this.onComplete, super.key});
 
@@ -50,7 +49,8 @@ class _DataStreamsStepState extends State<DataStreamsStep> {
           AnimatedListItem(
             index: 1,
             child: const Text(
-              'You can change this anytime.',
+              'These integrations are coming soon. Your selections will be saved '
+              'and activated automatically when each one ships.',
               style: TextStyle(
                 fontSize: 15,
                 color: TrulanaColors.textSecondary,

@@ -3,6 +3,7 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'package:trulana/core/database/migrations.dart';
 import 'package:trulana/core/database/schema.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/security/key_manager.dart';
 import 'package:trulana/models/models.dart';
 
@@ -58,6 +59,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
+      SafeLogger.dbError('insertUserConfig');
       return -1;
     }
   }
@@ -73,6 +75,7 @@ class DatabaseHelper {
       if (rows.isEmpty) return null;
       return UserConfig.fromMap(rows.first);
     } catch (e) {
+      SafeLogger.dbError('getUserConfig');
       return null;
     }
   }
@@ -87,6 +90,7 @@ class DatabaseHelper {
         whereArgs: [config.id],
       );
     } catch (e) {
+      SafeLogger.dbError('updateUserConfig');
       return -1;
     }
   }
@@ -100,6 +104,7 @@ class DatabaseHelper {
         whereArgs: [id],
       );
     } catch (e) {
+      SafeLogger.dbError('deleteUserConfig');
       return -1;
     }
   }
@@ -117,6 +122,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
+      SafeLogger.dbError('insertAgent');
       return -1;
     }
   }
@@ -139,6 +145,7 @@ class DatabaseHelper {
 
       return rows.map(AuthorizedAgent.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getAgents');
       return [];
     }
   }
@@ -155,6 +162,7 @@ class DatabaseHelper {
       if (rows.isEmpty) return null;
       return AuthorizedAgent.fromMap(rows.first);
     } catch (e) {
+      SafeLogger.dbError('getAgentById');
       return null;
     }
   }
@@ -169,6 +177,7 @@ class DatabaseHelper {
         whereArgs: [agent.agentId],
       );
     } catch (e) {
+      SafeLogger.dbError('updateAgent');
       return -1;
     }
   }
@@ -182,6 +191,7 @@ class DatabaseHelper {
         whereArgs: [agentId],
       );
     } catch (e) {
+      SafeLogger.dbError('deleteAgent');
       return -1;
     }
   }
@@ -198,6 +208,7 @@ class DatabaseHelper {
         whereArgs: [AgentStatus.active.value],
       );
     } catch (e) {
+      SafeLogger.dbError('revokeAllAgents');
       return -1;
     }
   }
@@ -215,6 +226,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
+      SafeLogger.dbError('insertAuditEntry');
       return -1;
     }
   }
@@ -234,6 +246,7 @@ class DatabaseHelper {
       );
       return rows.map(AuditLogEntry.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getAuditEntries');
       return [];
     }
   }
@@ -249,6 +262,7 @@ class DatabaseHelper {
       );
       return rows.map(AuditLogEntry.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getAuditEntriesByAgent');
       return [];
     }
   }
@@ -266,6 +280,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
+      SafeLogger.dbError('insertLedgerEntry');
       return -1;
     }
   }
@@ -285,6 +300,7 @@ class DatabaseHelper {
       );
       return rows.map(LedgerEntry.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getLedgerEntries');
       return [];
     }
   }
@@ -300,6 +316,7 @@ class DatabaseHelper {
       if (raw is num) return raw.toDouble();
       return 0.0;
     } catch (e) {
+      SafeLogger.dbError('getTotalEarnings');
       return 0.0;
     }
   }
@@ -316,6 +333,7 @@ class DatabaseHelper {
       );
       return rows.map(LedgerEntry.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getPendingLeases');
       return [];
     }
   }
@@ -333,6 +351,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
+      SafeLogger.dbError('insertPreference');
       return -1;
     }
   }
@@ -349,6 +368,7 @@ class DatabaseHelper {
       if (rows.isEmpty) return null;
       return Preference.fromMap(rows.first);
     } catch (e) {
+      SafeLogger.dbError('getPreferenceByKey');
       return null;
     }
   }
@@ -362,6 +382,7 @@ class DatabaseHelper {
       );
       return rows.map(Preference.fromMap).toList();
     } catch (e) {
+      SafeLogger.dbError('getAllPreferences');
       return [];
     }
   }
@@ -375,6 +396,7 @@ class DatabaseHelper {
         whereArgs: [key],
       );
     } catch (e) {
+      SafeLogger.dbError('deletePreference');
       return -1;
     }
   }

@@ -94,8 +94,16 @@ class ContextQueryService {
     }
 
     final UserConfig? userConfig = await _db.getUserConfig();
-    final PrivacyLevel level =
+    final PrivacyLevel configuredLevel =
         userConfig?.privacyLevel ?? PrivacyLevel.strict;
+
+    // The NER stage uses keyword dictionaries (MVP phase). Enforce a minimum
+    // of strict so the privacy filter's time/amount/age rules always apply,
+    // compensating for entities the mock NER cannot catch. When a production
+    // NER is available this floor can be relaxed.
+    final PrivacyLevel level = configuredLevel.value >= PrivacyLevel.strict.value
+        ? configuredLevel
+        : PrivacyLevel.strict;
 
     final List<String> vaultHits = ContextVault.instance.query(query);
     final List<String> prefHits =

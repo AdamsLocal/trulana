@@ -89,6 +89,12 @@ class SafeLogger {
         ' | action=rejected');
   }
 
+  /// Logs a database operation failure without including any payload,
+  /// PII, or stack trace. Safe to call from every catch block.
+  static void dbError(String operation) {
+    _log('db | operation=$operation | status=error');
+  }
+
   static void _log(String message) {
     final String line = '[$_tag] $message';
     if (_testSink != null) {
