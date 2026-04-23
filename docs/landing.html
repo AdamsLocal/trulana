@@ -802,7 +802,7 @@ footer a:hover { color: var(--accent); }
 <!-- Nav: minimal brand mark only for PH launch -->
 <nav>
   <div class="nav-inner">
-    <a href="https://github.com/AdamsLocal/trulana" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana</a>
+    <a href="/" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana</a>
   </div>
 </nav>
 
@@ -814,10 +814,10 @@ footer a:hover { color: var(--accent); }
     <h1 class="hero-wordmark">Trulana</h1>
     <h2 class="hero-headline">Give AI context &mdash;<br>without giving it <em>your data.</em></h2>
     <p class="sub">Trulana is a local-first private context server. Apps query your context and preferences over REST or MCP &mdash; only redacted answers leave the device. AI gets more useful over time without owning your data.</p>
-    <div class="hero-proof"><span>REST + MCP verified</span> &middot; <span>134 tests passing</span> &middot; <span>Runs locally</span></div>
+    <div class="hero-proof"><span>REST + MCP verified</span> &middot; <span>Tested locally</span> &middot; <span>Runs locally</span></div>
     <div class="cta-row">
       <a href="#example" class="btn btn-primary">Run the demo</a>
-      <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost" target="_blank">View source</a>
+      <a href="mailto:adam@trulana.com?subject=Trulana%20Access" class="btn btn-ghost">Request access</a>
     </div>
     <div class="trust-row">
       <span class="trust-pill">Encrypted local vault</span>
@@ -1183,7 +1183,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 var installBar = document.getElementById('install-bar');
 if (installBar) {
   installBar.addEventListener('click', function() {
-    navigator.clipboard.writeText('git clone https://github.com/AdamsLocal/trulana && cd trulana && flutter run -d macos').then(function() {
+    navigator.clipboard.writeText('Private testing access is available by request.').then(function() {
       installBar.classList.add('copied');
       var copyEl = installBar.querySelector('.install-copy');
       copyEl.textContent = 'COPIED';
