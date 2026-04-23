@@ -23,10 +23,11 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 
 - Framework: Flutter (Dart 3.x) on macOS
 - Database: SQLite encrypted via sqflite_sqlcipher (AES-256)
-- Key storage: macOS Keychain via flutter_secure_storage (Secure Enclave backed)
+- Key storage: flutter_secure_storage — iOS/macOS Keychain, Android EncryptedSharedPreferences. The DB key is a symmetric AES key stored as a generic Keychain item; it is not generated or operated on inside the Secure Enclave.
 - REST API: shelf HTTP server bound to 127.0.0.1:8432 (localhost only)
 - MCP: stdio JSON-RPC adapter triggered via TRULANA_MCP=1 environment variable
-- Auth: Bearer tokens, 15-minute TTL, in-memory (don't survive restart)
+- Auth: Bearer tokens, 15-minute TTL, in-memory (don't survive restart). First-contact agents are pending until explicit user approval; users can narrow requested scopes before approving.
+- Scope enforcement: context.read required for /api/v1/context/query; monetize.write required for /api/v1/monetize/lease_offer.
 - Rate limiting: 60 requests/minute per agent (REST only, MCP pending)
 
 ## MCP tools
@@ -42,10 +43,11 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 
 ## Current limits
 
-- Scope enforcement records scopes but does not enforce them at query time
-- MCP uses local-process trust model (no cryptographic caller verification)
+- MCP uses a local-process trust model (no cryptographic caller verification)
 - MCP per-agent rate limiting not yet enforced
 - NER uses keyword dictionaries (on-device LLM is a future phase)
+- Release signing and notarization are performed manually (CI builds but does not sign). v1.0.0 is signed with an Apple Developer ID and notarized; v1.1.0 release tag has no attached artifact yet.
+- Audit log is encrypted-at-rest but not tamper-evident (no hash chain)
 
 ## Links
 
@@ -56,4 +58,4 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 
 ## Status
 
-macOS MVP / technical preview. 117 tests passing. REST and MCP verified.
+macOS MVP / technical preview. REST and MCP transports share the same service layer and are both gated by the same token-issuance, scope-enforcement, and audit-logging paths. Source-available under BSL 1.1; commercial production use requires a separate license from AdamsLocal LLC.

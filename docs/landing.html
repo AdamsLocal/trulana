@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trulana — Give AI context without giving it your data</title>
+<title>Trulana - Give AI context without giving it your data</title>
 
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -15,7 +15,7 @@
 <link rel="canonical" href="https://trulana.com/">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Trulana — Give AI context without giving it your data">
+<meta property="og:title" content="Trulana - Give AI context without giving it your data">
 <meta property="og:description" content="A local-first private context server with structured preferences. Apps query over REST or MCP. Only redacted answers leave the device. AI gets more useful over time.">
 <meta property="og:url" content="https://trulana.com/">
 <meta property="og:image" content="https://trulana.com/trulana-og.png">
@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="Trulana">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Trulana — Give AI context without giving it your data">
+<meta name="twitter:title" content="Trulana - Give AI context without giving it your data">
 <meta name="twitter:description" content="A local-first private context server. Apps get answers, not your data.">
 <meta name="twitter:image" content="https://trulana.com/trulana-og.png">
 
@@ -44,40 +44,32 @@
   "applicationSubCategory": "Privacy Tools",
   "operatingSystem": "macOS",
   "softwareVersion": "1.0.0-mvp",
-  "releaseNotes": "macOS MVP with REST API on localhost:8432, MCP stdio adapter for Claude/Cursor, 3-stage Auto-Redact Engine, structured preferences, encrypted database, token-based auth, and audit logging. 134 tests passing.",
+  "releaseNotes": "macOS MVP with REST API on localhost:8432, MCP stdio adapter for Claude/Cursor, 3-stage Auto-Redact Engine, structured preferences, encrypted database, token-based auth with per-scope enforcement, user-approved agent access, and audit logging.",
   "url": "https://trulana.com/",
-  "downloadUrl": "https://github.com/AdamsLocal/trulana",
-  "codeRepository": "https://github.com/AdamsLocal/trulana",
   "programmingLanguage": ["Dart", "Flutter"],
   "runtimePlatform": "Flutter macOS",
   "permissions": "No network access required. Runs entirely on localhost.",
   "screenshot": "https://trulana.com/trulana-og.png",
   "featureList": [
-    "Apple signed and notarized macOS app",
-    "Local-first encrypted context vault (AES-256)",
+    "Apple Developer ID signed and notarized macOS release (v1.0.0)",
+    "Local-first encrypted context vault (SQLCipher AES-256)",
     "REST API on localhost:8432",
     "MCP stdio adapter for Claude Desktop and Cursor",
     "3-stage PII auto-redaction (regex, NER, privacy-level generalization)",
-    "Token-based auth with 15-minute TTL",
-    "Encrypted audit log for every request",
+    "Scoped access tokens with 15-minute TTL and per-scope enforcement",
+    "User-approved agent access (first contact is pending until explicit approval)",
+    "Encrypted audit log for token grants, rejections, queries, and offers",
     "Structured preferences for compounding local context",
-    "Three privacy levels: Standard, Strict, Paranoid",
-    "134 automated tests"
+    "Three privacy levels: Standard, Strict, Paranoid"
   ],
   "author": {
     "@type": "Person",
     "name": "Adam",
-    "email": "adam@trulana.com",
-    "url": "https://github.com/AdamsLocal"
+    "email": "adam@trulana.com"
   },
-  "license": "https://opensource.org/licenses/MIT",
-  "isAccessibleForFree": true,
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock"
-  },
+  "license": "https://mariadb.com/bsl11/",
+  "isAccessibleForFree": false,
+  "description_license": "Source-available under the Business Source License 1.1. Free for non-commercial, personal, research, and evaluation use. Production use by a commercial entity requires a separate commercial license from AdamsLocal LLC.",
   "keywords": "privacy, local-first, AI, context server, MCP, redaction, personal data, macOS, Flutter, PII"
 }
 </script>
@@ -938,13 +930,14 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">How it works</div>
-    <h2>Five steps. All local.</h2>
+    <h2>Six steps. All local.</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">01</div><div class="step-text"><h3>App requests access</h3><p>An app sends an auth request with its name, ID, and stated intent.</p></div></div>
-      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Trulana issues a scoped token</h3><p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart.</p></div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>App queries your local context</h3><p>Trulana matches the request against your encrypted vault and structured preferences &mdash; on-device, before anything is returned.</p></div></div>
-      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>The redaction engine runs</h3><p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations &mdash; all caught.</p></div></div>
-      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful, personalized context with identifying details stripped. The raw data never moved.</p></div></div>
+      <div class="step"><div class="step-num">01</div><div class="step-text"><h3>App requests access</h3><p>An app sends an auth request with its name, ID, requested scopes, and stated intent.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>You approve or reject</h3><p>First-contact agents go into a pending queue. You review the requested scopes, narrow them if you want, and approve or reject explicitly. No silent activation.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>Trulana issues a scoped token</h3><p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart. Scopes are enforced at query time, not just recorded.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>App queries your local context</h3><p>Trulana matches the request against your encrypted vault and structured preferences &mdash; on-device, before anything is returned.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>The redaction engine runs on context responses</h3><p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations &mdash; all caught.</p></div></div>
+      <div class="step"><div class="step-num">06</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful, personalized context with identifying details stripped. The raw data never moved.</p></div></div>
     </div>
   </div>
 </section>
@@ -971,18 +964,17 @@ footer a:hover { color: var(--accent); }
   </div>
 </section>
 
-<!-- 8. GOVERNMENT & REGULATED INDUSTRIES -->
+<!-- 8. DATA-MINIMIZATION USE CASES -->
 <section>
   <div class="container">
-    <div class="section-label">Government &amp; regulated industries</div>
-    <h2>AI agents for compliance-first teams.</h2>
+    <div class="section-label">Data-minimization use cases</div>
+    <h2>When you'd rather not send the data at all.</h2>
     <div class="gov-card">
-      <p class="gov-text">Trulana runs a local encrypted context server so government teams can use AI agents without sending PII or sensitive data to cloud providers. Fully on-device, BSL&nbsp;1.1, Pro/Team tiers ready. Built for compliance-first workflows.</p>
+      <p class="gov-text">Trulana runs a local encrypted context server so teams working with sensitive material can use AI agents without sending the underlying data to cloud providers. Source-available under BSL&nbsp;1.1 (commercial production use requires a separate license). Specific regulatory certifications (HIPAA, SOC&nbsp;2, FedRAMP, etc.) are not claimed.</p>
       <div class="gov-pills">
         <span class="trust-pill">No cloud egress</span>
         <span class="trust-pill">On-device encryption</span>
         <span class="trust-pill">BSL 1.1 licensed</span>
-        <span class="trust-pill">Pro &amp; Team tiers</span>
       </div>
     </div>
   </div>
@@ -1003,22 +995,21 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">Current status</div>
-    <h2>Working macOS MVP. Build it and run it today.</h2>
-    <div class="install-bar" id="install-bar">
-      <span><span style="color:var(--accent)">$</span> git clone https://github.com/AdamsLocal/trulana &amp;&amp; cd trulana &amp;&amp; flutter run -d macos</span>
-      <span class="install-copy">COPY</span>
-    </div>
+    <h2>Working macOS MVP. Signed &amp; notarized v1.0.0 in private testing.</h2>
+    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana is currently in private testing with a small group of macOS design partners. The v1.0.0 release is signed with an Apple Developer ID, notarized, and stapled. Public release and source availability are planned for a later milestone.</p>
     <div class="status-list">
-      <div class="status-item"><div class="status-dot live"></div>Apple signed &amp; notarized macOS app</div>
+      <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed &amp; notarized (v1.0.0 release, stapled)</div>
       <div class="status-item"><div class="status-dot live"></div>macOS app with encrypted local database</div>
       <div class="status-item"><div class="status-dot live"></div>REST API on localhost:8432</div>
       <div class="status-item"><div class="status-dot live"></div>MCP integration (works in Cursor today)</div>
       <div class="status-item"><div class="status-dot live"></div>Token-based auth with 15-minute TTL</div>
-      <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction pipeline</div>
+      <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction pipeline for context responses</div>
+      <div class="status-item"><div class="status-dot live"></div>Per-scope enforcement (context.read, monetize.write)</div>
+      <div class="status-item"><div class="status-dot live"></div>User-approved agent access with scope narrowing</div>
       <div class="status-item"><div class="status-dot live"></div>Structured preferences for compounding local context</div>
-      <div class="status-item"><div class="status-dot live"></div>Encrypted audit log for every query</div>
-      <div class="status-item"><div class="status-dot live"></div>134 tests passing, 38 REST + 18 MCP checks</div>
-      <div class="status-item"><div class="status-dot soon"></div>Scope enforcement (in progress)</div>
+      <div class="status-item"><div class="status-dot live"></div>Encrypted audit log for grants, rejections, and context queries</div>
+      <div class="status-item"><div class="status-dot live"></div>Test suite covering redaction, scope, approval, and log hygiene</div>
+      <div class="status-item"><div class="status-dot soon"></div>Signing &amp; notarization automated in CI (currently manual)</div>
       <div class="status-item"><div class="status-dot soon"></div>On-device LLM for NER (next phase)</div>
     </div>
   </div>
@@ -1036,14 +1027,13 @@ footer a:hover { color: var(--accent); }
     </ul>
     <div class="cta-row">
       <a href="mailto:adam@trulana.com?subject=Design Partner Inquiry" class="btn btn-primary">Become a design partner</a>
-      <a href="https://github.com/AdamsLocal/trulana" class="btn btn-ghost" target="_blank">View source</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="container">
-    &copy; 2026 AdamsLocal. Trulana is a trademark of AdamsLocal. All rights reserved. &middot; <a href="https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md">Security</a> &middot; <a href="https://github.com/AdamsLocal/trulana">Source</a> &middot; <a href="mailto:adam@trulana.com">Contact</a>
+    &copy; 2026 AdamsLocal. Trulana is a trademark of AdamsLocal. All rights reserved. &middot; <a href="mailto:adam@trulana.com?subject=Security Inquiry">Security</a> &middot; <a href="mailto:adam@trulana.com">Contact</a>
   </div>
 </footer>
 

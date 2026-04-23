@@ -34,31 +34,36 @@ Trulana is a local-first personal data broker. All data stays on-device in an en
 
 - Runs as a subprocess launched by the MCP client (Claude Desktop, Cursor, etc.).
 - The MCP client controls which binary is launched and what environment variables are set.
-- Access is gated by `AuthService` — agents must call `trulana_request_access` to obtain a token before calling `trulana_query_context`.
+- Access is gated by `AuthService` — agents must call `sovereign_request_access` to obtain a token before calling `sovereign_query_context`.
 - Both calls flow through the same service singletons as REST. No bypass path exists.
 
 ### Current Trust Boundary (MVP)
 
 - Any local process that can invoke the binary with `TRULANA_MCP=1` can start an MCP session.
-- Access is still gated by token issuance: the agent must provide `app_id`, `app_name`, `scopes`, and `intent` to receive a token.
-- Every access attempt (successful or rejected) is written to the encrypted audit log.
+- Access is gated by an explicit user approval step: first-contact agents are persisted as `pending` and receive no token until the user approves them from the Gatekeeper UI. The user may narrow the requested scopes before approval.
+- Approved tokens carry only the scopes the user confirmed; re-auth cannot broaden the grant.
+- `/api/v1/context/query` and MCP `sovereign_query_context` require the `context.read` scope.
+- `/api/v1/monetize/lease_offer` requires the `monetize.write` scope.
+- Every access attempt (successful, rejected, or pending) is written to the encrypted audit log.
 - Tokens are in-memory only (RAM), 15-minute TTL, and do not survive process restart.
 
 ### What Is Not Yet Enforced
 
-- **User consent modal**: The MVP auto-approves token requests. Production will require explicit user approval before granting access.
-- **Scope enforcement**: Scopes are recorded but not enforced at the query level. Any valid token can query any vault context.
-- **Per-agent rate limiting on MCP**: The REST path has sliding-window rate limiting. The MCP path currently does not enforce per-agent rate limits (the service layer does not rate-limit; only the shelf middleware does).
+- **Per-agent rate limiting on MCP**: The REST path has sliding-window rate limiting. The MCP stdio transport currently does not enforce per-agent rate limits.
+- **Tamper-evidence on the audit log**: The audit table lives in the encrypted database. An attacker who obtained the database key could modify rows without detection (no hash chain, no append-only journal, no external attestation).
+- **Cryptographic caller verification on MCP**: MCP uses a local-process trust model. Any process that can spawn the binary with `TRULANA_MCP=1` can start a session — approval still gates data access, but the caller identity is not cryptographically attested.
 
 ## Encryption
 
 ### Database
 
 - `sqflite_sqlcipher` provides AES-256 full-database encryption.
-- The encryption key is a 256-bit value generated from `Random.secure()` (maps to `/dev/urandom`).
-- The key is stored in macOS Keychain via `flutter_secure_storage` with:
-  - `KeychainAccessibility.first_unlock_this_device` — key is non-migratable between devices.
-  - The key never appears in logs, environment variables, or application memory beyond the initial retrieval.
+- The encryption key is a 256-bit value generated from `Random.secure()` (maps to `/dev/urandom` on POSIX).
+- The key is stored via `flutter_secure_storage`:
+  - iOS: Keychain with `KeychainAccessibility.first_unlock_this_device` (non-migratable between devices; items stored by iOS under hardware-protected storage on supported devices). The key itself is a symmetric AES key held as a generic Keychain item — it is **not** generated or operated on inside the Secure Enclave. The Secure Enclave is only engaged by `SecKeyCreateRandomKey` with `kSecAttrTokenIDSecureEnclave`, which this code does not use.
+  - Android: `EncryptedSharedPreferences`.
+  - macOS: default Keychain options (no explicit hardware-key binding).
+- The key never appears in logs, environment variables, or application memory beyond the initial retrieval.
 
 ### Key Lifecycle
 
@@ -100,35 +105,44 @@ Both REST and MCP paths write audit entries through the same `AuthService` and `
 
 ## macOS Release Checklist
 
-Before distributing the Trulana binary:
+Release signing is performed **manually on the built artifact**, not inside the Xcode project. The local project uses `CODE_SIGN_IDENTITY = "-"` (ad-hoc) for developer iteration; release binaries are re-signed with a Developer ID and notarized as a separate step. Status below reflects the v1.0.0 release artifact (`trulana-release.zip` on the GitHub release page):
 
-- [x] **Code signing**: Sign the `.app` bundle with a valid Apple Developer ID. Unsigned binaries will be blocked by Gatekeeper.
-- [x] **Hardened runtime**: Enable hardened runtime in Xcode build settings. Required for notarization and prevents code injection.
-- [x] **Notarization**: Submit the signed binary to Apple's notarization service via `xcrun notarytool`. This is required for macOS 10.15+ distribution outside the App Store.
-- [x] **Entitlements review**: Verify that only required entitlements are present:
+- [x] **Code signing** — v1.0.0 is signed with `Developer ID Application: Adam Gurley (7S7QY5ND9Q)`. Verified via `codesign -dvvv` (Authority chain ends at Apple Root CA, timestamped 2026-03-30).
+- [x] **Hardened runtime** — v1.0.0 has `flags=0x10000(runtime)`. Required for notarization.
+- [x] **Notarization** — v1.0.0 has a stapled notarization ticket. Verified via `stapler validate` ("The validate action worked!") and `spctl -a --type execute` ("accepted, source=Notarized Developer ID").
+- [x] **Entitlements review** — Only the following are present on release:
   - `com.apple.security.app-sandbox` — required
   - `com.apple.security.network.server` — required for localhost binding
   - `com.apple.security.cs.allow-jit` — required for Dart VM (debug only)
-- [x] **Do not distribute unsigned debug builds.** Debug builds emit the Dart VM service URL to stdout, include assert-enabled code paths (e.g. `debug_ttl_seconds`), and are not hardened.
+- [x] **Do not distribute unsigned debug builds.** Debug builds emit the Dart VM service URL to stdout, include assert-enabled code paths (e.g. `debug_ttl_seconds`), and are not hardened. Policy stands.
+
+**Open release-hygiene items** (not code-signing, but related):
+
+- [ ] **Automate signing + notarization in CI.** The current `.github/workflows/ci.yml` builds the release bundle but does not codesign, notarize, or staple. Signing is performed manually by the maintainer holding the Developer ID key. A future release workflow should invoke `codesign --timestamp --options runtime`, `xcrun notarytool submit --wait`, and `xcrun stapler staple` so future releases are reproducible.
+- [ ] **v1.1.0 release has no attached artifact.** The "Latest" tag on GitHub has release notes but no downloadable binary. Either attach a re-notarized v1.1.0 `.zip` / `.dmg` or hide v1.1.0 from the release list until an artifact exists.
+- [ ] **Developer ID is personal (`Adam Gurley`), not organizational (`AdamsLocal LLC`).** The landing and LICENSE assert trademark/ownership by AdamsLocal LLC; the signing identity on shipped binaries is personal. Recommended to transfer to an org Developer ID before any paid commercial release.
 
 ## Acceptable Risks (MVP)
 
 | Risk | Severity | Mitigation | Status |
 |---|---|---|---|
-| Auto-approve on token requests | Medium | Audit log captures all grants. Production adds consent modal. | Documented |
-| Scopes recorded but not enforced | Low | Any valid token can query any context. Redaction still applies. | Documented |
-| No per-agent rate limiting on MCP | Low | MCP is local subprocess, not network-exposed. | Documented |
-| Mock NER (keyword-based, not AI) | Medium | Regex filter catches structured PII. Mock NER catches common names/cities/orgs. Real NER is a future phase. | Documented |
+| No per-agent rate limiting on MCP | Low | MCP is a local subprocess, not network-exposed. User approval still gates data access. | Documented |
+| Mock NER (keyword-based, not AI) | Medium | Regex filter catches structured PII. Mock NER catches common names/cities/orgs. Real on-device NER is a future phase. | Documented |
+| Audit log is not tamper-evident | Medium | Audit rows are encrypted-at-rest inside the SQLCipher database but have no hash chain or external attestation. An attacker with the DB key could modify rows without detection. | Documented |
 | Debug build stdout contamination | Low | Release builds are clean. `test_mcp.sh` validates. | Validated |
 | TokenManager is in-memory | Low | By design — tokens don't survive restart. Limits blast radius. | By design |
+| No CI signing pipeline | Medium | Release signing + notarization is performed manually by the maintainer holding the Developer ID key. Human-dependent; no audit trail of the signing step. Future CI workflow should automate it. | Open |
+| "Latest" release tag has no artifact | Medium | v1.1.0 is marked latest on GitHub but has 0 attached assets. Users following release-download links from the landing page get nothing. v1.0.0 (the most recent release with an artifact) IS signed and notarized. | Open |
 
 ## Test Coverage
 
-| Area | Tests | What Is Asserted |
-|---|---|---|
-| Redaction pipeline | 89 unit tests | All PII types stripped at all privacy levels |
-| REST API | 38 integration checks | Auth, rejection, redaction, PII leak detection, token expiry |
-| MCP protocol | 18 checks (release) | Stdout cleanliness, tool discovery, auth, redaction, rejection |
-| Service loop + models | 31 integration tests | Full auth → query → redact → audit E2E + preference model |
-| Log hygiene | 6 tests | No tokens, PII, keys, or DB paths in log output |
-| Auth consistency | 5 tests | Singleton identity, identical validation across transports |
+Test counts are not pinned here. Run `flutter test` for the current number. The suite covers:
+
+| Area | What Is Asserted |
+|---|---|
+| Redaction pipeline | All supported PII types are stripped at each privacy level |
+| Service loop | Token minted with `context.read` → query → redact → audit, end-to-end, for multiple content flavors |
+| Scope enforcement | Tokens without `context.read` are rejected; tokens without `monetize.write` cannot submit lease offers |
+| Approval flow | Defensive paths: empty scopes, not-found, not-pending, non-pending rejection does not revoke tokens |
+| Log hygiene | No tokens, PII, keys, or DB paths appear in log output |
+| Auth consistency | Singleton identity, identical validation across transports, identical rejection codes |

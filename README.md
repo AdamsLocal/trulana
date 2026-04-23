@@ -2,22 +2,23 @@
 
 > **Your device is the API. Apps get answers, not your data.**
 
-Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
+Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every context response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
 
-![Tests](https://img.shields.io/badge/tests-134%20passing-3DFFD0?style=flat-square) ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
+![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
 
 ---
 
-## How it works — six steps, zero leaks
+## How it works
 
 | Step | What happens |
 |------|-------------|
-| 01 · App requests access | Via REST or MCP stdio adapter |
-| 02 · Token issued | 15-min TTL · in-memory only · never persisted |
-| 03 · Context queried | App queries your local vault over localhost |
-| **04 · Auto-Redact Engine** | **3-stage PII pipeline fires on every response** |
-| 05 · Sanitized data returned | Answers only — no raw context ever leaves |
-| 06 · Audit logged | Encrypted trail · every request · tamper-evident |
+| 01 · App requests access | Via REST or MCP stdio adapter; provides requested scopes and intent |
+| 02 · You approve or reject | First-contact agents are pending until you approve. You can narrow the requested scopes before approval. |
+| 03 · Token issued | 15-min TTL · in-memory only · never persisted · scopes enforced at query time |
+| 04 · Context queried | App queries your local vault over localhost using the token |
+| **05 · Auto-Redact Engine** | **3-stage PII pipeline runs on every context response** |
+| 06 · Sanitized data returned | Answers only — no raw context ever leaves |
+| 07 · Audit logged | Encrypted trail for grants, rejections, queries, and offers |
 
 ---
 
@@ -83,8 +84,8 @@ Server binds to `localhost:8432`. Non-loopback connections rejected.
 | Layer | Technology |
 |-------|-----------|
 | Framework | Flutter · Dart 3.x · every OS |
-| Database | SQLite encrypted via `sqflite_sqlcipher` |
-| Key storage | macOS Keychain · Secure Enclave backed |
+| Database | SQLite encrypted via `sqflite_sqlcipher` (AES-256) |
+| Key storage | `flutter_secure_storage` — iOS/macOS Keychain, Android `EncryptedSharedPreferences` |
 | Biometrics | `local_auth` · Touch ID · no passwords · no accounts |
 | Local server | `shelf` · localhost only · rejects non-loopback |
 | MCP | stdio adapter · works with Claude + Cursor today |
@@ -94,17 +95,19 @@ Server binds to `localhost:8432`. Non-loopback connections rejected.
 
 ## Privacy & Security
 
-**Zero cloud storage** — All data encrypted locally. Keys in OS Keychain, Secure Enclave backed. Nothing leaves the device unredacted.
+**Zero cloud storage** — All data encrypted locally. The DB encryption key is held in the platform's secure-storage store (iOS/macOS Keychain, Android `EncryptedSharedPreferences`) and never leaves the device.
 
 **Biometric gate** — Touch ID. No passwords, no accounts, no recovery email.
 
-**Auto-Redact Engine** — 3-stage pipeline on every outbound response: regex PII stripping → entity recognition → privacy-level generalization.
+**User-approved agent access** — First-contact agents are persisted as pending. You approve or reject explicitly and can narrow the requested scopes before approval. No silent activation.
 
-**TTL tokens** — 15-minute expiry. In-memory only. Don't survive a restart. Scope recorded per token.
+**Auto-Redact Engine** — 3-stage pipeline on every **context response**: regex PII stripping → entity recognition → privacy-level generalization. (The auth and monetize routes do not emit context data, so they bypass the engine by design.)
+
+**TTL tokens** — 15-minute expiry. In-memory only. Don't survive a restart. Scopes are enforced at query time — `context.read` for `/context/query`, `monetize.write` for `/monetize/lease_offer`.
 
 **Localhost only** — Server binds to `127.0.0.1`. Non-loopback connections rejected at the socket level.
 
-**Encrypted audit trail** — Every request logged. Tamper-evident. You own the log and the key.
+**Encrypted audit trail** — Every grant, rejection, query, and offer is written to the encrypted audit table. The trail is encrypted-at-rest but not tamper-evident (no hash chain); an attacker with the DB key could modify rows without detection.
 
 See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
 
@@ -113,20 +116,22 @@ See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
 ## Tests
 
 ```bash
-flutter test                        # all 134 tests
-flutter test test/engine/           # redaction pipeline (89 tests)
-flutter test test/security/         # log hygiene + auth consistency (11 tests)
-flutter test test/integration/      # full service loop + preferences E2E (31 tests)
+flutter test                        # full suite
+flutter test test/engine/           # redaction pipeline
+flutter test test/security/         # log hygiene, auth consistency, approval flow
+flutter test test/integration/      # service loop + monetize route
 ```
 
 ---
 
 ## Current limits
 
-- Scope enforcement records scopes but does not yet gate queries by scope
-- MCP uses local-process trust model — no cryptographic caller verification yet
+- MCP uses a local-process trust model — no cryptographic caller verification
 - MCP per-agent rate limiting not yet enforced
 - NER uses keyword dictionaries — on-device LLM redaction is a future phase
+- Release signing + notarization are performed manually — CI builds but does not sign
+- v1.1.0 release tag has no attached artifact; v1.0.0 is the most recent signed + notarized build
+- Audit log is encrypted-at-rest but not tamper-evident (no hash chain)
 
 ---
 
