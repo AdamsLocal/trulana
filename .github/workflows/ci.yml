@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     # Tests run on macOS: flutter_secure_storage (Keychain) and
