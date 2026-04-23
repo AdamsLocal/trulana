@@ -21,7 +21,7 @@
   var piiPatterns = [
     { rx: /\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/g, tag: 'SSN REDACTED' },
     { rx: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, tag: 'EMAIL REDACTED' },
-    { rx: /(?<!\d)(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?!\d)/g, tag: 'PHONE REDACTED' },
+    { rx: /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?!\d)/g, tag: 'PHONE REDACTED' },
     { rx: /\b(?:\d{4}[-\s]?){3}\d{1,4}\b|\b\d{4}[-\s]?\d{6}[-\s]?\d{5}\b/g, tag: 'CARD REDACTED' },
     { rx: /\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b/g, tag: 'IP REDACTED' }
   ];
@@ -68,7 +68,7 @@
       });
       if (match) hits.push(e.raw);
     });
-    var raw = hits.length > 0 ? hits.join(' ') : q;
+    var raw = hits.length > 0 ? hits.join(' ') : 'No matching data found.';
     var r = redact(raw);
     return { data: r.text, redactions: r.count, hits: hits.length };
   }
