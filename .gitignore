@@ -67,3 +67,9 @@ CHANGELOG.md
 PRIVACY_POLICY.md
 .dart_tool/
 CONTRIBUTING.md
+.vercel
+.env*.local
+
+# Icon export artifacts (not used at build time)
+assets/images/Icon Exports/
+assets/images/trulana.icon/

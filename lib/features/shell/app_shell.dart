@@ -140,7 +140,7 @@ class _Sidebar extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'v1.0.0-mvp',
+                      'v1.2.1',
                       style: TrulanaTheme.monoStyle.copyWith(
                         fontSize: 9,
                         color: TrulanaColors.textTertiary,

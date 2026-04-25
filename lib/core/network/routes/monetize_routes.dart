@@ -4,6 +4,7 @@ import 'package:shelf/shelf.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:trulana/core/database/database_helper.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/network/middleware/auth_middleware.dart';
 import 'package:trulana/core/network/token_manager.dart';
 import 'package:trulana/models/models.dart';
@@ -24,12 +25,28 @@ Future<Response> handleLeaseOffer(Request request) async {
         request.context[kAccessTokenContextKey] as AccessToken?;
 
     if (token == null) {
+      SafeLogger.monetizeRejected(statusCode: 401);
       return Response(
         401,
         headers: <String, String>{'content-type': 'application/json'},
         body: jsonEncode(<String, String>{
           'status': 'error',
           'message': 'Authentication required.',
+        }),
+      );
+    }
+
+    if (!token.grantedScopes.contains('monetize.write')) {
+      SafeLogger.monetizeRejected(
+        statusCode: 403,
+        agentId: token.agentId,
+      );
+      return Response(
+        403,
+        headers: <String, String>{'content-type': 'application/json'},
+        body: jsonEncode(<String, String>{
+          'status': 'error',
+          'message': 'Token does not include the monetize.write scope.',
         }),
       );
     }

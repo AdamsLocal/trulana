@@ -89,6 +89,16 @@ class SafeLogger {
         ' | action=rejected');
   }
 
+  static void monetizeRejected({
+    required int statusCode,
+    String? agentId,
+  }) {
+    final String agentPart = agentId != null ? ' | agent=$agentId' : '';
+    _log('monetize/lease_offer -> $statusCode'
+        '$agentPart'
+        ' | action=rejected');
+  }
+
   static void _log(String message) {
     final String line = '[$_tag] $message';
     if (_testSink != null) {

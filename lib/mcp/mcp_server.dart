@@ -7,7 +7,7 @@ import 'package:trulana/core/services/auth_service.dart';
 import 'package:trulana/core/services/context_query_service.dart';
 
 const String _serverName = 'trulana';
-const String _serverVersion = '1.0.0';
+const String _serverVersion = '1.2.1';
 
 /// MCP stdio server that exposes Trulana's shared services over the
 /// Model Context Protocol. Reads JSON-RPC 2.0 from stdin, dispatches

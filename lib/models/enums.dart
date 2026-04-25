@@ -21,6 +21,7 @@ enum PrivacyLevel {
 /// Lifecycle state of a third-party agent's access grant.
 /// Stored as lowercase strings so SQLite queries remain human-readable.
 enum AgentStatus {
+  pending('pending'),
   active('active'),
   revoked('revoked'),
   paused('paused');
@@ -30,6 +31,7 @@ enum AgentStatus {
   final String value;
 
   static AgentStatus fromValue(String value) => switch (value) {
+        'pending' => AgentStatus.pending,
         'active' => AgentStatus.active,
         'revoked' => AgentStatus.revoked,
         'paused' => AgentStatus.paused,

@@ -82,6 +82,17 @@ class ContextQueryService {
       );
     }
 
+    if (!token.grantedScopes.contains('context.read')) {
+      SafeLogger.contextQueryRejected(
+        statusCode: 403,
+        agentId: token.agentId,
+      );
+      return ContextQueryResult.failure(
+        errorCode: 403,
+        errorMessage: 'Token does not include the context.read scope.',
+      );
+    }
+
     if (query == null || query.isEmpty) {
       SafeLogger.contextQueryRejected(
         statusCode: 400,
@@ -102,8 +113,39 @@ class ContextQueryService {
         await PreferencesService.instance.queryPreferences(query);
 
     final List<String> allHits = <String>[...prefHits, ...vaultHits];
-    final String rawContext =
-        allHits.isNotEmpty ? allHits.join(' ') : query;
+
+    // When the vault has no matching context, return an empty response
+    // rather than reflecting the caller's raw query back through the
+    // redaction engine. The redacted-query echo gave the caller an
+    // oracle for probing the redaction pipeline and muddied the audit
+    // trail (same 'Context query processed' entry for both "vault data
+    // returned" and "nothing found").
+    if (allHits.isEmpty) {
+      final AuditLogEntry emptyAuditEntry = AuditLogEntry(
+        logId: _uuid.v4(),
+        agentId: token.agentId,
+        requestIntent: 'Context query: no vault match',
+        actionTaken: AuditAction.redacted,
+        timestamp: DateTime.now(),
+      );
+      await _db.insertAuditEntry(emptyAuditEntry);
+
+      SafeLogger.contextQuery(
+        agentId: token.agentId,
+        privacyLevel: level.name,
+        redactions: 0,
+        vaultHits: 0,
+      );
+
+      return ContextQueryResult.success(
+        sanitizedText: '',
+        privacyLevel: level.name,
+        redactionsApplied: 0,
+        vaultHits: 0,
+      );
+    }
+
+    final String rawContext = allHits.join(' ');
 
     final AutoRedactEngine engine = AutoRedactEngine();
     final RedactionResult result = await engine.process(rawContext, level);

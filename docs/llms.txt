@@ -46,16 +46,15 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 - MCP uses a local-process trust model (no cryptographic caller verification)
 - MCP per-agent rate limiting not yet enforced
 - NER uses keyword dictionaries (on-device LLM is a future phase)
-- Release signing and notarization are performed manually (CI builds but does not sign). v1.0.0 is signed with an Apple Developer ID and notarized; v1.1.0 release tag has no attached artifact yet.
+- Release signing and notarization are performed manually (CI builds but does not sign). v1.2.1 is the current release: Developer ID signed, notarized, stapled, Gatekeeper accepted.
 - Audit log is encrypted-at-rest but not tamper-evident (no hash chain)
 
 ## Links
 
-- Source: https://github.com/AdamsLocal/trulana
-- Security model: https://github.com/AdamsLocal/trulana/blob/main/SECURITY.md
 - Landing page: https://trulana.com/
 - Contact: adam@trulana.com
+- Source repository: not currently public (private during this milestone). Public source-available release under BUSL 1.1 is planned.
 
 ## Status
 
-macOS MVP / technical preview. REST and MCP transports share the same service layer and are both gated by the same token-issuance, scope-enforcement, and audit-logging paths. Source-available under BSL 1.1; commercial production use requires a separate license from AdamsLocal LLC.
+macOS Desktop MVP. Current release: v1.2.1 (Developer ID signed, notarized, stapled, Gatekeeper accepted). REST and MCP transports share the same service layer and are both gated by the same token-issuance, scope-enforcement, and audit-logging paths. Licensed under BUSL 1.1 (not MIT, not Apache); commercial production use requires a separate paid license from AdamsLocal LLC. No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.

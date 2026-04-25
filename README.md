@@ -1,10 +1,27 @@
-# Trulana™
+# Trulana
 
 > **Your device is the API. Apps get answers, not your data.**
 
-Trulana turns any device into a private context server for AI tools. Apps query over localhost or MCP — every context response is redacted on-device before it leaves. MCP-native. Cross-platform. Zero cloud.
+Trulana is a local-first private context system for AI tools. Apps query over localhost (REST) or MCP — every context response is redacted on-device before it leaves. The current shipped artifact is a **macOS Desktop MVP**.
 
-![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/platform-macOS%20·%20Windows%20·%20Linux%20·%20iOS%20·%20Android-0A0820?style=flat-square&labelColor=1ABFA0)
+![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square) ![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square) ![Platform](https://img.shields.io/badge/public%20binary-macOS%20only-0A0820?style=flat-square&labelColor=1ABFA0)
+
+---
+
+## Current release
+
+**v1.2.1 — macOS Desktop MVP**
+
+- Developer ID signed (`Adam Gurley · 7S7QY5ND9Q`)
+- Apple notarized
+- Notarization ticket stapled
+- Gatekeeper accepted (`spctl --assess --type execute` → `accepted, source=Notarized Developer ID`)
+- Universal binary (x86_64 + arm64)
+- Hardened runtime enabled
+
+macOS is the only current public binary. Other platforms are not shipped.
+
+Signing and notarization are currently performed manually. CI builds the bundle but does not yet sign or notarize.
 
 ---
 
@@ -22,30 +39,7 @@ Trulana turns any device into a private context server for AI tools. Apps query 
 
 ---
 
-## Quickstart (macOS)
-
-```bash
-git clone https://github.com/AdamsLocal/trulana.git
-cd trulana
-flutter pub get
-flutter run -d macos
-```
-
-Then in a second terminal:
-
-```bash
-./scripts/demo_client.sh
-```
-
----
-
 ## MCP Integration (Claude / Cursor)
-
-Build release:
-
-```bash
-flutter build macos --release
-```
 
 Add to your MCP client config:
 
@@ -53,7 +47,7 @@ Add to your MCP client config:
 {
   "mcpServers": {
     "trulana": {
-      "command": "/absolute/path/to/trulana.app/Contents/MacOS/trulana",
+      "command": "/Applications/trulana.app/Contents/MacOS/trulana",
       "env": { "TRULANA_MCP": "1" }
     }
   }
@@ -69,13 +63,14 @@ Two tools exposed:
 
 ## REST API
 
-Server binds to `localhost:8432`. Non-loopback connections rejected.
+Server binds to `127.0.0.1:8432`. Non-loopback connections rejected at the socket level.
 
 | Endpoint | Method | Auth | Purpose |
 |----------|--------|------|---------|
 | `/api/v1/health` | GET | None | Server health check |
-| `/api/v1/auth/request` | POST | None | Agent handshake · returns access token |
-| `/api/v1/context/query` | POST | Bearer token | Query vault · response redacted by Auto-Redact Engine |
+| `/api/v1/auth/request` | POST | None | Agent handshake · returns access token (or 403 + pending if first contact) |
+| `/api/v1/context/query` | POST | Bearer token + `context.read` scope | Query vault · response redacted by Auto-Redact Engine |
+| `/api/v1/monetize/lease_offer` | POST | Bearer token + `monetize.write` scope | Submit a lease offer |
 
 ---
 
@@ -83,21 +78,21 @@ Server binds to `localhost:8432`. Non-loopback connections rejected.
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Flutter · Dart 3.x · every OS |
+| Framework | Flutter · Dart 3.x |
 | Database | SQLite encrypted via `sqflite_sqlcipher` (AES-256) |
-| Key storage | `flutter_secure_storage` — iOS/macOS Keychain, Android `EncryptedSharedPreferences` |
-| Biometrics | `local_auth` · Touch ID · no passwords · no accounts |
+| Key storage | `flutter_secure_storage` — macOS Keychain (the DB key is held as a generic Keychain item; it is **not** generated or operated on inside the Secure Enclave) |
+| Biometrics | `local_auth` · Touch ID |
 | Local server | `shelf` · localhost only · rejects non-loopback |
-| MCP | stdio adapter · works with Claude + Cursor today |
+| MCP | stdio adapter |
 | State | Riverpod |
 
 ---
 
 ## Privacy & Security
 
-**Zero cloud storage** — All data encrypted locally. The DB encryption key is held in the platform's secure-storage store (iOS/macOS Keychain, Android `EncryptedSharedPreferences`) and never leaves the device.
+**Local-only storage** — All data encrypted locally. The DB encryption key is held in the macOS Keychain and never leaves the device.
 
-**Biometric gate** — Touch ID. No passwords, no accounts, no recovery email.
+**Biometric gate** — Touch ID. No accounts.
 
 **User-approved agent access** — First-contact agents are persisted as pending. You approve or reject explicitly and can narrow the requested scopes before approval. No silent activation.
 
@@ -107,7 +102,9 @@ Server binds to `localhost:8432`. Non-loopback connections rejected.
 
 **Localhost only** — Server binds to `127.0.0.1`. Non-loopback connections rejected at the socket level.
 
-**Encrypted audit trail** — Every grant, rejection, query, and offer is written to the encrypted audit table. The trail is encrypted-at-rest but not tamper-evident (no hash chain); an attacker with the DB key could modify rows without detection.
+**Encrypted audit trail** — Every grant, rejection, query, and offer is written to the encrypted audit table. The trail is encrypted-at-rest but not tamper-evident (no hash chain).
+
+No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.
 
 See [SECURITY.md](SECURITY.md) for the full security model and trust boundaries.
 
@@ -130,14 +127,14 @@ flutter test test/integration/      # service loop + monetize route
 - MCP per-agent rate limiting not yet enforced
 - NER uses keyword dictionaries — on-device LLM redaction is a future phase
 - Release signing + notarization are performed manually — CI builds but does not sign
-- v1.1.0 release tag has no attached artifact; v1.0.0 is the most recent signed + notarized build
 - Audit log is encrypted-at-rest but not tamper-evident (no hash chain)
+- macOS is the only current public binary
 
 ---
 
-## Prerequisites
+## Prerequisites (development)
 
-- macOS (other platforms via Flutter)
+- macOS
 - Flutter SDK >= 3.11.1
 - Xcode 16+
 
@@ -145,4 +142,6 @@ flutter test test/integration/      # service loop + monetize route
 
 ## License
 
-Business Source License 1.1 Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
+Business Source License 1.1. Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
+
+Source-available, not MIT or Apache. Free for non-commercial, personal, research, and evaluation use. **Commercial production use requires a paid commercial license from AdamsLocal LLC.**

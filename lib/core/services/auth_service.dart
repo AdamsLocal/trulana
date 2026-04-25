@@ -87,16 +87,36 @@ class AuthService {
     AuthorizedAgent? agent = await _db.getAgentById(appId);
 
     if (agent == null) {
+      // First-contact agent: persist as pending and await explicit user
+      // approval. No token is issued here — the user must promote the
+      // agent to `active` from the Gatekeeper UI before calls succeed.
       final AuthorizedAgent newAgent = AuthorizedAgent(
         agentId: appId,
         agentName: appName,
         grantedScopes: scopes,
-        status: AgentStatus.active,
+        status: AgentStatus.pending,
         expirationDate: DateTime.now().add(const Duration(days: 30)),
       );
       await _db.insertAgent(newAgent);
-      agent = newAgent;
-    } else if (agent.status == AgentStatus.revoked) {
+
+      final AuditLogEntry pendingAuditEntry = AuditLogEntry(
+        logId: _uuid.v4(),
+        agentId: appId,
+        requestIntent: intent,
+        actionTaken: AuditAction.blocked,
+        timestamp: DateTime.now(),
+      );
+      await _db.insertAuditEntry(pendingAuditEntry);
+
+      SafeLogger.authRejected(statusCode: 403, agentId: appId);
+      return AuthResult.failure(
+        errorCode: 403,
+        errorMessage:
+            'Access request pending user approval.',
+      );
+    }
+
+    if (agent.status == AgentStatus.revoked) {
       SafeLogger.authRejected(statusCode: 403, agentId: appId);
       return AuthResult.failure(
         errorCode: 403,
@@ -104,17 +124,40 @@ class AuthService {
       );
     }
 
+    if (agent.status == AgentStatus.pending) {
+      SafeLogger.authRejected(statusCode: 403, agentId: appId);
+      return AuthResult.failure(
+        errorCode: 403,
+        errorMessage: 'Access request pending user approval.',
+      );
+    }
+
+    if (agent.status == AgentStatus.paused) {
+      SafeLogger.authRejected(statusCode: 403, agentId: appId);
+      return AuthResult.failure(
+        errorCode: 403,
+        errorMessage: 'Agent access is paused.',
+      );
+    }
+
+    // Authoritative scopes come from the persisted agent record — the
+    // caller-supplied `scopes` parameter is only used to prove the
+    // caller knows what it is asking for, not to grant new privileges.
+    final List<String> grantedScopes = List<String>.unmodifiable(
+      agent.grantedScopes,
+    );
+
     final int ttl = _resolveTtl(debugTtlSeconds);
     final String tokenString = TokenManager.instance.generateToken(
       agentId: appId,
-      scopes: scopes,
+      scopes: grantedScopes,
       ttl: Duration(seconds: ttl),
     );
 
     final AuditLogEntry auditEntry = AuditLogEntry(
       logId: _uuid.v4(),
       agentId: appId,
-      requestIntent: 'Token grant requested',
+      requestIntent: intent,
       actionTaken: AuditAction.approved,
       timestamp: DateTime.now(),
     );
@@ -125,7 +168,7 @@ class AuthService {
     return AuthResult.success(
       accessToken: tokenString,
       ttlSeconds: ttl,
-      grantedScopes: scopes,
+      grantedScopes: grantedScopes,
     );
   }
 
