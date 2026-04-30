@@ -200,25 +200,38 @@ class _Sidebar extends StatelessWidget {
                 top: BorderSide(color: Color(0xFF14142A)),
               ),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const PulseIndicator(
-                  size: 7,
-                  color: TrulanaColors.successGreen,
+                Row(
+                  children: [
+                    const PulseIndicator(
+                      size: 7,
+                      color: TrulanaColors.successGreen,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Server running on ',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: TrulanaColors.textTertiary,
+                      ),
+                    ),
+                    Text(
+                      ':8432',
+                      style: TrulanaTheme.monoStyle.copyWith(
+                        fontSize: 11,
+                        color: const Color(0xFF2A8A84),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Server running on ',
+                  'built with \u{1F480} energy by Gurley - AdamsLocal',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 9,
                     color: TrulanaColors.textTertiary,
-                  ),
-                ),
-                Text(
-                  ':8432',
-                  style: TrulanaTheme.monoStyle.copyWith(
-                    fontSize: 11,
-                    color: const Color(0xFF2A8A84),
                   ),
                 ),
               ],
