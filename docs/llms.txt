@@ -52,7 +52,7 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 ## Links
 
 - Landing page: https://trulana.com/
-- Contact: adam@trulana.com
+- Contact: addamplus@icloud.com
 - Source repository: not currently public (private during this milestone). Public source-available release under BUSL 1.1 is planned.
 
 ## Status
