@@ -83,7 +83,10 @@ class TrulanaServer {
 
     final Router protectedRouter = Router();
     protectedRouter.post('/api/v1/context/query', handleContextQuery);
+    
+    // ZK Contract Escrow Loop
     protectedRouter.post('/api/v1/monetize/lease_offer', handleLeaseOffer);
+    protectedRouter.post('/api/v1/monetize/settle', handleBountySettlement); // Injecting the settlement route
 
     final Handler protectedHandler = const Pipeline()
         .addMiddleware(authMiddleware())
