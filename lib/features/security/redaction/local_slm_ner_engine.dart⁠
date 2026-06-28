@@ -1,0 +1,99 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:trulana/core/logging/safe_logger.dart';
+
+// 2026 Standard: On-device quantized SLM inference (e.g., Llama.cpp wrapper or Apple MLX)
+import 'package:local_neural_edge/local_neural_edge.dart';
+
+/// The final stage of the 3-Stage Auto-Redact Engine.
+/// Utilizes a quantized, strictly local Small Language Model (SLM) to detect 
+/// and redact contextual PII that deterministic regex misses.
+class LocalSlmNerEngine {
+  LocalSlmNerEngine._privateConstructor();
+  static final LocalSlmNerEngine instance = LocalSlmNerEngine._privateConstructor();
+
+  late final EdgeModel _slm;
+  bool _isInitialized = false;
+
+  /// Loads the 1.2B parameter SLM into unified memory.
+  Future<void> initializeEngine() async {
+    if (_isInitialized) return;
+
+    try {
+      SafeLogger.info('Booting local neural engine for NER...');
+      
+      // Load a highly quantized, privacy-focused model strictly optimized for token classification
+      _slm = await EdgeModel.load(
+        modelPath: 'assets/models/trulana-ner-v2-q4.gguf',
+        computeBackend: ComputeBackend.neuralEngine, // Leverages Apple Silicon NPU
+        contextSize: 2048,
+      );
+      
+      _isInitialized = true;
+      SafeLogger.info('Neural NER Engine initialized and memory-locked.');
+    } catch (e) {
+      SafeLogger.error('Critical failure booting local SLM: $e');
+      throw StateError('Redaction pipeline compromised. Engine failed to load.');
+    }
+  }
+
+  /// Scans raw context and replaces sensitive entities with generalized tokens.
+  /// Example: "My doctor, Dr. Aris, said..." -> "My doctor, [PERSON_REDACTED], said..."
+  Future<String> redactContextualPii(String rawContext, {required PrivacyLevel level}) async {
+    if (!_isInitialized) {
+      throw StateError('Cannot process data: SLM Engine not initialized.');
+    }
+
+    // Skip neural processing if the user explicitly drops shields
+    if (level == PrivacyLevel.paranoid) {
+       // Deepest pass: maximum sensitivity
+       return await _runInferencePass(rawContext, aggressive: true);
+    } else if (level == PrivacyLevel.strict) {
+       // Standard CaaS baseline
+       return await _runInferencePass(rawContext, aggressive: false);
+    } 
+    
+    // Fallback for non-sensitive data streams
+    return rawContext;
+  }
+
+  Future<String> _runInferencePass(String text, {required bool aggressive}) async {
+    final stopwatch = Stopwatch()..start();
+    
+    // The SLM returns an array of character offsets for identified PII boundaries
+    final List<EntityToken> entities = await _slm.extractEntities(
+      text,
+      targetClasses: [
+        EntityClass.person, 
+        EntityClass.organization, 
+        EntityClass.location, 
+        EntityClass.healthCondition,
+        EntityClass.financialData,
+      ],
+      confidenceThreshold: aggressive ? 0.75 : 0.88,
+    );
+
+    // Sort entities descending to avoid offset shifting during string replacement
+    entities.sort((a, b) => b.startIndex.compareTo(a.startIndex));
+
+    String redactedText = text;
+    for (final entity in entities) {
+      final String replacement = '[${entity.classification.name.toUpperCase()}_REDACTED]';
+      redactedText = redactedText.replaceRange(
+        entity.startIndex, 
+        entity.endIndex, 
+        replacement,
+      );
+    }
+
+    stopwatch.stop();
+    SafeLogger.audit(
+      action: 'SLM_REDACTION', 
+      details: 'Redacted ${entities.length} entities in ${stopwatch.elapsedMilliseconds}ms.',
+    );
+
+    return redactedText;
+  }
+}
+
+enum PrivacyLevel { standard, strict, paranoid }
