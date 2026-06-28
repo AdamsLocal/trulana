@@ -21,16 +21,28 @@ void main() async {
   await _seedDefaultAgents();
   await _seedDefaultAuditEntries();
 
+  // 1. Initialize the unified root container first
+  final container = ProviderContainer();
+
   final bool mcpMode =
       Platform.environment['TRULANA_MCP'] == '1' ||
       Platform.environment['SOVEREIGN_MCP'] == '1';
 
   if (mcpMode) {
     SafeLogger.enableMcpMode();
-    await McpServer.run();
+    // 2. Pass container if your McpServer is updated to accept it
+    await McpServer.run(); 
   } else {
+    // 3. Start your existing application server instance
     await TrulanaServer.instance.start();
-    runApp(const ProviderScope(child: TrulanaApp()));
+    
+    // 4. Swap to UncontrolledProviderScope to pass our explicit container instance
+    runApp(
+      UncontrolledProviderScope(
+        container: container,
+        child: const TrulanaApp(),
+      ),
+    );
   }
 }
 
