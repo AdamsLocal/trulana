@@ -9,6 +9,7 @@ import 'package:trulana/core/network/middleware/auth_middleware.dart';
 import 'package:trulana/core/network/token_manager.dart';
 import 'package:trulana/models/models.dart';
 import 'package:trulana/features/monetization/zk_commitment_engine.dart';
+import 'package:trulana/features/security/watermark_engine.dart';
 
 const Uuid _uuid = Uuid();
 
@@ -144,7 +145,7 @@ Future<Response> handleLeaseOffer(Request request) async {
 
 /// Handles `POST /api/v1/monetize/settle` — closes the Zero-Knowledge contract loop.
 /// The agent submits their proof hash and token; if valid, we reveal the hidden 
-/// salt and the raw context payload.
+/// salt and the raw context payload, injecting a holographic watermark for provenance.
 Future<Response> handleBountySettlement(Request request) async {
   try {
     final AccessToken? token =
@@ -179,4 +180,46 @@ Future<Response> handleBountySettlement(Request request) async {
       return Response(
         403,
         headers: <String, String>{'content-type': 'application/json'},
-        body: jsonEncode(<String, String>{'status': 'error', 'message': '
+        body: jsonEncode(<String, String>{'status': 'error', 'message': 'Invalid bounty token.'})
+      );
+    }
+
+    // Regenerate the commitment to extract the mocked salt for MVP demonstration
+    final commitment = ZkCommitmentEngine.instance.generateCommitment(dataRequested);
+    final String revealedSalt = commitment['salt']!;
+
+    // 2026 Disruption: Create the unique trace ID for this specific transaction
+    final String traceId = '${token.agentId}:${DateTime.now().millisecondsSinceEpoch}';
+    
+    // Inject the invisible hologram into the highly valuable context
+    final String watermarkedContext = WatermarkEngine.instance.injectHologram(
+      dataRequested, 
+      traceId,
+    );
+
+    // Audit the settlement
+    final DatabaseHelper db = DatabaseHelper.instance;
+    await db.insertAuditEntry(AuditLogEntry(
+      logId: const Uuid().v4(),
+      agentId: token.agentId,
+      requestIntent: 'ZK Bounty Settled: $providedHash',
+      actionTaken: AuditAction.approved,
+      timestamp: DateTime.now(),
+    ));
+
+    return Response.ok(
+      jsonEncode(<String, Object>{
+        'status': 'bounty_cleared',
+        'message': 'Token accepted. Contract settled. Revealing zero-knowledge payload.',
+        'revealed_salt': revealedSalt,
+        'unlocked_context': watermarkedContext,
+      }),
+      headers: <String, String>{'content-type': 'application/json'},
+    );
+  } catch (e) {
+    return Response.internalServerError(
+      headers: <String, String>{'content-type': 'application/json'},
+      body: jsonEncode(<String, String>{'status': 'error', 'message': 'Internal server error.'})
+    );
+  }
+}
