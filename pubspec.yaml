@@ -37,6 +37,9 @@ dependencies:
   # Serialization
   json_annotation: ^4.9.0
 
+  # Cryptography — SHA-256 commitments used by the experimental CaaS escrow layer
+  crypto: ^3.0.7
+
   # Utilities
   uuid: ^4.5.1
   path: ^1.9.1

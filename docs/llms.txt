@@ -2,33 +2,35 @@
 
 > Your device is the API. A local-first private context server for AI tools.
 
-Trulana turns your machine into a private context server. AI tools can request context about you — but your raw data never leaves your device. Every response is filtered on-device before it's returned.
+Trulana turns your machine into a private context server. AI tools can request context about you — but your raw data never leaves your device. Every response is filtered on-device before it is returned.
 
 ## What it does
 
-Instead of sending personal data to AI tools, Trulana flips the model:
+Instead of copying personal data into AI tools, Trulana inverts the model:
 
-1. An app requests access via REST (localhost:8432) or MCP (stdio)
-2. Trulana issues a short-lived, scoped access token (15-minute TTL, in-memory only)
-3. The app queries local context (e.g. "morning routine", "work colleagues")
-4. The query is matched against an encrypted local vault
-5. The response passes through a 3-stage Auto-Redact Engine:
+1. An app requests access via REST (localhost:8432) or MCP (stdio).
+2. The user explicitly approves the agent; first-contact agents are pending until approved, and requested scopes can be narrowed before approval.
+3. Trulana issues a short-lived, scoped access token (15-minute TTL, in-memory only, never persisted).
+4. The app queries local context (e.g. "morning routine", "work colleagues").
+5. The query is matched against an encrypted local vault.
+6. The response passes through a 3-stage Auto-Redact Engine:
    - Stage 1: Regex filter (SSN, email, phone, credit card, IP)
    - Stage 2: NER processor (person names, locations, organizations)
    - Stage 3: Privacy filter (time generalization, amount generalization, age redaction)
-6. Only the sanitized result is returned
-7. Every request is logged to an encrypted audit trail
+7. Only the sanitized result is returned; raw context never leaves the device.
+8. Every request is logged to an encrypted audit trail.
 
 ## Technical details
 
-- Framework: Flutter (Dart 3.x) on macOS
-- Database: SQLite encrypted via sqflite_sqlcipher (AES-256)
-- Key storage: flutter_secure_storage — iOS/macOS Keychain, Android EncryptedSharedPreferences. The DB key is a symmetric AES key stored as a generic Keychain item; it is not generated or operated on inside the Secure Enclave.
-- REST API: shelf HTTP server bound to 127.0.0.1:8432 (localhost only)
-- MCP: stdio JSON-RPC adapter triggered via TRULANA_MCP=1 environment variable
-- Auth: Bearer tokens, 15-minute TTL, in-memory (don't survive restart). First-contact agents are pending until explicit user approval; users can narrow requested scopes before approving.
+- Framework: Flutter (Dart 3.x) on macOS.
+- Database: SQLite encrypted via sqflite_sqlcipher (AES-256).
+- Key storage: flutter_secure_storage. The DB key is a symmetric AES key held as a generic Keychain item; it is not generated or operated on inside the Secure Enclave.
+- REST API: shelf HTTP server bound to 127.0.0.1:8432 (loopback only; non-loopback rejected at the socket and in middleware).
+- MCP: stdio JSON-RPC adapter triggered via TRULANA_MCP=1.
+- Auth: Bearer tokens, 15-minute TTL, in-memory (do not survive restart).
 - Scope enforcement: context.read required for /api/v1/context/query; monetize.write required for /api/v1/monetize/lease_offer.
-- Rate limiting: 60 requests/minute per agent (REST only, MCP pending)
+- Rate limiting: 60 requests/minute per agent (REST only; MCP rate limiting not yet enforced).
+- Shared service layer: REST and MCP are thin transports over the same AuthService / ContextQueryService, so token issuance, scope enforcement, redaction, and audit logging are identical across transports.
 
 ## MCP tools
 
@@ -37,24 +39,34 @@ Instead of sending personal data to AI tools, Trulana flips the model:
 
 ## Privacy levels
 
-- Standard: Regex + NER stripping only
-- Strict: Also generalizes times, currency amounts, ages
-- Paranoid: All of strict plus proper noun catch-all and noise disclaimer
+- Standard: Regex + NER stripping only.
+- Strict: Also generalizes times, currency amounts, ages.
+- Paranoid: All of strict, plus a proper-noun catch-all and a noise disclaimer.
 
 ## Current limits
 
-- MCP uses a local-process trust model (no cryptographic caller verification)
-- MCP per-agent rate limiting not yet enforced
-- NER uses keyword dictionaries (on-device LLM is a future phase)
-- Release signing and notarization are performed manually (CI builds but does not sign). v1.2.1 is the current release: Developer ID signed, notarized, stapled, Gatekeeper accepted.
-- Audit log is encrypted-at-rest but not tamper-evident (no hash chain)
+- MCP uses a local-process trust model (no cryptographic caller verification).
+- MCP per-agent rate limiting is not yet enforced.
+- NER uses keyword dictionaries (on-device LLM/SLM redaction is a future phase).
+- Release signing and notarization are performed manually (CI builds an unsigned bundle).
+- Audit log is encrypted-at-rest but not tamper-evident (no hash chain).
+- macOS is the only public binary.
+
+## Experimental (unreleased)
+
+A Context-as-a-Service escrow layer (SHA-256 commitment + reveal, plus zero-width "watermark" provenance tagging) exists in the repository but is NOT part of the signed v1.2.1 binary and is not functional end-to-end (the commitment salt is not yet persisted between the lease-offer and settlement requests). It is a research preview and should not be represented as production.
+
+## Release
+
+- v1.2.1 is the current public release: Developer ID signed (Adam Gurley · 7S7QY5ND9Q), Apple notarized, ticket stapled, Gatekeeper accepted (source=Notarized Developer ID), universal binary (x86_64 + arm64), hardened runtime.
+- Release notes: https://github.com/AdamsLocal/trulana/releases/tag/v1.2.1
 
 ## Links
 
 - Landing page: https://trulana.com/
 - Contact: adam@trulana.com
-- Source repository: not currently public (private during this milestone). Public source-available release under BUSL 1.1 is planned.
+- Source repository: not currently public (private during this milestone). A public source-available release under BUSL 1.1 is planned.
 
 ## Status
 
-macOS Desktop MVP. Current release: v1.2.1 (Developer ID signed, notarized, stapled, Gatekeeper accepted). REST and MCP transports share the same service layer and are both gated by the same token-issuance, scope-enforcement, and audit-logging paths. Licensed under BUSL 1.1 (not MIT, not Apache); commercial production use requires a separate paid license from AdamsLocal LLC. No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.
+macOS Desktop MVP, current release v1.2.1. Licensed under BUSL 1.1 (not MIT, not Apache); commercial production use requires a separate paid license from AdamsLocal LLC. No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.

@@ -54,7 +54,12 @@ These are ordered by impact. Each one maps to a "Current limits" entry in the RE
 These are larger efforts that build on top of the MVP:
 
 - **Replace keyword vault with vector search.** `ContextVault` uses hardcoded keyword matching. Production should use a local vector store.
-- **Web3 / Stripe payment settlement.** The `Ledger` table and `lease_offer` endpoint exist but there is no on-chain settlement or Stripe Connect integration yet.
+- **Finish the experimental Context-as-a-Service escrow.** `ZkCommitmentEngine`, `WatermarkEngine`, and the `/api/v1/monetize/settle` route exist but the escrow is not functional end-to-end. To make it real and production-defensible:
+  - Persist the commitment (`offer_id → {hash, salt}`) when `/monetize/lease_offer` is called, and look it up on `/monetize/settle` so `verifyProof` can actually validate the originally-issued hash. Today `settle` regenerates a fresh salt and can never match.
+  - Enforce the `monetize.write` scope on `/monetize/settle` (it currently checks only token presence, unlike `lease_offer`).
+  - Replace the `bountyToken.startsWith('caas_tk_')` placeholder with real settlement-token validation.
+  - Add an end-to-end route test (`test/integration/`) covering offer → settle → verify, not just the engines in isolation.
+  - Add real payment settlement (Stripe Connect and/or on-chain); the `Ledger` table records offers but no value moves yet.
 - **MCP caller identity verification.** Currently any local process can start an MCP session by invoking the binary with `TRULANA_MCP=1`. Consider cryptographic verification of caller identity.
 - **Other platforms.** macOS is the only current public binary. Windows, Linux, iOS, Android are not shipped.
 
@@ -64,8 +69,11 @@ These are larger efforts that build on top of the MVP:
 git clone https://github.com/AdamsLocal/trulana.git
 cd trulana
 flutter pub get
+dart run build_runner build --delete-conflicting-outputs   # generates Riverpod / json_serializable code
 flutter test
 ```
+
+> The `dart run build_runner build` step is required: several providers and models use code generation (`@riverpod`, `json_serializable`) and reference generated `*.g.dart` part files that are not committed. Skipping it will produce missing-part analyzer errors.
 
 ## Running the verification gates
 
@@ -92,11 +100,14 @@ flutter build macos --release
 
 ```
 test/
-├── engine/              # Auto-Redact pipeline (regex, NER, privacy filter, full pipeline, vault)
-├── security/            # log hygiene, auth consistency, approval flow
-├── integration/         # full service loop + monetize route + preference model
-└── widget_test.dart     # model round-trip smoke tests
+├── engine/                 # Auto-Redact pipeline (regex, NER, privacy filter, full pipeline, vault)
+├── security/               # log hygiene, auth consistency, approval flow
+├── integration/            # full service loop + monetize route + preference model
+├── caas_pipeline_test.dart # experimental CaaS engines (ZK commitment + watermark) — see note below
+└── widget_test.dart        # model round-trip smoke tests
 ```
+
+> `caas_pipeline_test.dart` exercises the experimental `ZkCommitmentEngine` and `WatermarkEngine` **in isolation**. It does not exercise the wired `/monetize/lease_offer → /monetize/settle` HTTP flow, which is why it passes even though that flow is not yet functional end-to-end. Adding an end-to-end route test is part of the future work below.
 
 When adding a feature, add tests in the matching directory. Engine changes go in `test/engine/`, auth/security changes go in `test/security/`, and end-to-end flows go in `test/integration/`.
 

@@ -105,22 +105,35 @@ Both REST and MCP paths write audit entries through the same `AuthService` and `
 
 ## macOS Release Checklist
 
-Release signing is performed **manually on the built artifact**, not inside the Xcode project. The local project uses `CODE_SIGN_IDENTITY = "-"` (ad-hoc) for developer iteration; release binaries are re-signed with a Developer ID and notarized as a separate step. Status below reflects the v1.0.0 release artifact (`trulana-release.zip` on the GitHub release page):
+Release signing is performed **manually on the built artifact**, not inside the Xcode project. The local project uses `CODE_SIGN_IDENTITY = "-"` (ad-hoc) for developer iteration; release binaries are re-signed with a Developer ID and notarized as a separate step. Status below reflects the **current public release, v1.2.1** ([release notes](https://github.com/AdamsLocal/trulana/releases/tag/v1.2.1)):
 
-- [x] **Code signing** — v1.0.0 is signed with `Developer ID Application: Adam Gurley (7S7QY5ND9Q)`. Verified via `codesign -dvvv` (Authority chain ends at Apple Root CA, timestamped 2026-03-30).
-- [x] **Hardened runtime** — v1.0.0 has `flags=0x10000(runtime)`. Required for notarization.
-- [x] **Notarization** — v1.0.0 has a stapled notarization ticket. Verified via `stapler validate` ("The validate action worked!") and `spctl -a --type execute` ("accepted, source=Notarized Developer ID").
+- [x] **Code signing** — signed with `Developer ID Application: Adam Gurley (7S7QY5ND9Q)`. Verified via `codesign -dvvv` (Authority chain ends at Apple Root CA; `TeamIdentifier=7S7QY5ND9Q`).
+- [x] **Hardened runtime** — `flags=0x10000(runtime)`. Required for notarization.
+- [x] **Notarization** — stapled notarization ticket. Verified via `xcrun stapler validate` ("The validate action worked!") and `spctl --assess --type execute` ("accepted, source=Notarized Developer ID").
+- [x] **Universal binary** — Mach-O universal (x86_64 + arm64).
 - [x] **Entitlements review** — Only the following are present on release:
   - `com.apple.security.app-sandbox` — required
   - `com.apple.security.network.server` — required for localhost binding
   - `com.apple.security.cs.allow-jit` — required for Dart VM (debug only)
 - [x] **Do not distribute unsigned debug builds.** Debug builds emit the Dart VM service URL to stdout, include assert-enabled code paths (e.g. `debug_ttl_seconds`), and are not hardened. Policy stands.
 
+**Release lineage** (for provenance during diligence): v1.0.0 was the first notarized release but predates the hardened approval / scope-enforcement model. v1.1.0 was a UI milestone with no attached binary. v1.2.0 shipped the correct security model but mislabeled its bundle/UI version as `1.0.0` due to a stale Flutter version-config cache. **v1.2.1 is the current correct baseline** and is the version all other documentation refers to.
+
 **Open release-hygiene items** (not code-signing, but related):
 
-- [ ] **Automate signing + notarization in CI.** The current `.github/workflows/ci.yml` builds the release bundle but does not codesign, notarize, or staple. Signing is performed manually by the maintainer holding the Developer ID key. A future release workflow should invoke `codesign --timestamp --options runtime`, `xcrun notarytool submit --wait`, and `xcrun stapler staple` so future releases are reproducible.
-- [ ] **v1.1.0 release has no attached artifact.** The "Latest" tag on GitHub has release notes but no downloadable binary. Either attach a re-notarized v1.1.0 `.zip` / `.dmg` or hide v1.1.0 from the release list until an artifact exists.
-- [ ] **Developer ID is personal (`Adam Gurley`), not organizational (`AdamsLocal LLC`).** The landing and LICENSE assert trademark/ownership by AdamsLocal LLC; the signing identity on shipped binaries is personal. Recommended to transfer to an org Developer ID before any paid commercial release.
+- [ ] **Automate signing + notarization in CI.** `.github/workflows/ci.yml` now runs analyze + test and builds an **unsigned** macOS bundle; it does not codesign, notarize, or staple. Signing is performed manually by the maintainer holding the Developer ID key. A future tag-gated release workflow should invoke `codesign --timestamp --options runtime`, `xcrun notarytool submit --wait`, and `xcrun stapler staple` so releases are reproducible and auditable.
+- [ ] **Developer ID is personal (`Adam Gurley`), not organizational (`AdamsLocal LLC`).** The landing page and LICENSE assert trademark/ownership by AdamsLocal LLC; the signing identity on shipped binaries is personal. Transfer to an org Developer ID is recommended before any paid commercial release.
+
+## Out of Scope: Experimental CaaS Escrow
+
+The development branch contains an in-progress Context-as-a-Service monetization layer (`ZkCommitmentEngine`, `WatermarkEngine`, and the `/api/v1/monetize/settle` route). **It is not part of the signed v1.2.1 binary and is excluded from the trust model above.** Security-relevant caveats for anyone reviewing that code:
+
+- The SHA-256 commitment primitive and the zero-width watermark round-trip are unit-tested in isolation and behave correctly there.
+- The wired HTTP flow is **not** functional end-to-end: `/monetize/lease_offer` returns a commitment hash but does not persist the salt, so `/monetize/settle` regenerates a fresh salt and the original hash cannot be verified.
+- `/monetize/settle` currently checks only for a valid token, not for the `monetize.write` scope that `/monetize/lease_offer` requires.
+- The zero-width "watermark" is steganographic provenance tagging, not an access control. It is trivially strippable by any normalizer and must not be relied on as a security boundary.
+
+Do not represent this layer as production until commitment persistence, scope enforcement on settlement, and end-to-end tests land.
 
 ## Acceptable Risks (MVP)
 
@@ -132,7 +145,7 @@ Release signing is performed **manually on the built artifact**, not inside the 
 | Debug build stdout contamination | Low | Release builds are clean. `test_mcp.sh` validates. | Validated |
 | TokenManager is in-memory | Low | By design — tokens don't survive restart. Limits blast radius. | By design |
 | No CI signing pipeline | Medium | Release signing + notarization is performed manually by the maintainer holding the Developer ID key. Human-dependent; no audit trail of the signing step. Future CI workflow should automate it. | Open |
-| "Latest" release tag has no artifact | Medium | v1.1.0 is marked latest on GitHub but has 0 attached assets. Users following release-download links from the landing page get nothing. v1.0.0 (the most recent release with an artifact) IS signed and notarized. | Open |
+| Experimental CaaS escrow wired into routes | Medium | The `/monetize/settle` route and ZK/watermark engines exist on the development branch but are not in the signed v1.2.1 binary and are not functional end-to-end (commitment salt not persisted across requests). Settlement also does not currently enforce a `monetize.write` scope check. Must not be presented as production. | Open / out of scope |
 
 ## Test Coverage
 
