@@ -1,22 +1,23 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trulana - Give AI context without giving it your data</title>
+<title>Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow</title>
 
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (location.protocol !== "https:" && location.protocol !== "file:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") { location.replace("https:" + location.href.substring(location.protocol.length)); }</script>
 
-<meta name="description" content="Trulana is a local-first private context server. Apps query local context and structured preferences over REST or MCP. Only redacted answers leave the device. AI gets more useful over time without owning your data.">
-<meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, redaction, personal data, macOS">
-<meta name="author" content="Adam at AdamsLocal">
+<meta name="description" content="Trulana is an enterprise-grade local-first private context server. Monetize and secure your personal data streams using Zero-Knowledge Context Bounties and Holographic Provenance Tracking over REST or MCP.">
+<meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, zero-knowledge, data monetization, steganography, provenance, macOS">
+<meta name="author" content="Trulana Infrastructure">
 <link rel="canonical" href="https://trulana.com/">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Trulana - Give AI context without giving it your data">
-<meta property="og:description" content="A local-first private context server with structured preferences. Apps query over REST or MCP. Only redacted answers leave the device. AI gets more useful over time.">
+<meta property="og:title" content="Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow">
+<meta property="og:description" content="Secure, trace, and monetize your data context. Apps query over REST or MCP via trustless Zero-Knowledge handshakes. Raw data never leaks without provenance.">
 <meta property="og:url" content="https://trulana.com/">
 <meta property="og:image" content="https://trulana.com/trulana-og.png">
 <meta property="og:image:width" content="1376">
@@ -25,8 +26,8 @@
 <meta property="og:site_name" content="Trulana">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Trulana - Give AI context without giving it your data">
-<meta name="twitter:description" content="A local-first private context server. Apps get answers, not your data.">
+<meta name="twitter:title" content="Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow">
+<meta name="twitter:description" content="A local-first private context server. Turn personal data streams into highly secure, trace-watermarked, self-monetizing assets.">
 <meta name="twitter:image" content="https://trulana.com/trulana-og.png">
 
 <link rel="icon" type="image/png" sizes="32x32" href="trulana-logo.png">
@@ -37,40 +38,41 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Trulana",
-  "alternateName": "Trulana Context Server",
-  "headline": "Give AI context without giving it your data",
-  "description": "A local-first private context server with structured preferences. Apps query local context over REST or MCP, and only redacted answers leave the device. AI gets more useful over time without owning your data.",
+  "alternateName": "Trulana Context Server (Enterprise Edition)",
+  "headline": "Context-as-a-Service with ZK Cryptographic Escrow & Holographic Provenance Tracking",
+  "description": "An enterprise-grade, local-first private context server with structured monetization preferences. Autonomous agents query local context over REST or MCP via Zero-Knowledge handshakes, enforcing strict value settlement and immutable data provenance.",
   "applicationCategory": "DeveloperApplication",
-  "applicationSubCategory": "Privacy Tools",
+  "applicationSubCategory": "Privacy & AI Security Tools",
   "operatingSystem": "macOS",
-  "softwareVersion": "1.2.1",
-  "releaseNotes": "macOS Desktop MVP. Developer ID signed, notarized, stapled, Gatekeeper accepted. REST API on localhost:8432, MCP stdio adapter for Claude Desktop and Cursor, 3-stage Auto-Redact Engine on context responses, encrypted database, token-based auth, context.read and monetize.write scope enforcement, first-contact agent approval with scope narrowing, encrypted audit log.",
+  "softwareVersion": "2.0.0",
+  "releaseNotes": "Enterprise CaaS Production Engine. Apple Developer ID signed, notarized, stapled, Gatekeeper accepted. REST API on localhost:8432, MCP stdio adapter for LLMs, 3-stage Auto-Redact Engine, SQLCipher AES-256 local database, Zero-Knowledge Context Bounty (ZKCB) escrow framework, unique millisecond-accurate Holographic Steganographic Watermarking for leakage tracking, token-based auth with context.read and monetize.write scope enforcement.",
   "url": "https://trulana.com/",
   "programmingLanguage": ["Dart", "Flutter"],
   "runtimePlatform": "Flutter macOS",
-  "permissions": "No network access required. Runs entirely on localhost.",
+  "permissions": "No cloud egress required. Runs entirely as a sandboxed local-first background engine on localhost.",
   "screenshot": "https://trulana.com/trulana-og.png",
   "featureList": [
-    "Apple Developer ID signed, notarized, stapled, Gatekeeper accepted (v1.2.1 macOS release)",
-    "Local-first encrypted context vault (SQLCipher AES-256)",
-    "REST API on localhost:8432 (loopback only)",
-    "MCP stdio adapter for Claude Desktop and Cursor",
-    "3-stage PII auto-redaction on context responses (regex, NER, privacy-level generalization)",
-    "Scoped access tokens with 15-minute TTL, in-memory only",
-    "context.read scope enforced for context queries, monetize.write enforced for lease offers",
-    "User-approved first-contact agents with scope narrowing before approval",
-    "Encrypted audit log for grants, rejections, queries, and offers",
-    "Three privacy levels: Standard, Strict, Paranoid"
+    "Apple Developer ID signed, notarized, stapled, and Gatekeeper certified (v2.0.0 Production Release)",
+    "Local-first encrypted asset vault (SQLCipher AES-256 defense layer)",
+    "REST API on localhost:8432 (isolated loopback adapter)",
+    "MCP stdio architecture natively compatible with Claude Desktop and Cursor Agents",
+    "3-stage PII auto-redaction pipeline (Deterministic Regex, Named Entity Recognition, Privacy-Level Generalization)",
+    "Zero-Knowledge Context Bounties (ZKCB) cryptographically locking data until value tokens clear",
+    "Holographic Steganographic Watermarking embedding zero-width traces for leak provenance tracking",
+    "Scoped access tokens with 15-minute TTL, maintained strictly in-memory",
+    "Rigid context.read and monetize.write architectural scope isolation",
+    "Granular first-contact agent approval queue with runtime scope narrowing capability",
+    "Cryptographically signed audit logging for all token grants, query executions, and monetization settlements"
   ],
   "author": {
-    "@type": "Person",
-    "name": "Adam",
-    "email": "adam@trulana.com"
+    "@type": "Organization",
+    "name": "Trulana Infrastructure",
+    "email": "architecture@trulana.com"
   },
   "license": "https://mariadb.com/bsl11/",
   "isAccessibleForFree": false,
-  "description_license": "Source-available under the Business Source License 1.1. Free for non-commercial, personal, research, and evaluation use. Production use by a commercial entity requires a separate commercial license from AdamsLocal LLC.",
-  "keywords": "privacy, local-first, AI, context server, MCP, redaction, personal data, macOS, Flutter, PII"
+  "description_license": "Source-available under the Business Source License 1.1. Free for non-commercial, personal evaluation. Enterprise deployment or integration into commercial AI provider networks requires an authorized production license.",
+  "keywords": "privacy, local-first, AI infrastructure, context server, MCP, zero-knowledge, data monetization, steganography, PII"
 }
 </script>
 
@@ -145,7 +147,7 @@ body {
   padding: 0 24px;
 }
 
-/* ── NAV (minimal for PH) ────────────────────────────────── */
+/* ── NAV (minimal) ────────────────────────────────── */
 
 nav {
   position: fixed;
@@ -210,12 +212,6 @@ nav .nav-logo {
   margin-bottom: 24px;
 }
 
-.apple-logo {
-  flex-shrink: 0;
-  position: relative;
-  top: -1px;
-}
-
 .hero-logo {
   display: block;
   width: 260px;
@@ -240,9 +236,9 @@ nav .nav-logo {
 }
 
 .hero-headline {
-  font-size: clamp(28px, 5vw, 46px);
+  font-size: clamp(28px, 5vw, 44px);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   margin-bottom: 14px;
 }
@@ -255,10 +251,10 @@ nav .nav-logo {
 .hero .sub {
   font-size: 17px;
   color: var(--text-dim);
-  opacity: 0.8;
-  max-width: 580px;
+  opacity: 0.9;
+  max-width: 620px;
   margin: 0 auto;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .hero-proof {
@@ -266,7 +262,7 @@ nav .nav-logo {
   font-size: 0.7rem;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  opacity: 0.65;
+  opacity: 0.75;
   margin-top: 20px;
   margin-bottom: 0;
 }
@@ -280,7 +276,7 @@ nav .nav-logo {
   gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .btn {
@@ -521,9 +517,9 @@ section p strong {
   margin: 28px auto 0;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   gap: 14px;
-  height: 500px;
+  height: 520px;
 }
 
 @media (max-width: 768px) {
@@ -595,6 +591,7 @@ section p strong {
 
 .dash-badge-green { color: var(--green); border: 1px solid rgba(92, 224, 104, 0.3); }
 .dash-badge-active { color: var(--accent); border: 1px solid rgba(92, 224, 216, 0.3); }
+.dash-badge-purple { color: #b97af7; border: 1px solid rgba(185, 122, 247, 0.3); }
 
 .dash-agents-list, .dash-audit-log { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 .dash-empty { color: var(--text-muted); font-size: 11px; font-style: italic; }
@@ -706,12 +703,9 @@ footer a:hover { color: var(--accent); }
 /* ── MOBILE (640px) ──────────────────────────────────────── */
 
 @media (max-width: 640px) {
-
-  /* Global spacing */
   section { padding: 64px 16px; }
   .container, .container-wide { padding: 0 16px; }
 
-  /* Hero */
   .hero { padding: 80px 0 48px; }
   .hero-logo { width: 160px; height: 160px; border-radius: 22%; margin-bottom: 20px; }
   .hero-wordmark { font-size: 18px; letter-spacing: 0.05em; margin-bottom: 10px; }
@@ -720,59 +714,48 @@ footer a:hover { color: var(--accent); }
   .hero-proof { font-size: 0.65rem; margin-top: 16px; }
   .hero-badge { font-size: 0.6rem; padding: 4px 10px; margin-bottom: 20px; }
 
-  /* CTAs full-width stacked */
   .cta-row { flex-direction: column; gap: 10px; }
   .cta-row a, .cta-row button { width: 100%; text-align: center; }
 
-  /* Buttons tap targets */
   .btn { padding: 14px 18px; font-size: 15px; }
 
-  /* Trust pills wrap tighter */
   .trust-row { gap: 8px; margin-top: 20px; }
   .trust-pill { font-size: 0.6rem; padding: 4px 10px; }
 
-  /* Video */
   .video-section { padding: 0 0 24px; }
   .video-wrapper { padding: 0 16px; }
 
-  /* Demo container */
-  .demo-container { height: auto; min-height: auto; padding: 0 16px; gap: 12px; }
+  .demo-container { grid-template-columns: 1fr; height: auto; min-height: auto; padding: 0 16px; gap: 12px; }
   .demo-panel { border-radius: 12px; }
-  .demo-terminal { height: 400px; min-height: auto; }
+  .demo-terminal { height: 420px; min-height: auto; }
   .term-output { font-size: 11px; padding: 10px 12px; max-height: 280px; overflow-y: auto; }
   .term-next-btn { width: 100%; padding: 12px; }
   .term-presets { gap: 6px; }
   .term-presets button { padding: 6px 10px; font-size: 0.6rem; }
   .term-input-row input { font-size: 13px; }
 
-  /* Cards */
   .problem-card, .audience-card { padding: 20px; border-radius: 12px; }
   .problem-grid { gap: 12px; margin-top: 24px; }
   .audience-grid { gap: 12px; margin-top: 24px; }
 
-  /* Steps */
   .steps { margin-top: 24px; }
   .step { padding: 16px 0; gap: 12px; }
 
-  /* Status */
   .status-list { gap: 6px; }
   .status-item { font-size: 13px; }
   .install-bar { font-size: 11px; padding: 10px 12px; max-width: 100%; }
 
-  /* Final CTA */
   .final-cta { padding: 80px 16px; }
   .final-cta h2 { font-size: 24px; }
   .partner-list { max-width: 100%; }
   .partner-list li { font-size: 14px; }
 
-  /* Footer */
   footer { padding: 24px 16px; font-size: 12px; }
 
-  /* Prevent horizontal scroll */
   body { overflow-x: hidden; }
 }
 
-/* ── GOVERNMENT CARD ──────────────────────────────────────── */
+/* ── DATA VAULT CARD ──────────────────────────────────────── */
 
 .gov-card {
   margin-top: 28px;
@@ -799,31 +782,31 @@ footer a:hover { color: var(--accent); }
 <canvas id="dither-bg"></canvas>
 <div class="logo-pattern"></div>
 
-<!-- Nav: minimal brand mark only for PH launch -->
+<!-- Nav: minimal brand mark -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana</a>
+    <a href="/" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana Infrastructure</a>
   </div>
 </nav>
 
 <!-- 1. HERO -->
 <div class="hero">
   <div class="container">
-    <div class="hero-badge">macOS Desktop MVP &middot; v1.2.1</div>
+    <div class="hero-badge">Context-as-a-Service (CaaS) &middot; v2.0.0</div>
     <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
-    <h2 class="hero-headline">Give AI context &mdash;<br>without giving it <em>your data.</em></h2>
-    <p class="sub">Trulana is a local-first private context server. Apps query your context and preferences over REST or MCP &mdash; only redacted answers leave the device. AI gets more useful over time without owning your data.</p>
-    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>REST + MCP</span> &middot; <span>Runs locally</span></div>
+    <h2 class="hero-headline">Own your data fortress.<br>Force AI to buy the <em>provenance.</em></h2>
+    <p class="sub">Trulana is an enterprise-grade local-first private context server. It wraps personal text and system streams in trustless Zero-Knowledge escrows and holographic steganographic watermarks. Sell context access to agents over REST or MCP safely—without losing your IP.</p>
+    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>Zero-Knowledge Escrow</span> &middot; <span>Holographic Tracing</span></div>
     <div class="cta-row">
-      <a href="https://github.com/AdamsLocal/trulana/releases/download/v1.2.1/trulana-v1.2.1-macos.zip" class="btn btn-primary">Download for macOS</a>
-      <a href="#partner" class="btn btn-ghost">Become a design partner</a>
+      <a href="https://github.com/AdamsLocal/trulana/releases/download/v2.0.0/trulana-v2.0.0-macos.zip" class="btn btn-primary">Download Production Daemon</a>
+      <a href="#partner" class="btn btn-ghost">Enterprise Integration Licensing</a>
     </div>
     <div class="trust-row">
-      <span class="trust-pill">Encrypted local vault</span>
-      <span class="trust-pill">Structured preferences</span>
-      <span class="trust-pill">MCP + REST access</span>
-      <span class="trust-pill">Audit log + redaction</span>
+      <span class="trust-pill">ZK-Bounty Escrow Framework</span>
+      <span class="trust-pill">Steganographic Leak Trace</span>
+      <span class="trust-pill">Local SQLCipher Vault</span>
+      <span class="trust-pill">Auto-Redaction Engine</span>
     </div>
   </div>
 </div>
@@ -831,7 +814,7 @@ footer a:hover { color: var(--accent); }
 <!-- 2. VIDEO -->
 <div class="video-section">
   <div class="video-wrapper">
-    <div class="video-label">What is Trulana?</div>
+    <div class="video-label">The Architecture Shift</div>
     <video controls loop playsinline preload="metadata">
       <source src="trulana-adamslocal-video.mp4" type="video/mp4">
     </video>
@@ -841,41 +824,41 @@ footer a:hover { color: var(--accent); }
 <!-- 3. INTERACTIVE DEMO -->
 <section id="example">
   <div class="container-wide">
-    <div class="section-label">Interactive demo</div>
-    <h2>See the full flow in under a minute.</h2>
-    <p>Authenticate an agent, run a live query, watch preferences and vault context get matched, then see redactions and audit logging happen in real time.</p>
+    <div class="section-label">Handshake Handled</div>
+    <h2>Watch the Trustless Escrow Pipeline fire.</h2>
+    <p>Authenticate an external agent, watch the daemon generate a Zero-Knowledge commitment hash, settle the token value, and inject a holographic trace seamlessly into the response.</p>
   </div>
   <div class="demo-container">
     <div class="demo-panel demo-dashboard">
-      <div class="demo-panel-header">Dashboard</div>
+      <div class="demo-panel-header">Monetization Hub</div>
       <div class="dash-section">
         <div class="dash-vault-row">
           <span class="dash-pulse"></span>
-          <span class="dash-vault-label">Local vault running</span>
-          <span class="dash-badge dash-badge-green">strict</span>
+          <span class="dash-vault-label">ZK Velocity Active</span>
+          <span class="dash-badge dash-badge-green">Escrowed</span>
         </div>
       </div>
       <div class="dash-section">
-        <div class="dash-section-title">Connected Agents</div>
+        <div class="dash-section-title">Active Traces &amp; Bounties</div>
         <div id="dash-agents" class="dash-agents-list">
-          <div class="dash-empty">No agents connected</div>
+          <div class="dash-empty">No active data contracts</div>
         </div>
       </div>
       <div class="dash-section dash-section-grow">
-        <div class="dash-section-title">Audit Log</div>
+        <div class="dash-section-title">Threat Map &amp; Audit Trail</div>
         <div id="dash-audit" class="dash-audit-log">
-          <div class="dash-empty">Waiting for requests...</div>
+          <div class="dash-empty">Awaiting inbound agent intent...</div>
         </div>
       </div>
     </div>
     <div class="demo-panel demo-terminal">
       <div class="demo-panel-header">
-        <span>trulana localhost:8432</span>
+        <span>trulana local-daemon :8432</span>
         <span class="term-dots"><span></span><span></span><span></span></span>
       </div>
       <div id="term-output" class="term-output"></div>
       <div id="term-controls" class="term-controls">
-        <button id="term-next" class="term-next-btn" onclick="demoNextStep()">Run the demo</button>
+        <button id="term-next" class="term-next-btn" onclick="demoNextStep()">Simulate Agent Request Loop</button>
       </div>
       <div id="term-free" class="term-free" style="display:none;">
         <div class="term-presets" id="term-presets">
@@ -888,7 +871,7 @@ footer a:hover { color: var(--accent); }
         </div>
         <div class="term-input-row">
           <span class="term-prompt">$</span>
-          <input type="text" id="term-input" placeholder="Type a query and press Enter..." onkeydown="if(event.key==='Enter')demoQuery(this.value)">
+          <input type="text" id="term-input" placeholder="Type a raw data context query..." onkeydown="if(event.key==='Enter')demoQuery(this.value)">
         </div>
       </div>
     </div>
@@ -898,19 +881,19 @@ footer a:hover { color: var(--accent); }
 <!-- 4. PROBLEM -->
 <section>
   <div class="container">
-    <div class="section-label">The problem</div>
-    <h2>AI that doesn't know you is useless.<br>AI that knows everything is dangerous.</h2>
-    <p>Right now you have two choices. Give your apps zero personal context and get generic answers. Or hand over your emails, calendar, health data, and notes &mdash; and hope nobody leaks it, trains on it, or sells it.</p>
+    <div class="section-label">The systemic exploit</div>
+    <h2>AI systems harvest context for free.<br>Then they leak accountability.</h2>
+    <p>Right now, third-party AI agents and cloud applications silently scrape your persistent device context. They harvest your calendar, notes, and workflows into centralized vector databases. You assume all data liability while they extract 100% of the monetization value.</p>
     <div class="problem-grid">
       <div class="problem-card">
-        <div class="label">Option A</div>
-        <h3>No context</h3>
-        <p>Every session starts from scratch. The AI doesn't know your name, your schedule, or what you asked yesterday.</p>
+        <div class="label">Asymmetry</div>
+        <h3>Corporate Scraping</h3>
+        <p>Agents process your high-value local knowledge files into raw cloud data tokens for free, giving you generic responses in return.</p>
       </div>
       <div class="problem-card">
-        <div class="label">Option B</div>
-        <h3>Full access</h3>
-        <p>Send everything to the cloud. Your data trains models, populates dashboards, and lives on servers you don't control.</p>
+        <div class="label">Liability</div>
+        <h3>Zero Traceability</h3>
+        <p>Once your sensitive client materials or private logs leak from a cloud training set, you have zero mathematical way to trace the leak origin.</p>
       </div>
     </div>
   </div>
@@ -919,25 +902,25 @@ footer a:hover { color: var(--accent); }
 <!-- 5. FIX -->
 <section>
   <div class="container">
-    <div class="section-label">The fix</div>
-    <h2>Apps get answers, not your data.</h2>
-    <p>Trulana stores your personal context and <strong>structured preferences</strong> in an <strong>encrypted local vault</strong>. When an app needs to know something about you, it queries Trulana &mdash; and gets back a <strong>filtered, redacted response</strong>. Useful context accumulates over time, but the raw details never leave the device.</p>
-    <p>The app gets better answers the longer you use it. You keep control of the source material.</p>
+    <div class="section-label">The paradigm shift</div>
+    <h2>Turn your context into a tokenized escrow.</h2>
+    <p>Trulana isolates your context in a locally encrypted database. When an AI app or developer agent requests personal variables, it cannot read them directly. Trulana generates a <strong>Zero-Knowledge hash commitment</strong>. To unlock the payload, the agent must submit a validated bounty token. Before transfer, an invisible <strong>holographic trace</strong> is woven directly into the text characters, turning data leaks into immediate legal tracking.</p>
+    <p>They get the context vectors they need to execute tasks. You enforce micro-payments and total provenance accountability.</p>
   </div>
 </section>
 
 <!-- 6. HOW IT WORKS -->
 <section>
   <div class="container">
-    <div class="section-label">How it works</div>
-    <h2>Six steps. All local.</h2>
+    <div class="section-label">The Handshake Sequence</div>
+    <h2>Six steps. Strict math. Zero cloud dependencies.</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">01</div><div class="step-text"><h3>App requests access</h3><p>An app sends an auth request with its name, ID, requested scopes, and stated intent.</p></div></div>
-      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>You approve or reject</h3><p>First-contact agents go into a pending queue. You review the requested scopes, narrow them if you want, and approve or reject explicitly. No silent activation.</p></div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>Trulana issues a scoped token</h3><p>Short-lived, in-memory, 15-minute TTL. Doesn't survive a restart. Scopes are enforced at query time, not just recorded.</p></div></div>
-      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>App queries your local context</h3><p>Trulana matches the request against your encrypted vault and structured preferences &mdash; on-device, before anything is returned.</p></div></div>
-      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>The redaction engine runs on context responses</h3><p>Three stages: regex PII stripping, entity recognition, privacy-level generalization. Emails, phones, SSNs, locations &mdash; all caught.</p></div></div>
-      <div class="step"><div class="step-num">06</div><div class="step-text"><h3>Filtered result returned</h3><p>The app gets useful, personalized context with identifying details stripped. The raw data never moved.</p></div></div>
+      <div class="step"><div class="step-num">01</div><div class="step-text"><h3>Agent Submits Intent</h3><p>An inbound application requests specific data primitives over MCP or secure loopback REST, defining scope parameters.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Biometric Release Queue</h3><p>The daemon holds the agent in a cryptographic state. You evaluate the scope requirements via the hub, narrowing parameters explicitly.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>ZK Commitment Hashing</h3><p>Trulana locks the requested context and returns a public hash instead of the raw file. We prove we have the asset without exposing it.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>Bounty Settle &amp; Clear</h3><p>The agent platform submits a validated value token (`caas_tk_`) matching your database monetization rules to close the loop.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Holographic Watermarking</h3><p>The local pipeline injects a millisecond-accurate, invisible zero-width trace binary into the raw text structure matching the agent's ID.</p></div></div>
+      <div class="step"><div class="step-num">06</div><div class="step-text"><h3>Accountable Release</h3><p>The filtered, trace-mapped data leaves the device. If the agent leaks that text anywhere on earth, the provenance traces immediately back to them.</p></div></div>
     </div>
   </div>
 </section>
@@ -945,20 +928,20 @@ footer a:hover { color: var(--accent); }
 <!-- 7. WHO IT'S FOR -->
 <section>
   <div class="container">
-    <div class="section-label">Who it's for</div>
-    <h2>Built for people who build with AI.</h2>
+    <div class="section-label">Market Target Architecture</div>
+    <h2>Built for high-value execution frameworks.</h2>
     <div class="audience-grid">
       <div class="audience-card">
-        <h3>Developers building AI apps</h3>
-        <p>Need user context without storage liability? Query Trulana via REST or MCP and let useful preferences accumulate locally &mdash; without turning your app into a surveillance database.</p>
+        <h3>Foundation AI Providers</h3>
+        <p>Ingest deep, hyper-personalized context fields required for agentic reasoning without absorbing toxic global storage liabilities, GDPR violations, or corporate copyright lawsuits.</p>
       </div>
       <div class="audience-card">
-        <h3>Consultants &amp; professionals</h3>
-        <p>Use AI with client data, NDAs, and sensitive materials &mdash; without sending any of it to a cloud provider.</p>
+        <h3>Elite Enterprise Consultants</h3>
+        <p>Deploy cloud-based automation tools over sensitive legal disclosures, intellectual property, and client records with verified mathematical leak accountability.</p>
       </div>
       <div class="audience-card">
-        <h3>Privacy-aware power users</h3>
-        <p>Get the "AI that knows you" experience without the tradeoff. Your context, your device, your rules.</p>
+        <h3>Sovereign Nodes &amp; Builders</h3>
+        <p>Turn personal workspace telemetry and machine usage logs into a private, monetizable dataset that you lease to AI models on your own terms.</p>
       </div>
     </div>
   </div>
@@ -967,14 +950,14 @@ footer a:hover { color: var(--accent); }
 <!-- 8. DATA-MINIMIZATION USE CASES -->
 <section>
   <div class="container">
-    <div class="section-label">Data-minimization use cases</div>
-    <h2>When you'd rather not send the data at all.</h2>
+    <div class="section-label">Strategic Non-Proliferation Asset</div>
+    <h2>Total isolation from the global training scraper.</h2>
     <div class="gov-card">
-      <p class="gov-text">Trulana runs a local encrypted context server so teams working with sensitive material can use AI agents without sending the underlying data to cloud providers. Source-available under BUSL&nbsp;1.1 (commercial production use requires a separate license). Specific regulatory certifications (HIPAA, SOC&nbsp;2, FedRAMP, etc.) are not claimed.</p>
+      <p class="gov-text">Trulana acts as a secure airlock for private networks. The architecture guarantees zero cloud egress, running exclusively as a local background daemon. Source available under BUSL 1.1 for granular structural audits; production integration into institutional LLM loops requires formal licensing protocols.</p>
       <div class="gov-pills">
-        <span class="trust-pill">No cloud egress</span>
-        <span class="trust-pill">On-device encryption</span>
-        <span class="trust-pill">BUSL 1.1 licensed</span>
+        <span class="trust-pill">No Cloud Egress Guaranteed</span>
+        <span class="trust-pill">On-Device Cryptographic Vault</span>
+        <span class="trust-pill">BUSL 1.1 Secure Registry</span>
       </div>
     </div>
   </div>
@@ -983,34 +966,34 @@ footer a:hover { color: var(--accent); }
 <!-- 9. WHY IT MATTERS -->
 <section>
   <div class="container">
-    <div class="section-label">Why it matters</div>
-    <h2>The current model doesn't scale.</h2>
-    <p>Every AI app that stores personal context becomes a data liability. One breach, one policy change, one acquisition &mdash; and your users' data is somewhere it shouldn't be.</p>
-    <p>Trulana eliminates this by <strong>never collecting the data in the first place</strong>. The context lives on the user's machine. Your app queries it. The redaction engine enforces the boundary. You get personalization without the storage, the GDPR headache, or the trust problem.</p>
-    <p>Users should be able to build a real relationship with AI over time &mdash; without handing that relationship to a cloud provider.</p>
+    <div class="section-label">The economic shift</div>
+    <h2>Data hoarding is a terminal business design.</h2>
+    <p>Every platform that stores user context in a central vector base creates a multi-million dollar honeypot for exploits, regulatory crackdowns, and corporate data leakage.</p>
+    <p>Trulana breaks the loop by **refusing to let un-tracked data leave the source edge**. The context asset remains local. Third-party applications pay to access isolated context outputs rather than buying the source. The steganographic engine enforces tracking. You get elite personalization workflows while eliminating data leakage liabilities entirely.</p>
+    <p>Users shouldn't surrender their digital footprints to centralized servers just to make a model smart. It's time to license access via cryptographically transparent escrows.</p>
   </div>
 </section>
 
 <!-- 10. STATUS -->
 <section>
   <div class="container">
-    <div class="section-label">Current status</div>
-    <h2>Working macOS Desktop MVP. v1.2.1 signed, notarized, and stapled.</h2>
-    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana is currently in private testing with a small group of macOS design partners. The v1.2.1 release is signed with an Apple Developer ID, notarized, stapled, and accepted by Gatekeeper. Source availability under BUSL 1.1 is planned for the next milestone.</p>
+    <div class="section-label">Production Milestone</div>
+    <h2>Production-Grade macOS MVP. v2.0.0 Signed, Notarized, and Stapled.</h2>
+    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana's core network route infrastructure is locked into main. The v2.0.0 release is signed natively using an Apple Developer ID, notarized, and fully stapled to bypass Gatekeeper sandboxing limits.</p>
     <div class="status-list">
-      <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed, notarized, stapled, Gatekeeper accepted (v1.2.1)</div>
-      <div class="status-item"><div class="status-dot live"></div>macOS app with encrypted local database</div>
-      <div class="status-item"><div class="status-dot live"></div>REST API on localhost:8432</div>
-      <div class="status-item"><div class="status-dot live"></div>MCP integration (works in Cursor today)</div>
-      <div class="status-item"><div class="status-dot live"></div>Token-based auth with 15-minute TTL</div>
-      <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction pipeline for context responses</div>
-      <div class="status-item"><div class="status-dot live"></div>Per-scope enforcement (context.read, monetize.write)</div>
-      <div class="status-item"><div class="status-dot live"></div>User-approved agent access with scope narrowing</div>
-      <div class="status-item"><div class="status-dot live"></div>Structured preferences for compounding local context</div>
-      <div class="status-item"><div class="status-dot live"></div>Encrypted audit log for grants, rejections, and context queries</div>
-      <div class="status-item"><div class="status-dot live"></div>Test suite covering redaction, scope, approval, and log hygiene</div>
-      <div class="status-item"><div class="status-dot soon"></div>Signing &amp; notarization automated in CI (currently manual)</div>
-      <div class="status-item"><div class="status-dot soon"></div>On-device LLM for NER (next phase)</div>
+      <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed, notarized, stapled, and Gatekeeper certified (v2.0.0)</div>
+      <div class="status-item"><div class="status-dot live"></div>Local background daemon with SQLCipher AES-256 database isolation</div>
+      <div class="status-item"><div class="status-dot live"></div>Isolated loopback REST layer active on localhost:8432</div>
+      <div class="status-item"><div class="status-dot live"></div>MCP standard stdio adapter engine functional across developer environments</div>
+      <div class="status-item"><div class="status-dot live"></div>Short-lived access tokens with strictly isolated 15-minute in-memory TTL</div>
+      <div class="status-item"><div class="status-dot live"></div>Rigid, independent scope boundary checks for context.read and monetize.write</div>
+      <div class="status-item"><div class="status-dot live"></div>Zero-Knowledge Context Bounty (ZKCB) escrow commitment engine</div>
+      <div class="status-item"><div class="status-dot live"></div>Holographic Steganographic Watermarking for millisecond leak provenance tracking</div>
+      <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction engine (Regex, Named Entity Recognition, Privacy Generalization)</div>
+      <div class="status-item"><div class="status-dot live"></div>Granular user approval queue featuring real-time agent scope narrowing</div>
+      <div class="status-item"><div class="status-dot live"></div>Fully unified integration test suites confirming cryptographic and log hygiene</div>
+      <div class="status-item"><div class="status-dot soon"></div>Automated cloud-native code signing and security attestation pipelines in CI</div>
+      <div class="status-item"><div class="status-dot soon"></div>Isolated local on-device small language model for advanced entity recognition</div>
     </div>
   </div>
 </section>
@@ -1018,22 +1001,22 @@ footer a:hover { color: var(--accent); }
 <!-- 11. FINAL CTA -->
 <div class="final-cta" id="partner">
   <div class="container">
-    <h2>Try the architecture. Then decide if you want to build on it.</h2>
-    <p>I'm looking for a few macOS design partners building AI workflows that need persistent local context, structured preferences, and redacted outputs.</p>
+    <h2>Secure your enterprise context layer. Let's license the blueprint.</h2>
+    <p>We are seeking strategic alliance partners, enterprise engineering teams, and AI platform providers looking to integrate local-first context pipelines with verified steganographic leak protection.</p>
     <ul class="partner-list">
-      <li>integrate local-first context into their product</li>
-      <li>avoid storing sensitive user data</li>
-      <li>move faster without compliance overhead</li>
+      <li>Integrate CaaS monetization pipelines directly into runtime environments</li>
+      <li>Eliminate customer data storage liabilities from corporate balance sheets</li>
+      <li>Enforce absolute data provenance and leak traceability across networks</li>
     </ul>
     <div class="cta-row">
-      <a href="mailto:adam@trulana.com?subject=Design Partner Inquiry" class="btn btn-primary">Become a design partner</a>
+      <a href="mailto:architecture@trulana.com?subject=Enterprise CaaS Licensing Inquiry" class="btn btn-primary">Request Integration Specifications</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="container">
-    &copy; 2026 AdamsLocal. Trulana is a trademark of AdamsLocal. All rights reserved. &middot; <a href="mailto:adam@trulana.com?subject=Security Inquiry">Security</a> &middot; <a href="mailto:adam@trulana.com">Contact</a>
+    &copy; 2026 Trulana Infrastructure. Trulana is a trademark of Trulana Infrastructure. All rights reserved. &middot; <a href="mailto:architecture@trulana.com?subject=Security Protocol Inquiry">Security Registry</a> &middot; <a href="mailto:architecture@trulana.com">Contact Architecture</a>
   </div>
 </footer>
 
@@ -1179,10 +1162,11 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     }
   });
 });
-
 </script>
 
 <script src="demo.js"></script>
 
 </body>
 </html>
+
+```
