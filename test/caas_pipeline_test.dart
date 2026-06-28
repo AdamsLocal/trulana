@@ -22,7 +22,7 @@ void main() {
       expect(publicHash, isNotEmpty, reason: 'Hash must be generated');
       expect(hiddenSalt, isNotEmpty, reason: 'Salt must be generated securely');
       
-      print('✅ Step 1 Passed: ZK Commitment Generated -> $publicHash');
+      // Step 1: ZK commitment generated (hash + salt).
     });
 
     test('Step 2: Escrow Settled - Agent Verifies Cryptographic Proof', () {
@@ -36,7 +36,7 @@ void main() {
 
       expect(isValidProof, isTrue, reason: 'The revealed salt and data must mathematically match the original hash');
       
-      print('✅ Step 2 Passed: ZK Proof verified successfully by simulated agent.');
+      // Step 2: revealed salt + data hash back to the original commitment.
     });
 
     test('Step 3: Provenance Injected - Data is Holographically Watermarked', () {
@@ -49,7 +49,7 @@ void main() {
       expect(watermarkedPayload.length, greaterThan(highlyValuableContext.length), 
         reason: 'The string must contain the hidden zero-width binary characters');
 
-      print('✅ Step 3 Passed: Hologram injected. String looks normal but contains invisible trace.');
+      // Step 3: payload watermarked with invisible zero-width trace.
     });
 
     test('Step 4: The Audit - Extracting Leaked Provenance Data', () {
@@ -59,7 +59,7 @@ void main() {
       expect(extractedTrace, equals('$requestingAgentId:tx_89912'), 
         reason: 'The extracted watermark must exactly match the injected trace ID');
       
-      print('✅ Step 4 Passed: Leak traced successfully! Extracted ID -> $extractedTrace');
+      // Step 4: trace ID recovered from the watermarked payload.
     });
   });
 }
