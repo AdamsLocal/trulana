@@ -1,6 +1,8 @@
 name: trulana
 description: "Autonomous Personal API and Data Broker — local-first, privacy-centric."
-publish_to: 'none'
+
+# Changed from 'none' to target your GitHub Packages scoped registry
+publish_to: https://pub.pkg.github.com/machine-squelch
 
 version: 1.2.1+4
 
@@ -55,7 +57,6 @@ dev_dependencies:
 
   # Testing
   mockito: ^5.4.6
-
 
 flutter:
   uses-material-design: true
