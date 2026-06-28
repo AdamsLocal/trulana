@@ -1,4 +1,4 @@
-name: Build & Release Trulana macOS App
+name: Build and Release Trulana
 
 on:
   release:
@@ -27,9 +27,7 @@ jobs:
         run: flutter build macos --release
 
       - name: Package Build Asset
-        run: |
-          cd build/macos/Build/Products/Release
-          zip -r ../../../../../trulana-macOS.zip trulana.app
+        run: zip -r trulana-macOS.zip build/macos/Build/Products/Release/trulana.app
 
       - name: Upload Binary to GitHub Release
         uses: softprops/action-gh-release@v2
