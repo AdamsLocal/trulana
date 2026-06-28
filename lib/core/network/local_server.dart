@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:trulana/core/network/middleware/auth_middleware.dart';
 import 'package:trulana/core/network/middleware/rate_limiter.dart';
@@ -14,6 +15,7 @@ import 'package:trulana/core/network/routes/context_routes.dart';
 import 'package:trulana/core/network/routes/monetize_routes.dart';
 import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/network/token_manager.dart';
+import 'package:trulana/providers/redaction_provider.dart';
 
 /// The local HTTP server that exposes Trulana's Personal API to
 /// third-party agents running on the same device.
@@ -27,6 +29,7 @@ class TrulanaServer {
   static final TrulanaServer instance = TrulanaServer._();
 
   HttpServer? _server;
+  late ProviderContainer _container;
 
   bool get isRunning => _server != null;
   int get port => _server?.port ?? 0;
@@ -36,10 +39,11 @@ class TrulanaServer {
   /// Callers should await this before advertising the port to agents.
   /// If the server is already running, the call is a no-op to prevent
   /// port-binding conflicts.
-  Future<void> start({int port = 8432}) async {
+  Future<void> start(ProviderContainer container, {int port = 8432}) async {
     if (_server != null) return;
 
     try {
+      _container = container;
       final Handler handler = _buildHandler();
 
       _server = await shelf_io.serve(
@@ -100,6 +104,7 @@ class TrulanaServer {
         .addMiddleware(validationMiddleware())
         .addMiddleware(_corsMiddleware())
         .addMiddleware(_localhostOnlyMiddleware())
+        .addMiddleware(_redactionMiddleware())
         .addHandler(combinedHandler);
   }
 
@@ -111,6 +116,29 @@ class TrulanaServer {
       }),
       headers: <String, String>{'content-type': 'application/json'},
     );
+  }
+
+  /// Middleware that scans string response bodies leaving the server loop,
+  /// passing any context objects through our on-device redaction processing engine.
+  Middleware _redactionMiddleware() {
+    return (Handler innerHandler) {
+      return (Request request) async {
+        final Response response = await innerHandler(request);
+
+        final String contentType = response.headers['content-type'] ?? '';
+        if (!contentType.contains('application/json') || response.statusCode != 200) {
+          return response;
+        }
+
+        try {
+          final String bodyString = await response.readAsString();
+          final String scrubbedBody = _container.read(redactContextProvider(bodyString));
+          return response.change(body: scrubbedBody);
+        } catch (_) {
+          return response;
+        }
+      };
+    };
   }
 
   /// Permissive CORS headers for local development.
