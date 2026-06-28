@@ -1,0 +1,39 @@
+name: Build & Release Trulana macOS App
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Build Runner
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build macOS Application
+        run: flutter build macos --release
+
+      - name: Package Build Asset
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r ../../../../../trulana-macOS.zip trulana.app
+
+      - name: Upload Binary to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: trulana-macOS.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
