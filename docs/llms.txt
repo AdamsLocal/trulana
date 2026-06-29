@@ -54,7 +54,7 @@ Instead of copying personal data into AI tools, Trulana inverts the model:
 
 ## Experimental (unreleased)
 
-A Context-as-a-Service escrow layer (SHA-256 commitment + reveal, plus zero-width "watermark" provenance tagging) exists in the repository but is NOT part of the signed v1.2.1 binary and is not functional end-to-end (the commitment salt is not yet persisted between the lease-offer and settlement requests). It is a research preview and should not be represented as production.
+A Context-as-a-Service escrow layer (SHA-256 commitment + reveal via /monetize/lease_offer and /monetize/settle, plus zero-width "watermark" provenance tagging) is implemented on main and covered by end-to-end tests (scope-enforced, replay-safe). It is NOT part of the signed v1.2.1 public binary, and its payment-token clearing is still simulated (a caas_tk_ prefix stands in for real Stripe / on-chain settlement). Describe it as an upcoming feature, not a shipped or payment-capable one. The zero-width watermark is provenance tagging, not an access control, and is trivially strippable. It is a SHA-256 commitment scheme, not a true zero-knowledge proof.
 
 ## Release
 
