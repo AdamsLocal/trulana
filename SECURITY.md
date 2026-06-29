@@ -126,14 +126,14 @@ Release signing is performed **manually on the built artifact**, not inside the 
 
 ## Out of Scope: Experimental CaaS Escrow
 
-The development branch contains an in-progress Context-as-a-Service monetization layer (`ZkCommitmentEngine`, `WatermarkEngine`, and the `/api/v1/monetize/settle` route). **It is not part of the signed v1.2.1 binary and is excluded from the trust model above.** Security-relevant caveats for anyone reviewing that code:
+`main` contains a Context-as-a-Service monetization layer (`ZkCommitmentEngine`, `WatermarkEngine`, `CommitmentStore`, and the `/api/v1/monetize/lease_offer` + `/api/v1/monetize/settle` routes). It is implemented and covered by end-to-end tests (`test/integration/monetize_escrow_test.dart`), but **it is not part of the signed v1.2.1 public binary and is excluded from the trust model above** until it ships in a signed release. Security-relevant properties and caveats for anyone reviewing that code:
 
-- The SHA-256 commitment primitive and the zero-width watermark round-trip are unit-tested in isolation and behave correctly there.
-- The wired HTTP flow is **not** functional end-to-end: `/monetize/lease_offer` returns a commitment hash but does not persist the salt, so `/monetize/settle` regenerates a fresh salt and the original hash cannot be verified.
-- `/monetize/settle` currently checks only for a valid token, not for the `monetize.write` scope that `/monetize/lease_offer` requires.
-- The zero-width "watermark" is steganographic provenance tagging, not an access control. It is trivially strippable by any normalizer and must not be relied on as a security boundary.
-
-Do not represent this layer as production until commitment persistence, scope enforcement on settlement, and end-to-end tests land.
+- **Commitment–reveal, end-to-end.** `lease_offer` commits to the payload (publishes `SHA-256(salt:payload)`, withholds the salt in the in-memory `CommitmentStore`); `settle` verifies the open commitment, reveals the salt, and returns the watermarked payload. The salt is never written to disk.
+- **Scope-enforced and replay-safe.** Both routes require the `monetize.write` scope. Settlement consumes the commitment (one-time reveal), so an offer cannot settle twice.
+- **It is a SHA-256 commitment, not a true zero-knowledge proof** — it proves the server did not alter the payload between offer and settlement; it does not hide the payload from a paying agent.
+- **Payment-token clearing is simulated.** A `caas_tk_` prefix stands in for real Stripe / on-chain settlement; do not represent payments as functional until that lands.
+- **The zero-width watermark is steganographic provenance tagging, not an access control.** It is trivially strippable by any normalizer and must not be relied on as a security boundary.
+- Open commitments live only in RAM and do not survive a process restart.
 
 ## Acceptable Risks (MVP)
 
@@ -145,7 +145,7 @@ Do not represent this layer as production until commitment persistence, scope en
 | Debug build stdout contamination | Low | Release builds are clean. `test_mcp.sh` validates. | Validated |
 | TokenManager is in-memory | Low | By design — tokens don't survive restart. Limits blast radius. | By design |
 | No CI signing pipeline | Medium | Release signing + notarization is performed manually by the maintainer holding the Developer ID key. Human-dependent; no audit trail of the signing step. Future CI workflow should automate it. | Open |
-| Experimental CaaS escrow wired into routes | Medium | The `/monetize/settle` route and ZK/watermark engines exist on the development branch but are not in the signed v1.2.1 binary and are not functional end-to-end (commitment salt not persisted across requests). Settlement also does not currently enforce a `monetize.write` scope check. Must not be presented as production. | Open / out of scope |
+| CaaS escrow not yet in a signed release | Medium | The `lease_offer`/`settle` escrow now works end-to-end (scope-enforced, replay-safe, tested) on `main`, but it is not in the signed v1.2.1 public binary and its payment-token clearing is still simulated (`caas_tk_` prefix). Must not be presented as a shipped, payment-capable feature until it lands in a signed release with real settlement. | Out of scope (on main, unreleased) |
 
 ## Test Coverage
 

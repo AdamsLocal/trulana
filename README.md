@@ -96,7 +96,8 @@ The server binds to `127.0.0.1:8432`. Non-loopback connections are rejected at t
 | `/api/v1/health` | GET | None | Server health check |
 | `/api/v1/auth/request` | POST | None | Agent handshake → returns a scoped access token (or 403 + `pending` on first contact) |
 | `/api/v1/context/query` | POST | Bearer + `context.read` | Query the vault · response redacted by the Auto-Redact Engine |
-| `/api/v1/monetize/lease_offer` | POST | Bearer + `monetize.write` | Record an inbound data-lease offer for user review |
+| `/api/v1/monetize/lease_offer` | POST | Bearer + `monetize.write` | Record an inbound data-lease offer and open an escrow commitment |
+| `/api/v1/monetize/settle` | POST | Bearer + `monetize.write` | Settle an open escrow — verify the commitment, reveal the salt, return the watermarked payload *(experimental — see below)* |
 
 Protected routes sit behind token auth and a sliding-window rate limiter (60 requests/minute per agent). A success response from `/context/query` looks like:
 
@@ -160,7 +161,7 @@ As defense in depth, a response-layer filter also scrubs structured PII (email /
 - **Local-only storage.** All data is encrypted at rest with AES-256. The DB key lives in the macOS Keychain and never leaves the device, never appears in logs, and is not stored in environment variables.
 - **Biometric gate.** Touch ID via `local_auth`. No accounts, no cloud identity.
 - **Explicit, scoped approval.** First-contact agents are persisted as `pending` and receive no token until you approve. Granted scopes are authoritative and cannot be silently broadened by re-auth.
-- **TTL tokens.** 15-minute expiry, in-memory only, do not survive a restart. Scopes are enforced at query time (`context.read` for `/context/query`, `monetize.write` for `/monetize/lease_offer`).
+- **TTL tokens.** 15-minute expiry, in-memory only, do not survive a restart. Scopes are enforced at query time (`context.read` for `/context/query`; `monetize.write` for `/monetize/lease_offer` and `/monetize/settle`).
 - **Loopback only.** The server binds to `127.0.0.1`; non-loopback connections are rejected at the socket and re-checked in middleware. CORS is restricted to `http://localhost`.
 - **Zero-PII logging.** `SafeLogger` enforces a strict allowlist; tokens, raw queries, response data, PII, DB paths, and keys are never logged. In MCP mode all logs go to stderr so stdout carries only JSON-RPC.
 - **Encrypted audit trail.** Every grant, rejection, query, and offer is recorded. The trail is encrypted-at-rest but **not** tamper-evident (no hash chain) — see [Limitations](#current-limitations).
@@ -171,13 +172,18 @@ No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed. Se
 
 ## Experimental: Context-as-a-Service escrow (unreleased)
 
-The repository contains an in-progress monetization layer that lets an agent pay to unlock specific context under a cryptographic-commitment-then-reveal scheme, with provenance watermarking. **This layer is not part of the signed v1.2.1 binary and must not be represented as production.** Current status:
+Trulana includes a monetization layer that lets an agent redeem a paid "context bounty" under a commitment-then-reveal escrow, with provenance watermarking. **It is implemented and covered by end-to-end tests on `main`, but it is not yet part of the signed v1.2.1 public binary — describe it as an upcoming feature, not a shipped one.** How it works:
 
-- **`ZkCommitmentEngine`** — SHA-256 commitment (`salt + data → hash`) and a `verifyProof` reveal check. The primitive is unit-tested in isolation and is sound.
-- **`WatermarkEngine`** — encodes a trace ID into zero-width characters and appends it to a payload, with a matching extractor. Unit-tested inject/extract round-trip.
-- **Known gap:** the end-to-end HTTP flow (`/monetize/lease_offer` → `/monetize/settle`) does **not** yet persist the commitment salt between the two requests, so a hash issued at offer time cannot currently be verified at settlement. The unit tests exercise the engines directly and therefore pass, but the wired HTTP escrow is not functional end-to-end.
+- **Open** (`/monetize/lease_offer`) — the server commits to the requested payload: it publishes `cryptographic_proof` (`= SHA-256(salt:payload)`, via `ZkCommitmentEngine`) and an `offer_id`, while holding the salt server-side in an in-memory `CommitmentStore` (never written to disk).
+- **Settle** (`/monetize/settle`) — with the `monetize.write` scope and a cleared settlement token, the server verifies the open commitment, reveals the salt, and returns the payload watermarked (`WatermarkEngine`) with a per-transaction trace for leak provenance. The reveal is **one-time**: the commitment is consumed so the same offer cannot settle twice. The agent independently confirms integrity by stripping the zero-width watermark and checking `SHA-256(salt:payload) == cryptographic_proof`.
 
-Treat this as a research preview. Maturing it (salt/commitment persistence keyed by offer, scope enforcement on settle, end-to-end tests) is tracked in [CONTRIBUTING.md](CONTRIBUTING.md#future-work).
+Honest caveats, by design:
+
+- It is a **SHA-256 commitment scheme**, not a true zero-knowledge proof, and the zero-width watermark is provenance tagging — **not** an access control (it is trivially strippable).
+- **Payment-token clearing is still simulated** — a `caas_tk_` prefix stands in for real Stripe / on-chain settlement (tracked in [CONTRIBUTING.md](CONTRIBUTING.md#future-work)).
+- Open commitments live in memory and do not survive a process restart.
+
+End-to-end coverage is in `test/integration/monetize_escrow_test.dart`.
 
 ---
 
@@ -187,10 +193,10 @@ Treat this as a research preview. Maturing it (salt/commitment persistence keyed
 flutter test                  # full suite
 flutter test test/engine/     # redaction pipeline (regex, NER, privacy filter, vault)
 flutter test test/security/   # log hygiene, auth consistency, approval flow
-flutter test test/integration/ # service loop + monetize route + preferences
+flutter test test/integration/ # service loop + monetize routes (incl. escrow) + preferences
 ```
 
-CI (`.github/workflows/ci.yml`) runs `flutter analyze`, `dart format --set-exit-if-changed`, and `flutter test` on every push and pull request, plus an unsigned `flutter build macos`.
+CI (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on every push and pull request, plus an unsigned `flutter build macos`.
 
 ---
 

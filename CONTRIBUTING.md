@@ -54,12 +54,10 @@ These are ordered by impact. Each one maps to a "Current limits" entry in the RE
 These are larger efforts that build on top of the MVP:
 
 - **Replace keyword vault with vector search.** `ContextVault` uses hardcoded keyword matching. Production should use a local vector store.
-- **Finish the experimental Context-as-a-Service escrow.** `ZkCommitmentEngine`, `WatermarkEngine`, and the `/api/v1/monetize/settle` route exist but the escrow is not functional end-to-end. To make it real and production-defensible:
-  - Persist the commitment (`offer_id → {hash, salt}`) when `/monetize/lease_offer` is called, and look it up on `/monetize/settle` so `verifyProof` can actually validate the originally-issued hash. Today `settle` regenerates a fresh salt and can never match.
-  - Enforce the `monetize.write` scope on `/monetize/settle` (it currently checks only token presence, unlike `lease_offer`).
-  - Replace the `bountyToken.startsWith('caas_tk_')` placeholder with real settlement-token validation.
-  - Add an end-to-end route test (`test/integration/`) covering offer → settle → verify, not just the engines in isolation.
-  - Add real payment settlement (Stripe Connect and/or on-chain); the `Ledger` table records offers but no value moves yet.
+- **Harden and ship the Context-as-a-Service escrow.** The commitment–reveal escrow now works end-to-end and is tested (`test/integration/monetize_escrow_test.dart`): `lease_offer` persists the commitment in `CommitmentStore`, `settle` verifies and reveals it under the `monetize.write` scope with one-time (replay-safe) reveal. Remaining to make it production-grade:
+  - Replace the `bountyToken.startsWith('caas_tk_')` placeholder with real settlement-token validation, and add real payment settlement (Stripe Connect and/or on-chain) — the `Ledger` table records offers but no value moves yet.
+  - Persist/expire open commitments (today they live only in memory and do not survive a restart); consider a TTL and a purge timer like `TokenManager`.
+  - Ship it in a signed, notarized release so it can be represented as a shipped feature rather than an unreleased preview.
 - **MCP caller identity verification.** Currently any local process can start an MCP session by invoking the binary with `TRULANA_MCP=1`. Consider cryptographic verification of caller identity.
 - **Other platforms.** macOS is the only current public binary. Windows, Linux, iOS, Android are not shipped.
 
