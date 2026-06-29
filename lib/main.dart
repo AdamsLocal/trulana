@@ -33,9 +33,10 @@ void main() async {
     // 2. Pass container if your McpServer is updated to accept it
     await McpServer.run(); 
   } else {
-    // 3. Start your existing application server instance
-    await TrulanaServer.instance.start();
-    
+    // 3. Start the local HTTP server, handing it the same root container
+    //    the redaction middleware reads from.
+    await TrulanaServer.instance.start(container);
+
     // 4. Swap to UncontrolledProviderScope to pass our explicit container instance
     runApp(
       UncontrolledProviderScope(

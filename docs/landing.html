@@ -43,21 +43,21 @@
   "applicationCategory": "DeveloperApplication",
   "applicationSubCategory": "Privacy & AI Security Tools",
   "operatingSystem": "macOS",
-  "softwareVersion": "2.0.0",
-  "releaseNotes": "Enterprise CaaS Production Engine. Apple Developer ID signed, notarized, stapled, Gatekeeper accepted. REST API on localhost:8432, MCP stdio adapter for LLMs, 3-stage Auto-Redact Engine, SQLCipher AES-256 local database, Zero-Knowledge Context Bounty (ZKCB) escrow framework, unique millisecond-accurate Holographic Steganographic Watermarking for leakage tracking, token-based auth with context.read and monetize.write scope enforcement.",
+  "softwareVersion": "1.2.1",
+  "releaseNotes": "Local-first private context server for AI tools. Apple Developer ID signed, notarized, stapled, Gatekeeper accepted. REST API on localhost:8432, MCP stdio adapter for LLMs, 3-stage Auto-Redact Engine, SQLCipher AES-256 local database, token-based auth with context.read and monetize.write scope enforcement. An experimental Context-as-a-Service escrow (SHA-256 commitment + zero-width watermarking) is in development and is not part of the signed binary.",
   "url": "https://trulana.com/",
   "programmingLanguage": ["Dart", "Flutter"],
   "runtimePlatform": "Flutter macOS",
   "permissions": "No cloud egress required. Runs entirely as a sandboxed local-first background engine on localhost.",
   "screenshot": "https://trulana.com/trulana-og.png",
   "featureList": [
-    "Apple Developer ID signed, notarized, stapled, and Gatekeeper certified (v2.0.0 Production Release)",
+    "Apple Developer ID signed, notarized, stapled, and Gatekeeper accepted (v1.2.1)",
     "Local-first encrypted asset vault (SQLCipher AES-256 defense layer)",
     "REST API on localhost:8432 (isolated loopback adapter)",
     "MCP stdio architecture natively compatible with Claude Desktop and Cursor Agents",
     "3-stage PII auto-redaction pipeline (Deterministic Regex, Named Entity Recognition, Privacy-Level Generalization)",
-    "Zero-Knowledge Context Bounties (ZKCB) cryptographically locking data until value tokens clear",
-    "Holographic Steganographic Watermarking embedding zero-width traces for leak provenance tracking",
+    "Experimental (unreleased): Zero-Knowledge Context Bounty escrow — SHA-256 commitment then reveal",
+    "Experimental (unreleased): zero-width steganographic watermarking for leak provenance tracing",
     "Scoped access tokens with 15-minute TTL, maintained strictly in-memory",
     "Rigid context.read and monetize.write architectural scope isolation",
     "Granular first-contact agent approval queue with runtime scope narrowing capability",
@@ -791,14 +791,14 @@ footer a:hover { color: var(--accent); }
 <!-- 1. HERO -->
 <div class="hero">
   <div class="container">
-    <div class="hero-badge">Context-as-a-Service (CaaS) &middot; v2.0.0</div>
+    <div class="hero-badge">Local-First Private Context Server &middot; v1.2.1</div>
     <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
     <h2 class="hero-headline">Own your data fortress.<br>Force AI to buy the <em>provenance.</em></h2>
-    <p class="sub">Trulana is an enterprise-grade local-first private context server. It wraps personal text and system streams in trustless Zero-Knowledge escrows and holographic steganographic watermarks. Sell context access to agents over REST or MCP safely—without losing your IP.</p>
-    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>Zero-Knowledge Escrow</span> &middot; <span>Holographic Tracing</span></div>
+    <p class="sub">Trulana is a local-first private context server. Apps and agents query your encrypted on-device vault over REST or MCP, and only redacted answers leave the machine. A Zero-Knowledge context-escrow and watermarking layer for paid context access is in active development (preview).</p>
+    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>Local-First &middot; Zero Cloud Egress</span> &middot; <span>On-Device Redaction</span></div>
     <div class="cta-row">
-      <a href="https://github.com/AdamsLocal/trulana/releases/download/v2.0.0/trulana-v2.0.0-macos.zip" class="btn btn-primary">Download Production Daemon</a>
+      <a href="https://github.com/AdamsLocal/trulana/releases/tag/v1.2.1" class="btn btn-primary">Download for macOS (v1.2.1)</a>
       <a href="#partner" class="btn btn-ghost">Enterprise Integration Licensing</a>
     </div>
     <div class="trust-row">
@@ -977,20 +977,20 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">Production Milestone</div>
-    <h2>Production-Grade macOS MVP. v2.0.0 Signed, Notarized, and Stapled.</h2>
-    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana's core network route infrastructure is locked into main. The v2.0.0 release is signed natively using an Apple Developer ID, notarized, and fully stapled to bypass Gatekeeper sandboxing limits.</p>
+    <h2>macOS Desktop MVP. v1.2.1 Signed, Notarized, and Stapled.</h2>
+    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana's core network-route infrastructure ships on <code>main</code>. The v1.2.1 release is signed with an Apple Developer ID, Apple-notarized, and ticket-stapled, so it is accepted by Gatekeeper without override prompts.</p>
     <div class="status-list">
-      <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed, notarized, stapled, and Gatekeeper certified (v2.0.0)</div>
+      <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed, notarized, stapled, and Gatekeeper accepted (v1.2.1)</div>
       <div class="status-item"><div class="status-dot live"></div>Local background daemon with SQLCipher AES-256 database isolation</div>
       <div class="status-item"><div class="status-dot live"></div>Isolated loopback REST layer active on localhost:8432</div>
       <div class="status-item"><div class="status-dot live"></div>MCP standard stdio adapter engine functional across developer environments</div>
       <div class="status-item"><div class="status-dot live"></div>Short-lived access tokens with strictly isolated 15-minute in-memory TTL</div>
       <div class="status-item"><div class="status-dot live"></div>Rigid, independent scope boundary checks for context.read and monetize.write</div>
-      <div class="status-item"><div class="status-dot live"></div>Zero-Knowledge Context Bounty (ZKCB) escrow commitment engine</div>
-      <div class="status-item"><div class="status-dot live"></div>Holographic Steganographic Watermarking for millisecond leak provenance tracking</div>
+      <div class="status-item"><div class="status-dot soon"></div>Zero-Knowledge Context Bounty escrow commitment engine (experimental, unreleased — not yet functional end-to-end)</div>
+      <div class="status-item"><div class="status-dot soon"></div>Zero-width steganographic watermarking for leak provenance (experimental, unreleased)</div>
       <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction engine (Regex, Named Entity Recognition, Privacy Generalization)</div>
       <div class="status-item"><div class="status-dot live"></div>Granular user approval queue featuring real-time agent scope narrowing</div>
-      <div class="status-item"><div class="status-dot live"></div>Fully unified integration test suites confirming cryptographic and log hygiene</div>
+      <div class="status-item"><div class="status-dot live"></div>Integration test suites for the service loop, scope enforcement, and log hygiene</div>
       <div class="status-item"><div class="status-dot soon"></div>Automated cloud-native code signing and security attestation pipelines in CI</div>
       <div class="status-item"><div class="status-dot soon"></div>Isolated local on-device small language model for advanced entity recognition</div>
     </div>
