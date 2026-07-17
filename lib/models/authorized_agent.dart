@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import 'enums.dart';
 
 /// A third-party application that has been granted (or denied) access
@@ -15,13 +17,32 @@ class AuthorizedAgent {
   final AgentStatus status;
   final DateTime expirationDate;
 
+  /// Base64url-encoded raw Ed25519 public key approved for MCP access.
+  /// Null means the record predates cryptographic MCP enrollment.
+  final String? mcpPublicKey;
+
   const AuthorizedAgent({
     required this.agentId,
     required this.agentName,
     this.grantedScopes = const <String>[],
     this.status = AgentStatus.active,
     required this.expirationDate,
+    this.mcpPublicKey,
   });
+
+  String? get mcpPublicKeyFingerprint {
+    final String? encoded = mcpPublicKey;
+    if (encoded == null) return null;
+    try {
+      final String padded = encoded.padRight(
+        encoded.length + ((4 - encoded.length % 4) % 4),
+        '=',
+      );
+      return 'SHA256:${sha256.convert(base64Url.decode(padded))}';
+    } on FormatException {
+      return 'INVALID KEY';
+    }
+  }
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         'agent_id': agentId,
@@ -29,6 +50,7 @@ class AuthorizedAgent {
         'granted_scopes': jsonEncode(grantedScopes),
         'status': status.value,
         'expiration_date': expirationDate.toIso8601String(),
+        'mcp_public_key': mcpPublicKey,
       };
 
   factory AuthorizedAgent.fromMap(Map<String, dynamic> map) {
@@ -41,6 +63,7 @@ class AuthorizedAgent {
       grantedScopes: rawScopes.cast<String>(),
       status: AgentStatus.fromValue(map['status'] as String),
       expirationDate: DateTime.parse(map['expiration_date'] as String),
+      mcpPublicKey: map['mcp_public_key'] as String?,
     );
   }
 
@@ -50,6 +73,7 @@ class AuthorizedAgent {
     List<String>? grantedScopes,
     AgentStatus? status,
     DateTime? expirationDate,
+    String? mcpPublicKey,
   }) =>
       AuthorizedAgent(
         agentId: agentId ?? this.agentId,
@@ -57,6 +81,7 @@ class AuthorizedAgent {
         grantedScopes: grantedScopes ?? this.grantedScopes,
         status: status ?? this.status,
         expirationDate: expirationDate ?? this.expirationDate,
+        mcpPublicKey: mcpPublicKey ?? this.mcpPublicKey,
       );
 
   @override
@@ -68,7 +93,8 @@ class AuthorizedAgent {
           agentName == other.agentName &&
           _listEquals(grantedScopes, other.grantedScopes) &&
           status == other.status &&
-          expirationDate == other.expirationDate;
+          expirationDate == other.expirationDate &&
+          mcpPublicKey == other.mcpPublicKey;
 
   @override
   int get hashCode => Object.hash(
@@ -77,6 +103,7 @@ class AuthorizedAgent {
         Object.hashAll(grantedScopes),
         status,
         expirationDate,
+        mcpPublicKey,
       );
 
   @override
