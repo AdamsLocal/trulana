@@ -2,23 +2,27 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:uuid/uuid.dart';
+
+import 'package:trulana/core/database/database_helper.dart';
 import 'package:trulana/core/logging/safe_logger.dart';
 import 'package:trulana/core/services/auth_service.dart';
 import 'package:trulana/core/services/context_query_service.dart';
+import 'package:trulana/mcp/mcp_caller_auth.dart';
+import 'package:trulana/models/models.dart';
 
 const String _serverName = 'trulana';
 const String _serverVersion = '1.2.1';
+const Uuid _uuid = Uuid();
 
 /// MCP stdio server that exposes Trulana's shared services over the
 /// Model Context Protocol. Reads JSON-RPC 2.0 from stdin, dispatches
-/// to [AuthService] and [ContextQueryService], writes responses to
-/// stdout. All logging goes to stderr via [SafeLogger].
-///
-/// This runs inside the same Flutter macOS process as the main app,
-/// giving it full access to the encrypted database, Keychain, and
-/// all registered plugins.
+/// to shared services, and writes responses to stdout.
 class McpServer {
   McpServer._();
+
+  static final McpCallerAuth _callerAuth = McpCallerAuth();
+  static final DatabaseHelper _db = DatabaseHelper.instance;
 
   static Future<void> run() async {
     SafeLogger.mcpStart();
@@ -34,16 +38,10 @@ class McpServer {
         final Object? decoded = jsonDecode(line);
         if (decoded is! Map<String, Object?>) continue;
 
-        final response = await _handleMessage(decoded);
-        if (response != null) {
-          stdout.writeln(jsonEncode(response));
-        }
+        final Map<String, Object?>? response = await _handleMessage(decoded);
+        if (response != null) stdout.writeln(jsonEncode(response));
       } on FormatException {
-        stdout.writeln(jsonEncode(_errorResponse(
-          null,
-          -32700,
-          'Parse error',
-        )));
+        stdout.writeln(jsonEncode(_errorResponse(null, -32700, 'Parse error')));
       }
     }
   }
@@ -53,19 +51,15 @@ class McpServer {
   ) async {
     final String? method = message['method'] as String?;
     final Object? id = message['id'];
-
-    if (method == null) return null;
-
-    // Notifications (no id) don't get responses.
-    if (id == null) return null;
+    if (method == null || id == null) return null;
 
     switch (method) {
       case 'initialize':
-        return _handleInitialize(id, message);
+        return _handleInitialize(id);
       case 'tools/list':
         return _handleToolsList(id);
       case 'tools/call':
-        return await _handleToolsCall(id, message);
+        return _handleToolsCall(id, message);
       case 'ping':
         return _successResponse(id, <String, Object?>{});
       default:
@@ -73,10 +67,7 @@ class McpServer {
     }
   }
 
-  static Map<String, Object?> _handleInitialize(
-    Object id,
-    Map<String, Object?> message,
-  ) {
+  static Map<String, Object?> _handleInitialize(Object id) {
     return _successResponse(id, <String, Object?>{
       'protocolVersion': '2024-11-05',
       'capabilities': <String, Object?>{
@@ -93,51 +84,76 @@ class McpServer {
     return _successResponse(id, <String, Object?>{
       'tools': <Map<String, Object?>>[
         <String, Object?>{
-          'name': 'sovereign_request_access',
-          'description':
-              'Request scoped access to the user\'s Trulana vault. '
-              'Returns a short-lived access token.',
+          'name': 'sovereign_auth_challenge',
+          'description': 'Enroll an Ed25519 public key or request a fresh '
+              'single-use challenge for an approved MCP caller.',
           'inputSchema': <String, Object?>{
             'type': 'object',
             'properties': <String, Object?>{
               'app_id': <String, Object?>{
                 'type': 'string',
-                'description': 'Unique identifier for the requesting agent.',
+                'description': 'Stable identifier for the requesting agent.',
               },
               'app_name': <String, Object?>{
                 'type': 'string',
-                'description': 'Human-readable name of the agent.',
+                'description': 'Human-readable name shown for approval.',
               },
               'scopes': <String, Object?>{
                 'type': 'array',
                 'items': <String, Object?>{'type': 'string'},
-                'description': 'Requested access scopes (e.g. context.read).',
+                'description': 'Requested scopes, such as context.read.',
               },
               'intent': <String, Object?>{
                 'type': 'string',
                 'description': 'Why the agent needs access.',
               },
+              'public_key': <String, Object?>{
+                'type': 'string',
+                'description': 'Raw 32-byte Ed25519 public key in base64url.',
+              },
             },
-            'required': <String>['app_id', 'app_name', 'scopes', 'intent'],
+            'required': <String>[
+              'app_id',
+              'app_name',
+              'scopes',
+              'intent',
+              'public_key',
+            ],
+          },
+        },
+        <String, Object?>{
+          'name': 'sovereign_auth_prove',
+          'description': 'Prove possession of the approved Ed25519 key by '
+              'signing a fresh challenge. Returns a short-lived token.',
+          'inputSchema': <String, Object?>{
+            'type': 'object',
+            'properties': <String, Object?>{
+              'challenge_id': <String, Object?>{
+                'type': 'string',
+                'description': 'ID returned by sovereign_auth_challenge.',
+              },
+              'signature': <String, Object?>{
+                'type': 'string',
+                'description': 'Raw 64-byte Ed25519 signature in base64url.',
+              },
+            },
+            'required': <String>['challenge_id', 'signature'],
           },
         },
         <String, Object?>{
           'name': 'sovereign_query_context',
-          'description':
-              'Query the user\'s personal context. The response is '
-              'automatically redacted based on the user\'s privacy level. '
-              'Requires a valid access token from sovereign_request_access.',
+          'description': 'Query personal context using a token returned by '
+              'sovereign_auth_prove. Responses are automatically redacted.',
           'inputSchema': <String, Object?>{
             'type': 'object',
             'properties': <String, Object?>{
               'access_token': <String, Object?>{
                 'type': 'string',
-                'description': 'Bearer token from sovereign_request_access.',
+                'description': 'Bearer token from sovereign_auth_prove.',
               },
               'query': <String, Object?>{
                 'type': 'string',
-                'description':
-                    'Natural language query (e.g. "morning routine").',
+                'description': 'Natural-language context query.',
               },
             },
             'required': <String>['access_token', 'query'],
@@ -156,45 +172,185 @@ class McpServer {
     final String? toolName = params?['name'] as String?;
     final Map<String, Object?>? args =
         params?['arguments'] as Map<String, Object?>?;
-
     if (toolName == null || args == null) {
-      return _errorResponse(id, -32602, 'Invalid params: name and arguments required.');
+      return _errorResponse(
+        id,
+        -32602,
+        'Invalid params: name and arguments required.',
+      );
     }
 
     switch (toolName) {
+      case 'sovereign_auth_challenge':
+        return _callAuthChallenge(id, args);
+      case 'sovereign_auth_prove':
+        return _callAuthProve(id, args);
       case 'sovereign_request_access':
-        return await _callRequestAccess(id, args);
+        return _toolResult(
+          id,
+          isError: true,
+          text: 'Cryptographic MCP authentication is required. Use '
+              'sovereign_auth_challenge, sign its payload with the approved '
+              'Ed25519 key, then call sovereign_auth_prove.',
+        );
       case 'sovereign_query_context':
-        return await _callQueryContext(id, args);
+        return _callQueryContext(id, args);
       default:
         return _errorResponse(id, -32602, 'Unknown tool: $toolName');
     }
   }
 
-  // ── Tool implementations ────────────────────────────────────────
-
-  static Future<Map<String, Object?>> _callRequestAccess(
+  static Future<Map<String, Object?>> _callAuthChallenge(
     Object id,
     Map<String, Object?> args,
   ) async {
-    final List<Object?>? rawScopes = args['scopes'] as List<Object?>?;
+    try {
+      final String? appId = args['app_id'] as String?;
+      final String? appName = args['app_name'] as String?;
+      final String? intent = args['intent'] as String?;
+      final String? publicKey = args['public_key'] as String?;
+      final List<Object?>? rawScopes = args['scopes'] as List<Object?>?;
+      if (appId == null ||
+          appId.isEmpty ||
+          appName == null ||
+          appName.isEmpty ||
+          intent == null ||
+          intent.isEmpty ||
+          publicKey == null ||
+          rawScopes == null ||
+          rawScopes.isEmpty ||
+          rawScopes.any((Object? value) => value is! String)) {
+        return _toolResult(
+          id,
+          isError: true,
+          text: 'app_id, app_name, non-empty string scopes, intent, and '
+              'public_key are required.',
+        );
+      }
 
-    final AuthResult result = await AuthService.instance.requestAccess(
-      appId: args['app_id'] as String?,
-      appName: args['app_name'] as String?,
-      scopes: rawScopes?.cast<String>(),
-      intent: args['intent'] as String?,
-    );
+      final List<String> scopes = rawScopes.cast<String>();
+      final String normalizedKey = McpCallerAuth.normalizePublicKey(publicKey);
+      final AuthorizedAgent? agent = await _db.getAgentById(appId);
 
-    if (!result.isSuccess) {
-      return _toolResult(id, isError: true, text: result.errorMessage);
+      if (agent == null) {
+        await AuthService.instance.requestAccess(
+          appId: appId,
+          appName: appName,
+          scopes: scopes,
+          intent: intent,
+          mcpPublicKey: normalizedKey,
+        );
+        return _toolResult(
+          id,
+          isError: true,
+          text: jsonEncode(<String, Object>{
+            'status': 'pending_user_approval',
+            'public_key_fingerprint':
+                McpCallerAuth.publicKeyFingerprint(normalizedKey),
+          }),
+        );
+      }
+
+      if (agent.mcpPublicKey == null) {
+        return _toolResult(
+          id,
+          isError: true,
+          text: 'This approval predates MCP key binding. Revoke it and '
+              'submit a new enrollment so the key fingerprint can be reviewed.',
+        );
+      }
+      if (agent.mcpPublicKey != normalizedKey) {
+        SafeLogger.authRejected(statusCode: 401, agentId: appId);
+        return _toolResult(
+          id,
+          isError: true,
+          text: 'MCP public key does not match the user-approved identity.',
+        );
+      }
+      if (agent.status != AgentStatus.active) {
+        SafeLogger.authRejected(statusCode: 403, agentId: appId);
+        final String state = agent.status == AgentStatus.pending
+            ? 'pending user approval'
+            : 'not active';
+        return _toolResult(id, isError: true, text: 'Agent access is $state.');
+      }
+
+      final McpCallerChallenge challenge = _callerAuth.issue(
+        appId: agent.agentId,
+        appName: agent.agentName,
+        scopes: agent.grantedScopes,
+        intent: intent,
+        publicKey: normalizedKey,
+      );
+      return _toolResult(id, text: jsonEncode(challenge.toPublicMap()));
+    } on McpCallerAuthException catch (error) {
+      SafeLogger.authRejected(statusCode: 400, agentId: error.appId);
+      return _toolResult(id, isError: true, text: error.message);
+    } on TypeError {
+      SafeLogger.authRejected(statusCode: 400);
+      return _toolResult(id, isError: true, text: 'Invalid argument types.');
     }
+  }
 
-    return _toolResult(id, text: jsonEncode(<String, Object>{
-      'access_token': result.accessToken,
-      'expires_in': result.ttlSeconds,
-      'granted_scopes': result.grantedScopes,
-    }));
+  static Future<Map<String, Object?>> _callAuthProve(
+    Object id,
+    Map<String, Object?> args,
+  ) async {
+    final Object? rawChallengeId = args['challenge_id'];
+    final Object? rawSignature = args['signature'];
+    if (rawChallengeId is! String ||
+        rawChallengeId.isEmpty ||
+        rawSignature is! String ||
+        rawSignature.isEmpty) {
+      return _toolResult(
+        id,
+        isError: true,
+        text: 'challenge_id and signature are required.',
+      );
+    }
+    final String challengeId = rawChallengeId;
+    final String signature = rawSignature;
+
+    try {
+      final McpCallerChallenge challenge = await _callerAuth.verify(
+        challengeId: challengeId,
+        signature: signature,
+      );
+      final AuthResult result = await AuthService.instance.requestAccess(
+        appId: challenge.appId,
+        appName: challenge.appName,
+        scopes: challenge.scopes,
+        intent: challenge.intent,
+        mcpProofVerified: true,
+      );
+      if (!result.isSuccess) {
+        return _toolResult(id, isError: true, text: result.errorMessage);
+      }
+
+      return _toolResult(id, text: jsonEncode(<String, Object>{
+        'access_token': result.accessToken,
+        'expires_in': result.ttlSeconds,
+        'granted_scopes': result.grantedScopes,
+      }));
+    } on McpCallerAuthException catch (error) {
+      await _auditProofFailure(error);
+      SafeLogger.authRejected(statusCode: 401, agentId: error.appId);
+      return _toolResult(id, isError: true, text: error.message);
+    }
+  }
+
+  static Future<void> _auditProofFailure(McpCallerAuthException error) async {
+    final String? appId = error.appId;
+    if (appId == null) return;
+    await _db.insertAuditEntry(
+      AuditLogEntry(
+        logId: _uuid.v4(),
+        agentId: appId,
+        requestIntent: 'MCP Ed25519 caller proof rejected',
+        actionTaken: AuditAction.blocked,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   static Future<Map<String, Object?>> _callQueryContext(
@@ -202,7 +358,6 @@ class McpServer {
     Map<String, Object?> args,
   ) async {
     final String? accessToken = args['access_token'] as String?;
-
     if (accessToken == null || accessToken.isEmpty) {
       return _toolResult(id, isError: true, text: 'Missing access_token.');
     }
@@ -212,7 +367,6 @@ class McpServer {
       accessToken: accessToken,
       query: args['query'] as String?,
     );
-
     if (!result.isSuccess) {
       return _toolResult(id, isError: true, text: result.errorMessage);
     }
@@ -224,33 +378,22 @@ class McpServer {
     }));
   }
 
-  // ── JSON-RPC helpers ────────────────────────────────────────────
-
   static Map<String, Object?> _successResponse(
     Object id,
     Map<String, Object?> result,
-  ) {
-    return <String, Object?>{
-      'jsonrpc': '2.0',
-      'id': id,
-      'result': result,
-    };
-  }
+  ) =>
+      <String, Object?>{'jsonrpc': '2.0', 'id': id, 'result': result};
 
   static Map<String, Object?> _errorResponse(
     Object? id,
     int code,
     String message,
-  ) {
-    return <String, Object?>{
-      'jsonrpc': '2.0',
-      'id': id,
-      'error': <String, Object?>{
-        'code': code,
-        'message': message,
-      },
-    };
-  }
+  ) =>
+      <String, Object?>{
+        'jsonrpc': '2.0',
+        'id': id,
+        'error': <String, Object?>{'code': code, 'message': message},
+      };
 
   static Map<String, Object?> _toolResult(
     Object id, {
@@ -259,10 +402,7 @@ class McpServer {
   }) {
     return _successResponse(id, <String, Object?>{
       'content': <Map<String, Object?>>[
-        <String, Object?>{
-          'type': 'text',
-          'text': text,
-        },
+        <String, Object?>{'type': 'text', 'text': text},
       ],
       'isError': isError,
     });

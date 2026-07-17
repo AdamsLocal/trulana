@@ -1,7 +1,6 @@
 name: trulana
 description: "Autonomous Personal API and Data Broker — local-first, privacy-centric."
 
-# Changed from 'none' to target your GitHub Packages scoped registry
 publish_to: https://pub.pkg.github.com/machine-squelch
 
 version: 1.2.1+4
@@ -37,8 +36,9 @@ dependencies:
   # Serialization
   json_annotation: ^4.9.0
 
-  # Cryptography — SHA-256 commitments used by the experimental CaaS escrow layer
+  # SHA-256 commitments/fingerprints and Ed25519 MCP caller proofs
   crypto: ^3.0.7
+  cryptography: ^2.9.0
 
   # Utilities
   uuid: ^4.5.1

@@ -6,7 +6,7 @@
 class Schema {
   Schema._();
 
-  static const int version = 2;
+  static const int version = 3;
   static const String databaseName = 'trulana.db';
 
   static const String createUserConfig = '''
@@ -25,7 +25,8 @@ class Schema {
       agent_name      TEXT NOT NULL,
       granted_scopes  TEXT NOT NULL,
       status          TEXT NOT NULL DEFAULT 'active',
-      expiration_date TEXT NOT NULL
+      expiration_date TEXT NOT NULL,
+      mcp_public_key  TEXT
     )
   ''';
 

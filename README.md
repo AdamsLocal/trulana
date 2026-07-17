@@ -43,7 +43,7 @@ Trulana inverts that. Your context stays in an encrypted vault on your device. A
 
 | Step | What happens |
 |------|--------------|
-| 01 · App requests access | Over REST or the MCP stdio adapter, with requested scopes and a stated intent. |
+| 01 · App requests access | Over REST, or through MCP with requested scopes, intent, and an Ed25519 public key whose fingerprint is shown for approval. |
 | 02 · You approve or reject | First-contact agents are persisted as **pending** and receive no token until you approve. You can narrow the requested scopes before approving. |
 | 03 · Token issued | 15-minute TTL · in-memory only · never persisted · scopes enforced at query time. |
 | 04 · Context queried | The app queries your local vault over localhost using the token. |
@@ -128,12 +128,17 @@ Add Trulana to your MCP client config:
 }
 ```
 
-Two tools are exposed (JSON-RPC `2024-11-05`):
+Three tools are exposed (JSON-RPC `2024-11-05`):
 
-- **`sovereign_request_access`** — request a scoped access token (`app_id`, `app_name`, `scopes`, `intent`).
-- **`sovereign_query_context`** — query the vault with a valid token; the response is automatically redacted.
+- **`sovereign_auth_challenge`** — enroll a raw 32-byte Ed25519 public key (base64url) or request a fresh challenge for an approved key.
+- **`sovereign_auth_prove`** — submit a raw 64-byte Ed25519 signature (base64url) over the decoded `signing_payload`; a valid proof returns the scoped token.
+- **`sovereign_query_context`** — query the vault with that token; the response is automatically redacted.
 
-Both calls flow through the same `AuthService` / `ContextQueryService` singletons as REST. There is no bypass path: an MCP caller cannot reach the vault without a user-approved, scoped token.
+First contact creates a pending approval containing the requested scopes and the SHA-256 fingerprint of the caller's public key. After approval, challenges expire after 60 seconds, are held only in memory, and are consumed before signature verification so failed proofs and successful proofs cannot be replayed. The legacy `sovereign_request_access` MCP call fails closed. A key-bound identity also cannot mint a token through the REST app-ID route without the MCP proof.
+
+The proof authenticates possession of the approved private key; it does not attest the operating system or prove that the surrounding MCP client process is uncompromised. Existing approvals without a key must be revoked and re-enrolled for MCP use.
+
+> This implementation is newer than the signed v1.2.1 binary. It becomes a shipped property only in a later signed release.
 
 ---
 
@@ -159,7 +164,7 @@ As defense in depth, a response-layer filter also scrubs structured PII (email /
 
 - **Local-only storage.** All data is encrypted at rest with AES-256. The DB key lives in the macOS Keychain and never leaves the device, never appears in logs, and is not stored in environment variables.
 - **Biometric gate.** Touch ID via `local_auth`. No accounts, no cloud identity.
-- **Explicit, scoped approval.** First-contact agents are persisted as `pending` and receive no token until you approve. Granted scopes are authoritative and cannot be silently broadened by re-auth.
+- **Explicit, scoped approval.** First-contact agents are persisted as `pending` and receive no token until you approve. MCP approvals display and bind an Ed25519 public-key fingerprint. Granted scopes are authoritative and cannot be silently broadened by re-auth.
 - **TTL tokens.** 15-minute expiry, in-memory only, do not survive a restart. Scopes are enforced at query time (`context.read` for `/context/query`, `monetize.write` for `/monetize/lease_offer`).
 - **Loopback only.** The server binds to `127.0.0.1`; non-loopback connections are rejected at the socket and re-checked in middleware. CORS is restricted to `http://localhost`.
 - **Zero-PII logging.** `SafeLogger` enforces a strict allowlist; tokens, raw queries, response data, PII, DB paths, and keys are never logged. In MCP mode all logs go to stderr so stdout carries only JSON-RPC.
@@ -196,7 +201,7 @@ CI (`.github/workflows/ci.yml`) runs `flutter analyze`, `dart format --set-exit-
 
 ## Current limitations
 
-- **MCP caller identity is not cryptographically verified** — any local process that can invoke the binary with `TRULANA_MCP=1` can start a session (user approval still gates data access).
+- **MCP proof is key possession, not process attestation** — Ed25519 challenge-response identifies the approved key, but a compromised host or client that steals/uses the private key remains outside this boundary. REST-only identities remain app-ID based unless enrolled for MCP key binding.
 - **MCP per-agent rate limiting is not enforced** — rate limiting lives in the REST/HTTP middleware layer, not the shared service layer.
 - **NER is a keyword dictionary** — on-device LLM/SLM redaction is a future phase; the pipeline interface is already swap-ready.
 - **Release signing + notarization are manual** — CI builds an unsigned bundle only.

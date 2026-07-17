@@ -6,8 +6,6 @@ import 'package:trulana/core/database/schema.dart';
 ///
 /// Version 1 is the baseline — tables are created via [onCreate] in
 /// [DatabaseHelper], so no migration logic runs for fresh installs.
-/// Future versions add cases to the switch block so upgrades are applied
-/// sequentially (e.g. v1->v2, then v2->v3) even if the user skips releases.
 class Migrations {
   Migrations._();
 
@@ -21,6 +19,9 @@ class Migrations {
         case 2:
           await _migrateV1ToV2(db);
           break;
+        case 3:
+          await _migrateV2ToV3(db);
+          break;
         default:
           break;
       }
@@ -29,5 +30,11 @@ class Migrations {
 
   static Future<void> _migrateV1ToV2(Database db) async {
     await db.execute(Schema.createPreferences);
+  }
+
+  static Future<void> _migrateV2ToV3(Database db) async {
+    await db.execute(
+      'ALTER TABLE authorized_agents ADD COLUMN mcp_public_key TEXT',
+    );
   }
 }

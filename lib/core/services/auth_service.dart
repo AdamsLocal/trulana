@@ -67,6 +67,8 @@ class AuthService {
     required List<String>? scopes,
     required String? intent,
     int? debugTtlSeconds,
+    String? mcpPublicKey,
+    bool mcpProofVerified = false,
   }) async {
     if (appId == null ||
         appId.isEmpty ||
@@ -88,14 +90,15 @@ class AuthService {
 
     if (agent == null) {
       // First-contact agent: persist as pending and await explicit user
-      // approval. No token is issued here — the user must promote the
-      // agent to `active` from the Gatekeeper UI before calls succeed.
+      // approval. MCP enrollment also persists the public key whose
+      // fingerprint the user reviews; REST callers leave this null.
       final AuthorizedAgent newAgent = AuthorizedAgent(
         agentId: appId,
         agentName: appName,
         grantedScopes: scopes,
         status: AgentStatus.pending,
         expirationDate: DateTime.now().add(const Duration(days: 30)),
+        mcpPublicKey: mcpPublicKey,
       );
       await _db.insertAgent(newAgent);
 
@@ -111,8 +114,7 @@ class AuthService {
       SafeLogger.authRejected(statusCode: 403, agentId: appId);
       return AuthResult.failure(
         errorCode: 403,
-        errorMessage:
-            'Access request pending user approval.',
+        errorMessage: 'Access request pending user approval.',
       );
     }
 
@@ -137,6 +139,17 @@ class AuthService {
       return AuthResult.failure(
         errorCode: 403,
         errorMessage: 'Agent access is paused.',
+      );
+    }
+
+    // A key-bound identity must not be impersonated through another local
+    // transport using only its public app_id. The MCP adapter sets this flag
+    // only after a valid, single-use Ed25519 proof.
+    if (agent.mcpPublicKey != null && !mcpProofVerified) {
+      SafeLogger.authRejected(statusCode: 401, agentId: appId);
+      return AuthResult.failure(
+        errorCode: 401,
+        errorMessage: 'This agent identity requires cryptographic MCP proof.',
       );
     }
 

@@ -172,6 +172,7 @@ class _PendingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String? fingerprint = agent.mcpPublicKeyFingerprint;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -209,6 +210,14 @@ class _PendingRow extends StatelessWidget {
                       style: TrulanaTheme.monoStyle.copyWith(
                           fontSize: 10,
                           color: TrulanaColors.textTertiary)),
+                  if (fingerprint != null) ...[
+                    const SizedBox(height: 2),
+                    Text('Ed25519: $fingerprint',
+                        overflow: TextOverflow.ellipsis,
+                        style: TrulanaTheme.monoStyle.copyWith(
+                            fontSize: 9,
+                            color: TrulanaColors.textTertiary)),
+                  ],
                 ],
               ),
             ),
@@ -307,6 +316,18 @@ class _ApprovalSheetState extends ConsumerState<_ApprovalSheet> {
             Text('agent_id: ${widget.agent.agentId}',
                 style: TrulanaTheme.monoStyle.copyWith(
                     fontSize: 10, color: TrulanaColors.textTertiary)),
+            if (widget.agent.mcpPublicKeyFingerprint != null) ...[
+              const SizedBox(height: 8),
+              Text('APPROVED MCP KEY',
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 9,
+                      letterSpacing: 0.8,
+                      color: TrulanaColors.warningAmber)),
+              const SizedBox(height: 3),
+              SelectableText(widget.agent.mcpPublicKeyFingerprint!,
+                  style: TrulanaTheme.monoStyle.copyWith(
+                      fontSize: 9, color: TrulanaColors.textSecondary)),
+            ],
             const SizedBox(height: 18),
             Text('REQUESTED SCOPES',
                 style: TrulanaTheme.monoStyle.copyWith(
