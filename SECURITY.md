@@ -32,15 +32,17 @@ Trulana is a local-first personal data broker. All data stays on-device in an en
 
 ### MCP Transport
 
-- Runs as a subprocess launched by the MCP client (Claude Desktop, Cursor, etc.).
-- The MCP client controls which binary is launched and what environment variables are set.
-- Access is gated by `AuthService` — agents must call `sovereign_request_access` to obtain a token before calling `sovereign_query_context`.
-- Both calls flow through the same service singletons as REST. No bypass path exists.
+- Runs as a subprocess launched by the MCP client.
+- First contact enrolls a raw Ed25519 public key as a pending agent. The Gatekeeper UI shows its SHA-256 fingerprint alongside requested scopes.
+- An approved caller requests a random, 60-second in-memory challenge and signs the exact returned payload. The challenge is removed before verification, making every proof attempt single-use.
+- Only a valid signature from the approved key reaches `AuthService` token issuance. The legacy direct MCP token tool fails closed.
+- Key-bound identities are also rejected by the REST app-ID route unless the internal MCP proof flag is present, preventing cross-transport app-ID impersonation.
+- Signature failures attributable to a known challenge are recorded as blocked audit events; unknown/replayed challenge IDs are safe-logged without an agent attribution.
 
 ### Current Trust Boundary (MVP)
 
-- Any local process that can invoke the binary with `TRULANA_MCP=1` can start an MCP session.
-- Access is gated by an explicit user approval step: first-contact agents are persisted as `pending` and receive no token until the user approves them from the Gatekeeper UI. The user may narrow the requested scopes before approval.
+- Any local process can start the stdio server, but it cannot mint a token for a key-bound identity without proving possession of the approved Ed25519 private key.
+- First-contact agents are persisted as `pending` with requested scopes and an MCP key fingerprint. No challenge/token is issued until the user approves; the user may narrow scopes before approval.
 - Approved tokens carry only the scopes the user confirmed; re-auth cannot broaden the grant.
 - `/api/v1/context/query` and MCP `sovereign_query_context` require the `context.read` scope.
 - `/api/v1/monetize/lease_offer` requires the `monetize.write` scope.
@@ -51,7 +53,10 @@ Trulana is a local-first personal data broker. All data stays on-device in an en
 
 - **Per-agent rate limiting on MCP**: The REST path has sliding-window rate limiting. The MCP stdio transport currently does not enforce per-agent rate limits.
 - **Tamper-evidence on the audit log**: The audit table lives in the encrypted database. An attacker who obtained the database key could modify rows without detection (no hash chain, no append-only journal, no external attestation).
-- **Cryptographic caller verification on MCP**: MCP uses a local-process trust model. Any process that can spawn the binary with `TRULANA_MCP=1` can start a session — approval still gates data access, but the caller identity is not cryptographically attested.
+- **Host/process attestation**: MCP verifies possession of an approved Ed25519 key. It does not attest the host OS or the integrity of the MCP client process, and it cannot protect a private key already compromised on that host.
+- **Cryptographic REST identity**: REST-only approvals remain app-ID based. An identity enrolled with an MCP key cannot fall back to that path.
+
+> The Ed25519 MCP implementation is newer than the signed v1.2.1 binary and is not a shipped release property until a later signed build is published.
 
 ## Encryption
 
@@ -139,7 +144,8 @@ Do not represent this layer as production until commitment persistence, scope en
 
 | Risk | Severity | Mitigation | Status |
 |---|---|---|---|
-| No per-agent rate limiting on MCP | Low | MCP is a local subprocess, not network-exposed. User approval still gates data access. | Documented |
+| No per-agent rate limiting on MCP | Low | MCP is a local subprocess, not network-exposed. User approval and Ed25519 proof gate key-bound access. | Documented |
+| MCP proof is not host attestation | Medium | Fresh single-use Ed25519 challenges prove possession of the approved key; compromise of that private key or host remains out of scope. | Documented |
 | Mock NER (keyword-based, not AI) | Medium | Regex filter catches structured PII. Mock NER catches common names/cities/orgs. Real on-device NER is a future phase. | Documented |
 | Audit log is not tamper-evident | Medium | Audit rows are encrypted-at-rest inside the SQLCipher database but have no hash chain or external attestation. An attacker with the DB key could modify rows without detection. | Documented |
 | Debug build stdout contamination | Low | Release builds are clean. `test_mcp.sh` validates. | Validated |
@@ -159,3 +165,4 @@ Test counts are not pinned here. Run `flutter test` for the current number. The 
 | Approval flow | Defensive paths: empty scopes, not-found, not-pending, non-pending rejection does not revoke tokens |
 | Log hygiene | No tokens, PII, keys, or DB paths appear in log output |
 | Auth consistency | Singleton identity, identical validation across transports, identical rejection codes |
+| MCP caller proof | Valid Ed25519 proof, wrong-key rejection, exact-payload binding, expiry, malformed-key rejection, and single-use replay prevention |
