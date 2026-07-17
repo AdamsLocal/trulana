@@ -68,7 +68,7 @@ class McpCallerAuth {
   McpCallerAuth({
     McpClock? clock,
     SecureBytes? secureBytes,
-    SignatureAlgorithm? algorithm,
+    SignatureAlgorithm<PublicKey>? algorithm,
     this.challengeTtl = _defaultChallengeTtl,
     this.maxOutstanding = _defaultMaxOutstanding,
   })  : _clock = clock ?? DateTime.now,
@@ -77,7 +77,7 @@ class McpCallerAuth {
 
   final McpClock _clock;
   final SecureBytes _secureBytes;
-  final SignatureAlgorithm _algorithm;
+  final SignatureAlgorithm<PublicKey> _algorithm;
   final Duration challengeTtl;
   final int maxOutstanding;
   final Map<String, McpCallerChallenge> _challenges =
