@@ -323,59 +323,37 @@ class _ToggleLoading extends StatelessWidget {
   }
 }
 
-class _ToggleSwitch extends StatefulWidget {
+/// Purely controlled toggle — source of truth is [isOn] from the provider.
+/// AnimatedContainer/AnimatedAlign animate on prop changes without local state,
+/// so there is no local _on that can desync from the persisted value.
+class _ToggleSwitch extends StatelessWidget {
   const _ToggleSwitch({required this.isOn, this.onChanged});
 
   final bool isOn;
   final ValueChanged<bool>? onChanged;
 
   @override
-  State<_ToggleSwitch> createState() => _ToggleSwitchState();
-}
-
-class _ToggleSwitchState extends State<_ToggleSwitch> {
-  late bool _on;
-
-  @override
-  void initState() {
-    super.initState();
-    _on = widget.isOn;
-  }
-
-  @override
-  void didUpdateWidget(_ToggleSwitch oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isOn != widget.isOn) {
-      _on = widget.isOn;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        final bool next = !_on;
-        setState(() => _on = next);
-        widget.onChanged?.call(next);
-      },
+      onTap: () => onChanged?.call(!isOn),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 36,
         height: 20,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: _on ? const Color(0xFF2A8A84) : TrulanaColors.surfaceLight,
+          color: isOn ? const Color(0xFF2A8A84) : TrulanaColors.surfaceLight,
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
-          alignment: _on ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
             width: 14,
             height: 14,
             margin: const EdgeInsets.symmetric(horizontal: 3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _on
+              color: isOn
                   ? TrulanaColors.primaryCyan
                   : TrulanaColors.textTertiary,
             ),
