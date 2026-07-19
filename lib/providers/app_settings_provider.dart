@@ -66,9 +66,9 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setRequireBiometric(bool value) async {
     final previous = state.requireValue;
+    state = AsyncData(previous.copyWith(requireBiometric: value));
     try {
       await _prefs.setPreference(_kRequireBiometric, value.toString());
-      state = AsyncData(previous.copyWith(requireBiometric: value));
     } catch (_) {
       state = AsyncData(previous);
     }
@@ -76,9 +76,9 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setAutoStartServer(bool value) async {
     final previous = state.requireValue;
+    state = AsyncData(previous.copyWith(autoStartServer: value));
     try {
       await _prefs.setPreference(_kAutoStartServer, value.toString());
-      state = AsyncData(previous.copyWith(autoStartServer: value));
     } catch (_) {
       state = AsyncData(previous);
     }
@@ -86,9 +86,9 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setMcpAdapter(bool value) async {
     final previous = state.requireValue;
+    state = AsyncData(previous.copyWith(mcpAdapter: value));
     try {
       await _prefs.setPreference(_kMcpAdapter, value.toString());
-      state = AsyncData(previous.copyWith(mcpAdapter: value));
     } catch (_) {
       state = AsyncData(previous);
     }
