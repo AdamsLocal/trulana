@@ -65,29 +65,32 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
   }
 
   Future<void> setRequireBiometric(bool value) async {
+    final previous = state.requireValue;
     try {
       await _prefs.setPreference(_kRequireBiometric, value.toString());
-      state = AsyncData(state.requireValue.copyWith(requireBiometric: value));
+      state = AsyncData(previous.copyWith(requireBiometric: value));
     } catch (_) {
-      // persistence failed; state unchanged so UI reverts via didUpdateWidget
+      state = AsyncData(previous);
     }
   }
 
   Future<void> setAutoStartServer(bool value) async {
+    final previous = state.requireValue;
     try {
       await _prefs.setPreference(_kAutoStartServer, value.toString());
-      state = AsyncData(state.requireValue.copyWith(autoStartServer: value));
+      state = AsyncData(previous.copyWith(autoStartServer: value));
     } catch (_) {
-      // persistence failed; state unchanged so UI reverts via didUpdateWidget
+      state = AsyncData(previous);
     }
   }
 
   Future<void> setMcpAdapter(bool value) async {
+    final previous = state.requireValue;
     try {
       await _prefs.setPreference(_kMcpAdapter, value.toString());
-      state = AsyncData(state.requireValue.copyWith(mcpAdapter: value));
+      state = AsyncData(previous.copyWith(mcpAdapter: value));
     } catch (_) {
-      // persistence failed; state unchanged so UI reverts via didUpdateWidget
+      state = AsyncData(previous);
     }
   }
 }
