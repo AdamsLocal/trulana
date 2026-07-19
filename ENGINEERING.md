@@ -1,20 +1,19 @@
-# Working Order — Engineering
+# AdamsLocal — Engineering
 
-This GitHub org is where Working Order ships code. The goal is simple: build dependable systems that don't lie (about data, audit trails, or what they did), and can be run and debugged without heroics.
+This is where AdamsLocal ships code. The goal is simple: build dependable systems that don't lie (about data, audit trails, or what they did), and can be run and debugged without heroics.
 
 If something here feels vague, fix it. Ambiguity is technical debt.
 
 ## What lives here
 
 - **Product repos**: customer-facing apps and services. Trulana is the flagship — a local-first, privacy-by-default personal context server.
-- **Core platform**: shared libraries, infra, tooling, CI/CD, and the "Kernel" pieces (encrypted local vault, audit log, auth layer).
 - **Prototypes**: experiments that may get promoted or deleted.
 
 If a repo is "important," it must say so in its own README (what it does, how it runs, how it's deployed, who owns it).
 
 ## What we build
 
-Working Order builds **local-first, privacy-preserving software** — primarily in Flutter/Dart for desktop and mobile. Products are designed around the principle that the device is the trust boundary: apps get answers, not raw data.
+**Local-first, privacy-preserving software** — primarily in Flutter/Dart for desktop and mobile. Products are designed around the principle that the device is the trust boundary: apps get answers, not raw data.
 
 Where AI and agent tooling is involved, we expose context over standard transports (REST, MCP) with on-device redaction before anything leaves the machine. This shapes the security posture of every repo here.
 
@@ -40,11 +39,7 @@ Where AI and agent tooling is involved, we expose context over standard transpor
 
 ## Getting access
 
-- Ask an org admin for:
-  - org membership
-  - team membership
-  - repo permissions (read/write/admin as needed)
-- Use SSO if enabled.
+- Contact the repo owner for read/write/admin permissions as needed.
 - Use SSH keys (preferred) or fine-grained PATs where required.
 
 ## Repo standards (minimum bar)
@@ -193,8 +188,7 @@ If you find a security issue:
 - If PII may have been exposed, that is automatically a severity-1 incident.
 
 Security contact:
-- Email: `security@workingorder.ai`
-- Backup: `ops@workingorder.ai`
+- Email: `adam.gurley@live.com`
 
 ## Support / ownership
 
@@ -227,7 +221,4 @@ templates/
 ### Quick links
 
 - Engineering docs: `docs/`
-- Runbooks / ops notes: `docs/runbooks/`
-- Architecture diagrams: `docs/architecture/`
-- New repo checklist: `docs/standards/new-repo-checklist.md`
 - Trulana repo: [github.com/AdamsLocal/trulana](https://github.com/AdamsLocal/trulana)
