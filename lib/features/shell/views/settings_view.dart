@@ -15,6 +15,7 @@ class SettingsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final configAsync = ref.watch(userConfigProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
 
     return Column(
       children: [
@@ -55,7 +56,16 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Require Touch ID on launch',
                         subtitle: 'Biometric gate every session',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.requireBiometric,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setRequireBiometric(value),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -65,12 +75,30 @@ class SettingsView extends ConsumerWidget {
                       _SettingRow(
                         label: 'Auto-start REST server',
                         subtitle: 'Binds to localhost:8432',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.autoStartServer,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setAutoStartServer(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'MCP stdio adapter',
                         subtitle: 'For Claude Desktop / Cursor',
-                        trailing: const _ToggleSwitch(isOn: true),
+                        trailing: settingsAsync.when(
+                          loading: () => const _ToggleLoading(),
+                          error: (_, __) => const _ToggleSwitch(isOn: true),
+                          data: (settings) => _ToggleSwitch(
+                            isOn: settings.mcpAdapter,
+                            onChanged: (value) => ref
+                                .read(appSettingsProvider.notifier)
+                                .setMcpAdapter(value),
+                          ),
+                        ),
                       ),
                       _SettingRow(
                         label: 'Token TTL',
@@ -272,46 +300,60 @@ class _SettingRow extends StatelessWidget {
   }
 }
 
-class _ToggleSwitch extends StatefulWidget {
-  const _ToggleSwitch({required this.isOn});
-
-  final bool isOn;
+/// Sized loading placeholder for while toggle state is being read.
+class _ToggleLoading extends StatelessWidget {
+  const _ToggleLoading();
 
   @override
-  State<_ToggleSwitch> createState() => _ToggleSwitchState();
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 36,
+      height: 20,
+      child: Center(
+        child: SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            color: TrulanaColors.primaryCyan,
+            strokeWidth: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _ToggleSwitchState extends State<_ToggleSwitch> {
-  late bool _on;
+/// Purely controlled toggle — source of truth is [isOn] from the provider.
+/// AnimatedContainer/AnimatedAlign animate on prop changes without local state,
+/// so there is no local _on that can desync from the persisted value.
+class _ToggleSwitch extends StatelessWidget {
+  const _ToggleSwitch({required this.isOn, this.onChanged});
 
-  @override
-  void initState() {
-    super.initState();
-    _on = widget.isOn;
-  }
+  final bool isOn;
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => _on = !_on),
+      onTap: () => onChanged?.call(!isOn),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 36,
         height: 20,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: _on ? const Color(0xFF2A8A84) : TrulanaColors.surfaceLight,
+          color: isOn ? const Color(0xFF2A8A84) : TrulanaColors.surfaceLight,
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
-          alignment: _on ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
             width: 14,
             height: 14,
             margin: const EdgeInsets.symmetric(horizontal: 3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _on
+              color: isOn
                   ? TrulanaColors.primaryCyan
                   : TrulanaColors.textTertiary,
             ),
