@@ -1,4 +1,4 @@
-import {derive, newSalt, seal, unseal, validateEnvelope, redact} from './vault.mjs';
+import {derive, newSalt, seal, unseal, validateEnvelope, redact, maxBackupBytes} from './vault.mjs';
 const $ = id => document.getElementById(id);
 const storageKey = 'trulana-vault-v1';
 let key = null, salt = null, data = null, releaseLock = null, timer, busy = false;
@@ -92,7 +92,7 @@ $('restore-file').onchange = event => {
   const file = event.target.files[0]; event.target.value = ''; if (!file) return;
   run(async () => {
     if (!$('password').value) throw Error('Enter the backup passphrase before selecting a backup.');
-    if (file.size > 4000000) throw Error('Backup exceeds the 4 MB import limit.');
+    if (file.size > maxBackupBytes) throw Error('Backup exceeds the 4 MB import limit.');
     await exclusive();
     const envelope = JSON.parse(await file.text()); validateEnvelope(envelope);
     const restoreKey = await derive($('password').value,envelope.salt);
