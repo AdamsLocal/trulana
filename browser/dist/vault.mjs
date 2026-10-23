@@ -1,6 +1,10 @@
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 export const iterations = 600000;
+export const maxBackupBytes = 4000000;
+function validateData(data) {
+  if (!data || !Array.isArray(data.entries) || data.entries.length > 500 || data.entries.some(x => !x || typeof x.id !== 'string' || typeof x.title !== 'string' || typeof x.body !== 'string' || x.title.length > 120 || x.body.length > 20000)) throw Error('Invalid vault data.');
+}
 const b64 = bytes => btoa(Array.from(bytes, n => String.fromCharCode(n)).join(''));
 const bytes = value => Uint8Array.from(atob(value), c => c.charCodeAt(0));
 export async function derive(password, salt) {
@@ -9,18 +13,22 @@ export async function derive(password, salt) {
 }
 export function newSalt() { return b64(crypto.getRandomValues(new Uint8Array(16))); }
 export async function seal(data, key, salt) {
+  validateData(data);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(JSON.stringify(data)));
-  return {format:'trulana-browser', version:1, iterations, salt, iv:b64(iv), ciphertext:b64(new Uint8Array(ciphertext))};
+  const envelope = {format:'trulana-browser', version:1, iterations, salt, iv:b64(iv), ciphertext:b64(new Uint8Array(ciphertext))};
+  validateEnvelope(envelope);
+  return envelope;
 }
 export function validateEnvelope(e) {
-  if (!e || e.format !== 'trulana-browser' || e.version !== 1 || e.iterations !== iterations || typeof e.ciphertext !== 'string' || e.ciphertext.length > 4000000 || bytes(e.salt).length !== 16 || bytes(e.iv).length !== 12) throw Error('Invalid backup format.');
+  if (enc.encode(JSON.stringify(e)).byteLength > maxBackupBytes) throw Error('Vault exceeds the 4 MB backup limit. Your saved vault was not changed. Reduce the new entry or remove unneeded context after backing up.');
+  if (!e || e.format !== 'trulana-browser' || e.version !== 1 || e.iterations !== iterations || typeof e.ciphertext !== 'string' || e.ciphertext.length > maxBackupBytes || bytes(e.salt).length !== 16 || bytes(e.iv).length !== 12) throw Error('Invalid backup format.');
 }
 export async function unseal(e, key) {
   validateEnvelope(e);
   const plaintext = await crypto.subtle.decrypt({name:'AES-GCM', iv:bytes(e.iv)}, key, bytes(e.ciphertext));
   const data = JSON.parse(dec.decode(plaintext));
-  if (!Array.isArray(data.entries) || data.entries.length > 500 || data.entries.some(x => typeof x.id !== 'string' || typeof x.title !== 'string' || typeof x.body !== 'string' || x.title.length > 120 || x.body.length > 20000)) throw Error('Invalid vault data.');
+  validateData(data);
   return data;
 }
 export function redact(text) {
