@@ -64,9 +64,13 @@ A Context-as-a-Service escrow layer (SHA-256 commitment + reveal, plus zero-widt
 ## Links
 
 - Landing page: https://trulana.com/
-- Contact: adam@trulana.com
-- Source repository: not currently public (private during this milestone). A public source-available release under BUSL 1.1 is planned.
+- Contact: adam@adamslocal.net
+- Source repository: not currently public (private during this milestone). The source at the current revision is MIT-licensed; repository visibility is a separate publishing step.
 
 ## Status
 
-macOS Desktop MVP, current release v1.2.1. Licensed under BUSL 1.1 (not MIT, not Apache); commercial production use requires a separate paid license from AdamsLocal LLC. No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.
+macOS Desktop MVP, current release v1.2.1. The current source revision uses the MIT License. Historical v1.2.1 binaries retain their bundled license notices. No regulatory certifications (HIPAA, SOC 2, FedRAMP, GDPR, etc.) are claimed.
+
+## Browser edition
+
+Early standalone browser vault in browser/: encrypted browser-local storage, search, pattern-based redaction preview and encrypted backup/restore. No native MCP/REST server, payment system, AI inference, desktop vault import, or offline restart in this edition.

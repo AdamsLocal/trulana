@@ -113,4 +113,4 @@ When adding a feature, add tests in the matching directory. Engine changes go in
 
 ## License
 
-Trulana is source-available under the Business Source License 1.1 (not MIT, not Apache). Contributions are accepted under the same license. Commercial production use requires a paid commercial license from AdamsLocal LLC. See [LICENSE](LICENSE).
+Contributions to this revision are accepted under the MIT License. See [LICENSE](LICENSE). Contact adam@adamslocal.net.

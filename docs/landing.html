@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow</title>
+<title>Trulana | Local-First Context & Experimental CaaS</title>
 
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (location.protocol !== "https:" && location.protocol !== "file:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") { location.replace("https:" + location.href.substring(location.protocol.length)); }</script>
 
-<meta name="description" content="Trulana is an enterprise-grade local-first private context server. Monetize and secure your personal data streams using Zero-Knowledge Context Bounties and Holographic Provenance Tracking over REST or MCP.">
-<meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, zero-knowledge, data monetization, steganography, provenance, macOS">
-<meta name="author" content="Trulana Infrastructure">
+<meta name="description" content="Trulana is a local-first private context server for macOS. Apps query redacted context over REST or MCP. Paid context escrow and watermarking are experimental and unreleased.">
+<meta name="keywords" content="trulana, privacy, local-first, AI, context server, MCP, commitment-reveal, data monetization, steganography, provenance, macOS">
+<meta name="author" content="AdamsLocal LLC">
 <link rel="canonical" href="https://trulana.com/">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow">
-<meta property="og:description" content="Secure, trace, and monetize your data context. Apps query over REST or MCP via trustless Zero-Knowledge handshakes. Raw data never leaks without provenance.">
+<meta property="og:title" content="Trulana | Local-First Context & Experimental CaaS">
+<meta property="og:description" content="Keep context on-device and approve scoped access over REST or MCP. Context escrow and watermarking are experimental, not guaranteed leak protection.">
 <meta property="og:url" content="https://trulana.com/">
 <meta property="og:image" content="https://trulana.com/trulana-og.png">
 <meta property="og:image:width" content="1376">
@@ -25,8 +25,8 @@
 <meta property="og:site_name" content="Trulana">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Trulana | Context-as-a-Service (CaaS) with ZK-Cryptographic Escrow">
-<meta name="twitter:description" content="A local-first private context server. Turn personal data streams into highly secure, trace-watermarked, self-monetizing assets.">
+<meta name="twitter:title" content="Trulana | Local-First Context & Experimental CaaS">
+<meta name="twitter:description" content="A local-first private context server. Encrypted storage and scoped access, with experimental context monetization research.">
 <meta name="twitter:image" content="https://trulana.com/trulana-og.png">
 
 <link rel="icon" type="image/png" sizes="32x32" href="trulana-logo.png">
@@ -37,9 +37,9 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Trulana",
-  "alternateName": "Trulana Context Server (Enterprise Edition)",
-  "headline": "Context-as-a-Service with ZK Cryptographic Escrow & Holographic Provenance Tracking",
-  "description": "An enterprise-grade, local-first private context server with structured monetization preferences. Autonomous agents query local context over REST or MCP via Zero-Knowledge handshakes, enforcing strict value settlement and immutable data provenance.",
+  "alternateName": "Trulana Context Server (macOS Desktop MVP)",
+  "headline": "Local-first context server with experimental escrow and watermarking",
+  "description": "A local-first private context server with explicit agent approvals and scoped REST/MCP access. Escrow and watermarking are experimental, unreleased, and not functional end-to-end.",
   "applicationCategory": "DeveloperApplication",
   "applicationSubCategory": "Privacy & AI Security Tools",
   "operatingSystem": "macOS",
@@ -56,22 +56,22 @@
     "REST API on localhost:8432 (isolated loopback adapter)",
     "MCP stdio architecture natively compatible with Claude Desktop and Cursor Agents",
     "3-stage PII auto-redaction pipeline (Deterministic Regex, Named Entity Recognition, Privacy-Level Generalization)",
-    "Experimental (unreleased): Zero-Knowledge Context Bounty escrow — SHA-256 commitment then reveal",
+    "Experimental (unreleased): Context Bounty escrow — SHA-256 commitment then reveal",
     "Experimental (unreleased): zero-width steganographic watermarking for leak provenance tracing",
     "Scoped access tokens with 15-minute TTL, maintained strictly in-memory",
     "Rigid context.read and monetize.write architectural scope isolation",
     "Granular first-contact agent approval queue with runtime scope narrowing capability",
-    "Cryptographically signed audit logging for all token grants, query executions, and monetization settlements"
+    "Encrypted audit logging for grants and queries; not cryptographically signed or tamper-evident"
   ],
   "author": {
     "@type": "Organization",
-    "name": "Trulana Infrastructure",
-    "email": "architecture@trulana.com"
+    "name": "AdamsLocal LLC",
+    "email": "adam@adamslocal.net"
   },
-  "license": "https://mariadb.com/bsl11/",
+  "license": "https://github.com/AdamsLocal/trulana/blob/v1.2.1/LICENSE",
   "isAccessibleForFree": false,
-  "description_license": "Source-available under the Business Source License 1.1. Free for non-commercial, personal evaluation. Enterprise deployment or integration into commercial AI provider networks requires an authorized production license.",
-  "keywords": "privacy, local-first, AI infrastructure, context server, MCP, zero-knowledge, data monetization, steganography, PII"
+  "description_license": "The historical v1.2.1 binary retains its bundled BUSL notices. Current source uses the MIT License; see the repository LICENSE for terms.",
+  "keywords": "privacy, local-first, AI infrastructure, context server, MCP, commitment-reveal, data monetization, steganography, PII"
 }
 </script>
 
@@ -784,7 +784,7 @@ footer a:hover { color: var(--accent); }
 <!-- Nav: minimal brand mark -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">Trulana Infrastructure</a>
+    <a href="/" class="nav-brand"><img src="trulana-icon.png" alt="Trulana" class="nav-logo">AdamsLocal LLC</a>
   </div>
 </nav>
 
@@ -794,16 +794,16 @@ footer a:hover { color: var(--accent); }
     <div class="hero-badge">Local-First Private Context Server &middot; v1.2.1</div>
     <img src="trulana-icon.png" alt="Trulana" class="hero-logo">
     <h1 class="hero-wordmark">Trulana</h1>
-    <h2 class="hero-headline">Own your data fortress.<br>Force AI to buy the <em>provenance.</em></h2>
-    <p class="sub">Trulana is a local-first private context server. Apps and agents query your encrypted on-device vault over REST or MCP, and only redacted answers leave the machine. A Zero-Knowledge context-escrow and watermarking layer for paid context access is in active development (preview).</p>
-    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>Local-First &middot; Zero Cloud Egress</span> &middot; <span>On-Device Redaction</span></div>
+    <h2 class="hero-headline">Own your data fortress.<br>Choose who gets your <em>context.</em></h2>
+    <p class="sub">Trulana is a local-first private context server. Apps and agents query your encrypted on-device vault over REST or MCP, and only redacted answers leave the machine. A context-escrow and watermarking layer for paid access is in development; payment settlement is not implemented and escrow is not functional end-to-end.</p>
+    <div class="hero-proof"><span>Signed &middot; Notarized &middot; Stapled</span> &middot; <span>Local-First &middot; On-Device Storage</span> &middot; <span>On-Device Redaction</span></div>
     <div class="cta-row">
       <a href="https://github.com/AdamsLocal/trulana/releases/tag/v1.2.1" class="btn btn-primary">Download for macOS (v1.2.1)</a>
-      <a href="#partner" class="btn btn-ghost">Enterprise Integration Licensing</a>
+      <a href="#partner" class="btn btn-ghost">Enterprise Integration</a>
     </div>
     <div class="trust-row">
-      <span class="trust-pill">ZK-Bounty Escrow Framework</span>
-      <span class="trust-pill">Steganographic Leak Trace</span>
+      <span class="trust-pill">Escrow Research Preview</span>
+      <span class="trust-pill">Watermarking Research Preview</span>
       <span class="trust-pill">Local SQLCipher Vault</span>
       <span class="trust-pill">Auto-Redaction Engine</span>
     </div>
@@ -824,8 +824,8 @@ footer a:hover { color: var(--accent); }
 <section id="example">
   <div class="container-wide">
     <div class="section-label">Handshake Handled</div>
-    <h2>Watch the Trustless Escrow Pipeline fire.</h2>
-    <p>Authenticate an external agent, watch the daemon generate a Zero-Knowledge commitment hash, settle the token value, and inject a holographic trace seamlessly into the response.</p>
+    <h2>Explore the escrow concept demo.</h2>
+    <p>This browser simulation illustrates a proposed workflow. It does not authenticate real agents, access your vault, or settle payments. The experimental implementation uses SHA-256 commitments, not zero-knowledge proofs; watermarking can be removed and does not guarantee leak attribution.</p>
   </div>
   <div class="demo-container">
     <div class="demo-panel demo-dashboard">
@@ -833,8 +833,8 @@ footer a:hover { color: var(--accent); }
       <div class="dash-section">
         <div class="dash-vault-row">
           <span class="dash-pulse"></span>
-          <span class="dash-vault-label">ZK Velocity Active</span>
-          <span class="dash-badge dash-badge-green">Escrowed</span>
+          <span class="dash-vault-label">Concept Demo Active</span>
+          <span class="dash-badge dash-badge-green">Simulated</span>
         </div>
       </div>
       <div class="dash-section">
@@ -882,7 +882,7 @@ footer a:hover { color: var(--accent); }
   <div class="container">
     <div class="section-label">The systemic exploit</div>
     <h2>AI systems harvest context for free.<br>Then they leak accountability.</h2>
-    <p>Right now, third-party AI agents and cloud applications silently scrape your persistent device context. They harvest your calendar, notes, and workflows into centralized vector databases. You assume all data liability while they extract 100% of the monetization value.</p>
+    <p>Sharing calendars, notes, and workflows with cloud AI tools can create additional copies outside your control. Trulana explores how local storage and explicit approvals can reduce that exposure.</p>
     <div class="problem-grid">
       <div class="problem-card">
         <div class="label">Asymmetry</div>
@@ -892,7 +892,7 @@ footer a:hover { color: var(--accent); }
       <div class="problem-card">
         <div class="label">Liability</div>
         <h3>Zero Traceability</h3>
-        <p>Once your sensitive client materials or private logs leak from a cloud training set, you have zero mathematical way to trace the leak origin.</p>
+        <p>Once sensitive materials are copied into another system, tracing later disclosure can be difficult. Experimental text watermarks do not guarantee attribution.</p>
       </div>
     </div>
   </div>
@@ -902,9 +902,9 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">The paradigm shift</div>
-    <h2>Turn your context into a tokenized escrow.</h2>
-    <p>Trulana isolates your context in a locally encrypted database. When an AI app or developer agent requests personal variables, it cannot read them directly. Trulana generates a <strong>Zero-Knowledge hash commitment</strong>. To unlock the payload, the agent must submit a validated bounty token. Before transfer, an invisible <strong>holographic trace</strong> is woven directly into the text characters, turning data leaks into immediate legal tracking.</p>
-    <p>They get the context vectors they need to execute tasks. You enforce micro-payments and total provenance accountability.</p>
+    <h2>Explore context escrow. Still experimental.</h2>
+    <p>Trulana stores context in a locally encrypted database. The research preview explores a <strong>SHA-256 commitment and reveal</strong> flow and <strong>zero-width watermarking</strong>. Commitment state is not yet preserved through settlement, bounty tokens are placeholders, and no real payment moves. Watermarks can be stripped and do not establish legal attribution.</p>
+    <p>The goal is user-controlled paid context access. This is a research direction, not a shipped payment or guaranteed tracking system.</p>
   </div>
 </section>
 
@@ -912,14 +912,14 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">The Handshake Sequence</div>
-    <h2>Six steps. Strict math. Zero cloud dependencies.</h2>
+    <h2>Six steps in the proposed escrow flow.</h2>
     <div class="steps">
       <div class="step"><div class="step-num">01</div><div class="step-text"><h3>Agent Submits Intent</h3><p>An inbound application requests specific data primitives over MCP or secure loopback REST, defining scope parameters.</p></div></div>
-      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Biometric Release Queue</h3><p>The daemon holds the agent in a cryptographic state. You evaluate the scope requirements via the hub, narrowing parameters explicitly.</p></div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>ZK Commitment Hashing</h3><p>Trulana locks the requested context and returns a public hash instead of the raw file. We prove we have the asset without exposing it.</p></div></div>
-      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>Bounty Settle &amp; Clear</h3><p>The agent platform submits a validated value token (`caas_tk_`) matching your database monetization rules to close the loop.</p></div></div>
-      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Holographic Watermarking</h3><p>The local pipeline injects a millisecond-accurate, invisible zero-width trace binary into the raw text structure matching the agent's ID.</p></div></div>
-      <div class="step"><div class="step-num">06</div><div class="step-text"><h3>Accountable Release</h3><p>The filtered, trace-mapped data leaves the device. If the agent leaks that text anywhere on earth, the provenance traces immediately back to them.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text"><h3>Biometric Release Queue</h3><p>New agents wait for explicit user approval. You review the requested scopes and can narrow them before granting access.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text"><h3>Commitment Hashing (Preview)</h3><p>The experimental engine hashes salted context for a later reveal check. This is a commitment, not a zero-knowledge proof.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text"><h3>Bounty Settlement (Planned)</h3><p>The proposed flow would validate a payment before release. Current bounty tokens are placeholders; end-to-end settlement is unfinished.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text"><h3>Text Watermarking (Preview)</h3><p>The experimental engine inserts a trace identifier using zero-width text characters. Normalization or editing can remove it.</p></div></div>
+      <div class="step"><div class="step-num">06</div><div class="step-text"><h3>Accountable Release</h3><p>The goal is to return approved, redacted context with an optional trace marker. Neither redaction nor watermarking guarantees prevention or attribution of leaks.</p></div></div>
     </div>
   </div>
 </section>
@@ -932,15 +932,15 @@ footer a:hover { color: var(--accent); }
     <div class="audience-grid">
       <div class="audience-card">
         <h3>Foundation AI Providers</h3>
-        <p>Ingest deep, hyper-personalized context fields required for agentic reasoning without absorbing toxic global storage liabilities, GDPR violations, or corporate copyright lawsuits.</p>
+        <p>Request scoped context for agent workflows while reducing centralized storage. Compliance and legal obligations still require separate assessment.</p>
       </div>
       <div class="audience-card">
         <h3>Elite Enterprise Consultants</h3>
-        <p>Deploy cloud-based automation tools over sensitive legal disclosures, intellectual property, and client records with verified mathematical leak accountability.</p>
+        <p>Explore scoped access to local context for automation. Experimental watermarking does not provide verified leak accountability.</p>
       </div>
       <div class="audience-card">
         <h3>Sovereign Nodes &amp; Builders</h3>
-        <p>Turn personal workspace telemetry and machine usage logs into a private, monetizable dataset that you lease to AI models on your own terms.</p>
+        <p>Explore user-controlled context sharing. Paid data leasing remains a research goal and is not available in the current release.</p>
       </div>
     </div>
   </div>
@@ -950,13 +950,13 @@ footer a:hover { color: var(--accent); }
 <section>
   <div class="container">
     <div class="section-label">Strategic Non-Proliferation Asset</div>
-    <h2>Total isolation from the global training scraper.</h2>
+    <h2>Keep context storage on your device.</h2>
     <div class="gov-card">
-      <p class="gov-text">Trulana acts as a secure airlock for private networks. The architecture guarantees zero cloud egress, running exclusively as a local background daemon. Source available under BUSL 1.1 for granular structural audits; production integration into institutional LLM loops requires formal licensing protocols.</p>
+      <p class="gov-text">Trulana stores context locally and serves approved requests through localhost or stdio. Receiving applications can transmit returned context elsewhere. Current source uses the MIT License for personal and commercial use; historical v1.2.1 binaries retain their bundled notices. No regulatory certifications are claimed.</p>
       <div class="gov-pills">
-        <span class="trust-pill">No Cloud Egress Guaranteed</span>
+        <span class="trust-pill">Local Context Storage</span>
         <span class="trust-pill">On-Device Cryptographic Vault</span>
-        <span class="trust-pill">BUSL 1.1 Secure Registry</span>
+        <span class="trust-pill">MIT-Licensed Source</span>
       </div>
     </div>
   </div>
@@ -968,8 +968,8 @@ footer a:hover { color: var(--accent); }
     <div class="section-label">The economic shift</div>
     <h2>Data hoarding is a terminal business design.</h2>
     <p>Every platform that stores user context in a central vector base creates a multi-million dollar honeypot for exploits, regulatory crackdowns, and corporate data leakage.</p>
-    <p>Trulana breaks the loop by **refusing to let un-tracked data leave the source edge**. The context asset remains local. Third-party applications pay to access isolated context outputs rather than buying the source. The steganographic engine enforces tracking. You get elite personalization workflows while eliminating data leakage liabilities entirely.</p>
-    <p>Users shouldn't surrender their digital footprints to centralized servers just to make a model smart. It's time to license access via cryptographically transparent escrows.</p>
+    <p>Trulana keeps its context vault local and requires scoped approval before returning redacted answers. Paid access and watermarking are experimental; they do not currently enforce payment, guarantee tracking, or eliminate data leakage liability.</p>
+    <p>Users shouldn't surrender their digital footprints to centralized servers just to make a model smart. User-controlled paid access is a direction we are researching.</p>
   </div>
 </section>
 
@@ -978,7 +978,7 @@ footer a:hover { color: var(--accent); }
   <div class="container">
     <div class="section-label">Production Milestone</div>
     <h2>macOS Desktop MVP. v1.2.1 Signed, Notarized, and Stapled.</h2>
-    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">Trulana's core network-route infrastructure ships on <code>main</code>. The v1.2.1 release is signed with an Apple Developer ID, Apple-notarized, and ticket-stapled, so it is accepted by Gatekeeper without override prompts.</p>
+    <p style="color: var(--text-dim); max-width: 640px; margin-bottom: 24px;">The <code>main</code> source includes changes newer than the signed v1.2.1 binary. The v1.2.1 release is signed with an Apple Developer ID, Apple-notarized, and ticket-stapled, so it is accepted by Gatekeeper without override prompts.</p>
     <div class="status-list">
       <div class="status-item"><div class="status-dot live"></div>Apple Developer ID signed, notarized, stapled, and Gatekeeper accepted (v1.2.1)</div>
       <div class="status-item"><div class="status-dot live"></div>Local background daemon with SQLCipher AES-256 database isolation</div>
@@ -986,7 +986,7 @@ footer a:hover { color: var(--accent); }
       <div class="status-item"><div class="status-dot live"></div>MCP standard stdio adapter engine functional across developer environments</div>
       <div class="status-item"><div class="status-dot live"></div>Short-lived access tokens with strictly isolated 15-minute in-memory TTL</div>
       <div class="status-item"><div class="status-dot live"></div>Rigid, independent scope boundary checks for context.read and monetize.write</div>
-      <div class="status-item"><div class="status-dot soon"></div>Zero-Knowledge Context Bounty escrow commitment engine (experimental, unreleased — not yet functional end-to-end)</div>
+      <div class="status-item"><div class="status-dot soon"></div>Context Bounty escrow commitment engine (experimental, unreleased — not yet functional end-to-end)</div>
       <div class="status-item"><div class="status-dot soon"></div>Zero-width steganographic watermarking for leak provenance (experimental, unreleased)</div>
       <div class="status-item"><div class="status-dot live"></div>3-stage auto-redaction engine (Regex, Named Entity Recognition, Privacy Generalization)</div>
       <div class="status-item"><div class="status-dot live"></div>Granular user approval queue featuring real-time agent scope narrowing</div>
@@ -1000,22 +1000,22 @@ footer a:hover { color: var(--accent); }
 <!-- 11. FINAL CTA -->
 <div class="final-cta" id="partner">
   <div class="container">
-    <h2>Secure your enterprise context layer. Let's license the blueprint.</h2>
-    <p>We are seeking strategic alliance partners, enterprise engineering teams, and AI platform providers looking to integrate local-first context pipelines with verified steganographic leak protection.</p>
+    <h2>Secure your enterprise context layer. Let's build together.</h2>
+    <p>We are seeking partners, enterprise engineering teams, and AI platform providers to integrate local-first context pipelines and evaluate experimental watermarking.</p>
     <ul class="partner-list">
-      <li>Integrate CaaS monetization pipelines directly into runtime environments</li>
-      <li>Eliminate customer data storage liabilities from corporate balance sheets</li>
-      <li>Enforce absolute data provenance and leak traceability across networks</li>
+      <li>Help develop and validate experimental CaaS monetization pipelines</li>
+      <li>Reduce centralized customer data storage</li>
+      <li>Evaluate provenance markers and their limitations</li>
     </ul>
     <div class="cta-row">
-      <a href="mailto:architecture@trulana.com?subject=Enterprise CaaS Licensing Inquiry" class="btn btn-primary">Request Integration Specifications</a>
+      <a href="mailto:adam@adamslocal.net?subject=Enterprise Integration Inquiry" class="btn btn-primary">Request Integration Specifications</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="container">
-    &copy; 2026 Trulana Infrastructure. Trulana is a trademark of Trulana Infrastructure. All rights reserved. &middot; <a href="mailto:architecture@trulana.com?subject=Security Protocol Inquiry">Security Registry</a> &middot; <a href="mailto:architecture@trulana.com">Contact Architecture</a>
+    &copy; 2026 AdamsLocal LLC. Trulana is a trademark of AdamsLocal LLC. All rights reserved. &middot; <a href="mailto:adam@adamslocal.net?subject=Security Protocol Inquiry">Security Registry</a> &middot; <a href="mailto:adam@adamslocal.net">Contact Architecture</a>
   </div>
 </footer>
 

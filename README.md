@@ -5,10 +5,14 @@
 Trulana is a local-first private context system for AI tools. Apps and agents query your personal context over localhost (REST) or the Model Context Protocol (MCP). Every context response is redacted on-device before it leaves the machine — raw personal data never crosses the process boundary. The shipped artifact is a **macOS Desktop MVP**.
 
 ![Flutter](https://img.shields.io/badge/Flutter-Dart%203.x-3DFFD0?style=flat-square)
-![License](https://img.shields.io/badge/license-BUSL--1.1-3DFFD0?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-3DFFD0?style=flat-square)
 ![Public binary](https://img.shields.io/badge/public%20binary-macOS%20only-0A0820?style=flat-square&labelColor=1ABFA0)
 
 ---
+
+## Browser edition (early release)
+
+The independent browser vault lives in `browser/`. It supports encrypted local storage, text search, manual redaction review, and encrypted backup/restore. It does not implement native REST/MCP, desktop vault migration, or payments. See [browser/README.md](browser/README.md) for setup and security limitations.
 
 ## Current release
 
@@ -229,6 +233,8 @@ flutter run -d macos
 
 ## License
 
-Business Source License 1.1. Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
+MIT License. Copyright © 2026 AdamsLocal LLC. See [LICENSE](LICENSE).
 
-Source-available, not MIT or Apache. Free for non-commercial, personal, research, and evaluation use. **Commercial production use requires a paid commercial license from AdamsLocal LLC.**
+The source at this revision permits personal and commercial use under MIT. Previously published release artifacts retain their bundled notices; no old binary has been rebuilt or relicensed by this change.
+
+Contact: [adam@adamslocal.net](mailto:adam@adamslocal.net).
