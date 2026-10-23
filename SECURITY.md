@@ -1,5 +1,9 @@
 # Trulana Security Model
 
+Security reports: [adam@adamslocal.net](mailto:adam@adamslocal.net).
+
+This document describes the native macOS app. The independent browser edition has a different trust model documented in [browser/README.md](browser/README.md).
+
 ## Architecture Overview
 
 Trulana is a local-first personal data broker. All data stays on-device in an encrypted database. Third-party agents access user context through two transport layers — REST (localhost HTTP) and MCP (stdio) — both of which are gated by the same shared services.
@@ -127,7 +131,7 @@ Release signing is performed **manually on the built artifact**, not inside the 
 **Open release-hygiene items** (not code-signing, but related):
 
 - [ ] **Automate signing + notarization in CI.** `.github/workflows/ci.yml` now runs analyze + test and builds an **unsigned** macOS bundle; it does not codesign, notarize, or staple. Signing is performed manually by the maintainer holding the Developer ID key. A future tag-gated release workflow should invoke `codesign --timestamp --options runtime`, `xcrun notarytool submit --wait`, and `xcrun stapler staple` so releases are reproducible and auditable.
-- [ ] **Developer ID is personal (`Adam Gurley`), not organizational (`AdamsLocal LLC`).** The landing page and LICENSE assert trademark/ownership by AdamsLocal LLC; the signing identity on shipped binaries is personal. Transfer to an org Developer ID is recommended before any paid commercial release.
+- [ ] **Developer ID is personal (`Adam Gurley`), not organizational (`AdamsLocal LLC`).** The LICENSE names AdamsLocal LLC; the signing identity on shipped binaries is personal. Transfer to an org Developer ID is recommended before any paid commercial release.
 
 ## Out of Scope: Experimental CaaS Escrow
 
